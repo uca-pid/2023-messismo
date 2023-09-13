@@ -1,2 +1,4 @@
-package com.messismo.bar;public class UsersTests {
+package com.messismo.bar;
+
+public class UsersTests {
 }
