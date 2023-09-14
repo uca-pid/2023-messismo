@@ -1,9 +1,11 @@
+import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Products from './components/Products';
 import Home from './components/Home'
 import Navbar from './components/Navbar';
+import Menu from './components/Menu';
 
 
 function App() {
@@ -13,6 +15,7 @@ function App() {
       <Navbar></Navbar>
       <div style={styles.content}>
       <Routes>
+        <Route path="/menu" Component={Menu}></Route>
         <Route path="/products" Component={Products}></Route>
         <Route path="/" Component={Home}></Route>
       </Routes>

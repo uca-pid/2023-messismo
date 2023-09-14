@@ -1,5 +1,6 @@
 import './Home.css';
 import { Link } from 'react-router-dom';
+import React from 'react';
 
 function Home() {
   return (
@@ -13,8 +14,8 @@ function Home() {
       <Link to="/products" className="boton-estilizado">
         Cargar Producto
       </Link>
-      <Link to="/products" className="boton-estilizado">
-        Carta
+      <Link to="/menu" className="boton-estilizado">
+        Menu
       </Link>
       <Link to="/products" className="boton-estilizado">
         Modificar carta
