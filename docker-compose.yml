@@ -1,31 +1,33 @@
 version: '3.8'
 services:
-  messismo-backend:
-    container_name: messismo-backend
-    image: messismo-backend
+  messismo_backend:
+    container_name: messismo_backend
+    image: messismo_backend
     platform: linux/amd64
-    build: .
+    build: ./backend
+    depends_on:
+      - postgres
     networks:
       hfnet:
         ipv4_address: 192.168.55.10
     ports:
       - "8080:8080"
     volumes:
-      - /Users/martinguido/Documents/TP:/app
+      - C:\Users\Usuario\Documents\bar:/app
     environment:
       SPRING_APPLICATION_JSON: '{
-        "spring.jpa.database": "postgresql",
+        "spring.jpa.database": "POSTGRESQL",
         "spring.sql.init.platform":"postgres",
         "spring.jpa.properties.hibernate.dialect":"org.hibernate.dialect.PostgreSQLDialect",
         "spring.datasource.driver-class-name":"org.postgresql.Driver",
         "spring.datasource.url":"jdbc:postgresql://192.168.55.11:5432/postgres",
         "spring.datasource.username":"postgres",
         "spring.datasource.password":"postgres",
-        "spring.jpa.show-sql":"true",
         "spring.jpa.generate-ddl":"true",
         "spring.jpa.hibernate.ddl-auto":"create-drop",
         "spring.jpa.properties.hibernate.format-sql":"true"
-        
+        "jwt.secret":"ee2ecef84938596217bd811c807a4eb225d510874e922e5e2e692d8a6e4464bf",
+        "jwt.expiration":"3600000"
             }'
   postgres:
     container_name: postgres
