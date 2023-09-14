@@ -1,0 +1,44 @@
+.container {
+    position: absolute;
+    background-color: white;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center; /* Centrar verticalmente */
+    flex-direction: column;
+}
+
+.entradas {
+    width: 60%;
+    border-radius: 2%;
+}
+
+.product {
+    width: 100%;
+    background-color: beige;
+    padding: 0.2px;
+    margin-top: 0.2%;
+    border-width: 2px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    border-bottom: 2px solid orange;
+    border-radius: 7px;
+
+}
+
+.categories {
+    color: orangered;
+    font-weight: bolder;
+    font-size: x-large;
+}
+
+.text {
+    margin-left: 2%;
+    margin-right: 2%;
+}
+
+.product:hover {
+    background-color: #e74c3c;
+    cursor: pointer; /* Cambia el cursor del mouse al pasar sobre el div */
+  }
