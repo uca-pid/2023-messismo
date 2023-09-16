@@ -1,4 +1,4 @@
-package com.messismo.bar;
+package com.messismo.bar.EntitiesTests;
 
 import com.messismo.bar.Entities.Role;
 import com.messismo.bar.Entities.User;
@@ -69,5 +69,17 @@ public class UsersTests {
 
         assertEquals(expectedAuthorities, authorities);
     }
+
+    @Test
+    public void testUserDetailsProperties() {
+        User user1 = new User(1L, "messi", "password123", Role.EMPLOYEE);
+
+        assertTrue(user1.isAccountNonExpired());
+        assertTrue(user1.isAccountNonLocked());
+        assertTrue(user1.isCredentialsNonExpired());
+        assertTrue(user1.isEnabled());
+    }
+
+
 
 }
