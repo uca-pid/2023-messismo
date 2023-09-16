@@ -3,5 +3,6 @@ package com.messismo.bar.Entities;
 public enum Role {
     EMPLOYEE,
     VALIDATED_EMPLOYEE,
-    ADMIN
+    VALIDATED_ADMIN,
+    SUPER_ADMIN
 }

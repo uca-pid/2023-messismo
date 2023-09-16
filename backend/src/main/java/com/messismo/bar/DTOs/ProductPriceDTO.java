@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductPriceDTO {
-    private Double price;
+
+    private Double unitPrice;
 
 }

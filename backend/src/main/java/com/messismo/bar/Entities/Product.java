@@ -17,11 +17,11 @@ import java.util.Set;
 public class Product {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "product_id", unique = true)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "product_id",unique = true)
     private Long productId;
 
-    @Column(name = "name")
+    @Column(name = "name", unique = true)
     private String name;
 
     @Column(name = "unit_price")
@@ -33,8 +33,6 @@ public class Product {
     @Column(name = "description")
     private String description;
 
-    @ManyToMany(mappedBy = "products")
-    private Set<Menu> menus = new HashSet<>();
 
 
 }

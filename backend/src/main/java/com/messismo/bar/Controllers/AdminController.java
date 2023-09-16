@@ -19,7 +19,7 @@ public class AdminController {
 
     @PutMapping("/product/updatePrice/{productId}")
     public ResponseEntity<?> updateProductPrice(@PathVariable Long productId, @RequestBody ProductPriceDTO body) {
-        return productService.modifyProductPrice(productId, body.getPrice());
+        return productService.modifyProductPrice(productId, body.getUnitPrice());
     }
 
     @DeleteMapping("/product/deleteProduct/{productId}")

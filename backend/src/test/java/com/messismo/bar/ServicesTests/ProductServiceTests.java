@@ -1,2 +1,4 @@
-package com.messismo.bar.ServicesTests;public class ProductService {
+package com.messismo.bar.ServicesTests;
+
+public class ProductServiceTests {
 }

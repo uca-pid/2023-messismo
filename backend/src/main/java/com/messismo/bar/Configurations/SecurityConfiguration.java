@@ -31,9 +31,9 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests(auth -> {
             auth.requestMatchers("/api/v1/auth/**").permitAll();
-            auth.requestMatchers("/api/v1/admin/**").hasRole("ADMIN");
-            auth.requestMatchers("/api/v1/validatedEmployee/**").hasAnyRole("ADMIN", "VALIDATED_EMPLOYEE");
-            auth.requestMatchers("/api/v1/employee/**").hasAnyRole("ADMIN", "VALIDATED_EMPLOYEE","EMPLOYEE");
+            auth.requestMatchers("/api/v1/admin/**").hasRole("SUPER_ADMIN");
+            auth.requestMatchers("/api/v1/validatedEmployee/**").hasAnyRole("SUPER_ADMIN", "VALIDATED_ADMIN", "VALIDATED_EMPLOYEE");
+            auth.requestMatchers("/api/v1/employee/**").hasAnyRole("ADMIN", "VALIDATED_ADMIN", "VALIDATED_EMPLOYEE", "EMPLOYEE");
             auth.anyRequest().authenticated();
         });
         httpSecurity.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

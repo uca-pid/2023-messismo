@@ -1,6 +1,6 @@
 package com.messismo.bar.Configurations;
 
-import com.messismo.bar.Services.JWtService;
+import com.messismo.bar.Services.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,7 +21,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JWtService jWtService;
+    private final JwtService jWtService;
 
     private final UserDetailsService userDetailsService;
 

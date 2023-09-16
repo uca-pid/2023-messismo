@@ -1,2 +1,4 @@
-package com.messismo.bar.ServicesTests;public class JwtService {
+package com.messismo.bar.ServicesTests;
+
+public class JwtServiceTests {
 }

@@ -1,10 +1,11 @@
-package com.messismo.bar;
+package com.messismo.bar.EntitiesTests;
 
 import com.messismo.bar.Entities.AuthenticationResponse;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+
 
 public class AuthenticationResponseTests {
     @Test

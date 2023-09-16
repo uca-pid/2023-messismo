@@ -1,6 +1,6 @@
 package com.messismo.bar.Controllers;
 
-import com.messismo.bar.Services.MenuService;
+import com.messismo.bar.Services.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,11 +12,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/employee")
 public class EmployeeController {
 
-    private final MenuService menuService;
+    private final ProductService productServiceService;
 
     @GetMapping("/getMenu")
-    public ResponseEntity<?> getMenu() {
-        return menuService.getMenu(1L);
+    public ResponseEntity<?> getAllProducts() {
+        return productServiceService.getAllProducts();
     }
 
 }

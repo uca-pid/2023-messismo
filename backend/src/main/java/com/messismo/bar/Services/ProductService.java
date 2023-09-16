@@ -2,11 +2,10 @@ package com.messismo.bar.Services;
 
 
 import com.messismo.bar.DTOs.ProductDTO;
-import com.messismo.bar.Entities.Menu;
 import com.messismo.bar.Entities.Product;
 import com.messismo.bar.Exceptions.ProductNotFoundException;
-import com.messismo.bar.Repositories.MenuRepository;
 import com.messismo.bar.Repositories.ProductRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -16,16 +15,11 @@ import java.util.Optional;
 import java.util.Set;
 
 @Service
+@RequiredArgsConstructor
 public class ProductService {
 
     private final ProductRepository productRepository;
 
-    private final MenuRepository menuRepository;
-
-    public ProductService(ProductRepository productRepository,MenuRepository menuRepository){
-        this.productRepository=productRepository;
-        this.menuRepository=menuRepository;
-    }
 
     public ResponseEntity<?> modifyProductPrice(Long productId, Double price){
         try{
@@ -59,9 +53,6 @@ public class ProductService {
                 newProduct.setUnitPrice(productDTO.getUnitPrice());
                 newProduct.setCategory(productDTO.getCategory());
                 newProduct.setDescription(productDTO.getDescription());
-                Set<Menu> menu = new HashSet<>();
-                menu.add(menuRepository.findByMenuId(1L).get());
-                newProduct.setMenus(menu);
                 productRepository.save(newProduct);
                 return ResponseEntity.status(HttpStatus.CREATED).body("Product created successfully");
             }
@@ -69,5 +60,9 @@ public class ProductService {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Product NOT created");
 
         }
+    }
+
+    public ResponseEntity<?> getAllProducts() {
+        return ResponseEntity.status(HttpStatus.OK).body(productRepository.findAll());
     }
 }
