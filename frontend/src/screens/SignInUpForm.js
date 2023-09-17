@@ -297,8 +297,6 @@ function SignInUpForm(){
     return(
             <BackgroundBox clicked={click}>
 
-                <Logo src="/images/logo.png" />
-
                 <Box1 clicked={click}>
                     <Form className='signin' show={!click}>
                         <Title>Sign In</Title>
