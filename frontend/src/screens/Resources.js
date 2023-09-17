@@ -7,12 +7,13 @@ const SIDEBAR_WIDTH = '16%';
 
 const Container = styled.div`
     display: flex;
-    min-height: 100vh;
+    
+
 `;
 
 const MainContent = styled.div`
     flex: 1;
-    padding: 20px;
+    padding: 100px;
 
     @media (max-width: 1600px){
         inset: 0 95% 0 0;
@@ -28,18 +29,21 @@ const Title = styled.h1`
     margin-top: 20px;
     color: white;
     font-family: 'Roboto';
+    font-size: 30px;
 `;
 
 const UserContainer = styled.div`
 
     display: flex;
     margin-top: 20px;
+
+    @media (max-width: 1600px){
+        display: block;
+    }
 `;
 
 const Resource = styled.div`
 
-    align-items: center;
-    margin-right: 20px;
     font-family: 'Roboto';
 
     .user-data{
@@ -120,6 +124,7 @@ const UserItem = styled.div`
 
 const Subheader = styled.h2`
     color: white;
+    font-size: 24px;
 `;
 
 
