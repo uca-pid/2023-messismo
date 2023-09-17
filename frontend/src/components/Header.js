@@ -134,6 +134,7 @@ const Header = () => {
     const openNavBar = () => setOpenNavBar(!open);
 
     const userType = 'admin'
+    const userPending = 'no'
 
     return(
         <NavBar opened={open}>
@@ -148,17 +149,20 @@ const Header = () => {
                     <span>Home</span>
                 </NavLink>
 
-                <NavLink to={'/products'} expanded={open}>
-                    <PiCoffeeFill className='icon'/>
-                    <span>Products</span>
-                </NavLink>
+                {userPending === 'no' && (
+                    <NavLink to={'/products'} expanded={open}>
+                        <PiCoffeeFill className='icon'/>
+                        <span>Products</span>
+                    </NavLink>
+                )}
 
-                {userType === 'admin' && (
+                {userType === 'admin' && userPending === 'no' && (
                     <NavLink to={'/resources'} expanded={open}>
                         <BsPersonCircle className='icon'/>
                         <span>Resources</span>
                     </NavLink>
                 )}
+                
 
             </Ul>
 
