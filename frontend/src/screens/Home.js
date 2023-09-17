@@ -19,15 +19,31 @@ const SidebarContainer = styled.div`
 `;
 
 const MainContent = styled.div`
-
+    align-items: center;
 `;
 
 const WelcomeImage = styled.img`
-    
+
 `;
 
 const Resource = styled.div`
 
+    font-family: 'Roboto';
+    color: #a4d4cc;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-align: center;
+    font-size: 20px;
+    margin-top: 5rem;
+
+    h3{
+        font-size: 40px;
+
+    }
+    p{
+        padding: 1rem;
+    }
+    
 `;
 
 
@@ -41,8 +57,6 @@ function HomePage(){
         <div key={user.id}>
           <h3>{user.username}</h3>
           <p>{user.email}</p>
-          <p>{user.joined}</p>
-          <p>{user.type}</p>
         </div>
     );
 
@@ -55,7 +69,7 @@ function HomePage(){
 
             <MainContent>
         
-                <WelcomeImage src="/images/welcomeback3.png"/>
+                <WelcomeImage src="/images/welcomeback2.png"/>
 
                 <Resource>
                     <p>{signedinuser.map(renderUser)}</p>
