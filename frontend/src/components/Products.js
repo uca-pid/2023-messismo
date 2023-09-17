@@ -13,9 +13,11 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/material/Button";
-
+import AddIcon from '@mui/icons-material/Add';
+import Form from "./Form";
 const Products = () => {
   const [userType, setUserType] = useState("admin");
+  const [openFormModal, setOpenFormModal] = useState(false);
   const products = [
     {
       nombre: "Papas con cheddar",
@@ -95,6 +97,15 @@ const Products = () => {
     setOpen(false);
   };
 
+
+  const handleOpenProductsModal = () => {
+    setOpenFormModal(true);
+  };
+
+  const handleCloseProductsModal = () => {
+    setOpenFormModal(false);
+  };
+
   const [selectedProduct, setSelectedProduct] = useState(null);
 
   const handleDeleteClick = (producto) => {
@@ -103,9 +114,32 @@ const Products = () => {
     setOpen(true);
   };
 
+
+  const handleSaveProduct = (newProductData) => {
+    // Aquí puedes manejar la lógica para guardar el nuevo producto
+    // newProductData contiene los datos del nuevo producto
+    console.log(newProductData);
+  };
   return (
     <div className="container">
       <h1>Productos</h1>
+      <Button variant="outlined" endIcon={<AddIcon />} style={{color: 'black', borderColor: 'black'}}
+        onClick={handleOpenProductsModal} >
+        Agregar Producto
+      </Button>
+      <Dialog
+        open={openFormModal}
+        onClose={handleCloseProductsModal}
+        aria-labelledby="form-dialog-title"
+        className="custom-dialog"
+        maxWidth="sm" // Puedes ajustar el tamaño aquí, por ejemplo, 'sm', 'md', 'lg', 'xl'
+        fullWidth
+        >
+        <DialogContent>
+          {/* Renderiza el formulario dentro del modal de formulario */}
+          <Form onClose={handleCloseProductsModal} onSave={handleSaveProduct} />
+        </DialogContent>
+      </Dialog>
       {products.map((producto, index) => (
         <div className="entradas">
           <div key={index} className="product">
@@ -122,7 +156,7 @@ const Products = () => {
                 <IconButton
                   aria-label="delete"
                   size="large"
-                  className="icon-button-red"
+                  style={{color: 'red'}}
                   onClick={() => handleDeleteClick(producto)} 
                 >
                   <DeleteIcon />
@@ -132,6 +166,13 @@ const Products = () => {
                   onClose={handleClose}
                   aria-labelledby="alert-dialog-title"
                   aria-describedby="alert-dialog-description"
+                  PaperProps={{
+                    style: {
+                        backgroundColor: 'white', 
+                        boxShadow: 'none', 
+                        zIndex: 1000, 
+                      },
+                  }}
                 >
                   <DialogTitle id="alert-dialog-title">
                   {selectedProduct && `¿Estás seguro que quieres eliminar el producto ${selectedProduct.nombre}?`}
@@ -143,7 +184,7 @@ const Products = () => {
                   </DialogContent>
                   <DialogActions>
                     <Button onClick={handleClose}>Cancelar</Button>
-                    <Button onClick={handleClose} autoFocus>
+                    <Button onClick={handleClose} style={{color: 'red'}}autoFocus >
                       Eliminar
                     </Button>
                   </DialogActions>

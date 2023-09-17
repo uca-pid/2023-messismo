@@ -14,7 +14,7 @@ import Products from './components/Products';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <Products/>
+    <App/>
   </React.StrictMode>
 );
 

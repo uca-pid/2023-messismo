@@ -1,80 +1,106 @@
-import React from "react";
-import { redirect } from "react-router-dom";
-import Navbar from "./Navbar";
+import React, { useState } from "react";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
 import './Form.css'
-import { Link } from "react-router-dom";
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import { useSlotProps } from "@mui/base";
+
+const Form = (props) => {
+  const [nombre, setNombre] = useState("");
+  const [categoria, setCategoria] = useState("");
+  const [descripcion, setDescripcion] = useState("");
+  const [precio, setPrecio] = useState("");
+
+  const handleNombreChange = (event) => {
+    setNombre(event.target.value);
+  };
+
+  const handleCategoriaChange = (event: SelectChangeEvent) => {
+    setCategoria(event.target.value);
+  };
+
+  const handleDescripcionChange = (event) => {
+    setDescripcion(event.target.value);
+  };
+
+  const handlePrecioChange = (event) => {
+    setPrecio(event.target.value);
+  };
 
 
-const Form = () => {
+  const cancelarButton = (event) => {
+    props.onClose();
+  };
+
   return (
-    <div style={styles.container}>
-      <div style={styles.formContainer}>
-        <h1>Producto</h1>
-        <form>
-          <div input style={styles.section}>
-          <p>Nombre</p>
-          <input style={styles.input_box} type="text" id="nombre" name="nombre" />
-          </div>
-          <div>
-          <p>Descripción</p>
-          <input style={styles.input_box} type="text" id="descripcion" name="descripcion" />
-          </div>
-          <div>
-          <p>Categoría</p>
-          <select id="opciones">
-            <option value="opcion1">Bebida sin alcohol</option>
-            <option value="opcion2">Trago</option>
-            <option value="opcion3">Entrada</option>
-            <option value="opcion3">Plato principal</option>
-            <option value="opcion3">Postre</option>
-          </select>
-          </div>
-          <div>
-          <p>Precio unitario</p>
-          <input style={styles.input_box} type="email" id="precio" name="precio" />
-          </div>
-          <div className="buttons">
-          <Link to="/" className="boton-estilizado2">
-            Volver
-          </Link>
-          <button className="boton-estilizado" type="submit">Cargar Producto</button>
-          </div>
-        </form>
+    <div>
+      <h2 style={{marginBottom: '7%'}}>Nuevo Producto</h2>
+      <p>Nombre</p>
+      <TextField
+        required
+        id="nombre"
+        value={nombre}
+        onChange={handleNombreChange}
+        variant="outlined"
+        style={{ width: '80%' }}
+      />
+      <p>Categoria</p>
+      <Select
+          labelId="demo-simple-select-label"
+          id="demo-simple-select"
+          value={categoria}
+          onChange={handleCategoriaChange}
+          style={{ width: '80%' }}
+        >
+          <MenuItem value={"Entradas"}>Entradas</MenuItem>
+          <MenuItem value={"Platos"}>Platos</MenuItem>
+          <MenuItem value={"Tragos"}>Tragos</MenuItem>
+          <MenuItem value={"Bebidas sin alcohol"}>Bebidas sin alcohol</MenuItem>
+          <MenuItem value={"Postres"}>Postres</MenuItem>
+        </Select>
+      <p>Descripción</p>
+      <TextField
+        required
+        id="descripcion"
+        value={descripcion}
+        onChange={handleDescripcionChange}
+        variant="outlined"
+        style={{ width: '80%' }}
+      />
+      <p>Precio</p>
+      <TextField
+        required
+        id="precio"
+        value={precio}
+        onChange={handlePrecioChange}
+        variant="outlined"
+        style={{ width: '80%' }}
+      />
+      <div className="buttons-add">
+        <Button
+          variant="outlined"
+          style={{ color: "grey", borderColor: "grey" , width: "40%"}}
+          onClick={cancelarButton}
+        >
+          Cancelar
+        </Button>
+        <Button
+          variant="contained"
+          style={{
+            backgroundColor: "green",
+            color: "white",
+            borderColor: "green",
+            width: "40%"
+          }}
+
+        >
+          Agregar
+        </Button>
       </div>
     </div>
   );
-};
-
-const styles = {
-  container: {
-    display: 'flex',
-    flex: 1, 
-    justifyContent: 'center',
-    alignItems: 'center',
-    //padding: '20px',
-  
-  },
-  formContainer: {
-    backgroundColor: '#fff',
-    border: '3px solid #ccc',
-    borderRadius: '10px',
-    padding: '20px',
-    width: '80%',
-    height: '75%',
-    justifyContent: 'center',
-    //alignItems: 'center',
-    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-    flexDirection: 'column',
-    },
-  section: {
-    height: '80%',
-  },
-
-  input_box: {
-    height: 30,
-    width:'30%',
-
-  }
-};
+}
 
 export default Form;

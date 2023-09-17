@@ -6,6 +6,7 @@ import Form from './components/Form';
 import Home from './components/Home'
 import Navbar from './components/Navbar';
 import Menu from './components/Menu';
+import Products from './components/Products';
 
 
 function App() {
@@ -18,7 +19,7 @@ function App() {
       <Routes>
         <Route path="/menu" Component={Menu}></Route>
         <Route path="/products" Component={Form}></Route>
-        <Route path="/" Component={Home}></Route>
+        <Route path="/" Component={Products}></Route>
       </Routes>
       </div>
       </div>
