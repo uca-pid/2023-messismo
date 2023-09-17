@@ -8,6 +8,7 @@ import SignInUpForm from './screens/SignInUpForm';
 import Home from './screens/Home';
 import Products from './screens/Products';
 import Resources from './screens/Resources';
+import HeaderProvider from './HeaderContext';
 
 const router = createBrowserRouter([
   { path: '/', element: <Welcome/> },
