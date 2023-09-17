@@ -4,6 +4,7 @@ import { styled } from 'styled-components';
 import 'fontsource-roboto';
 import { Link } from 'react-router-dom';
 import SignUpPopUp from '../components/SignUpPopUp';
+import validation from '../Validation'
 
 const Label = styled.label`
   display: flex;
@@ -277,22 +278,49 @@ const Text = styled.div`
     display: ${props => (props.show ? 'block' : 'none')};
 `;
 
+const ErrorMessage = styled.h4`
+    color: red;
+    font-family: 'Roboto';
+`;
+
 
 function SignInUpForm(){
     const [click, setClick] = useState(false);
     const handleClick = () => setClick(!click);
 
     const [checked, setChecked] = useState(false);
-    const handleChange = (e) => setChecked(e.target.checked);
 
     const [popUp, setPopUp] = useState(false)
     const duringPopUp = popUp ? "during-popup" : ""
+
+    const [userRole, setUserRole] = useState("employee");
+    const handleChange = (e) => {
+        setChecked(e.target.checked);
+        setUserRole(e.target.checked ? "admin" : "employee");
+    };
 
     const [isRegistered, setIsRegistered] = useState(false);
     const handleRegister = () => {
         
         setIsRegistered(false);
     };
+
+    const [values, setValues] = useState({
+        username: '',
+        email: '',
+        password: ''
+    })
+
+    const [errors, setErrors] = useState({})
+
+    const handleInput = (e) => {
+        e.preventDefault()
+        setValues({...values, [e.target.name]: [e.target.value]})
+    }
+
+    function handleValidation() {
+        setErrors(validation(values))
+    }
 
     return(
             <BackgroundBox clicked={click}>
@@ -315,14 +343,22 @@ function SignInUpForm(){
                         <Title>Sign Up</Title>
                         <Input type='text' name='username' id='usernameId'
                         placeholder='Username'
+                        onChange={handleInput}
                         />
+                        {errors.username && <ErrorMessage>{errors.username}</ErrorMessage>}
+                        
                         <Input type='email' name='email' id='emailId'
                         placeholder='Email'
+                        onChange={handleInput}
                         />
+                        {errors.email && <ErrorMessage>{errors.email}</ErrorMessage>}
+                        
                         <Input 
                         type='password' name='password' id='passwordId'
                         placeholder='Password'
+                        onChange={handleInput}
                         />
+                        {errors.password && <ErrorMessage>{errors.password}</ErrorMessage>}
 
                         <Label>
                             <span>{checked ? 'Admin' : 'Employee'}</span>
@@ -330,7 +366,8 @@ function SignInUpForm(){
                             <Switch />
                         </Label>
 
-                        <NavLink onClick={ () => { setPopUp(true); handleRegister(); } } style={{ textDecoration: 'none' }}>Sign Up</NavLink>
+                        {/* <NavLink onClick={ () => { setPopUp(true); handleRegister(); } } style={{ textDecoration: 'none' }}>Sign Up</NavLink> */}
+                        <NavLink onClick={ () => { handleValidation() } }>Sign Up</NavLink>
                     </Form>
                 </Box1>
 
