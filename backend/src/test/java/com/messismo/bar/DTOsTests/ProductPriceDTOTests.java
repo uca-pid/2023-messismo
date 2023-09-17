@@ -25,9 +25,9 @@ public class ProductPriceDTOTests {
     @Test
     public void testProductPriceDTOEquals() {
 
-        ProductPriceDTO productPriceDTO1 = new ProductPriceDTO(14.99);
-        ProductPriceDTO productPriceDTO2 = new ProductPriceDTO(14.99);
-        ProductPriceDTO productPriceDTO3 = new ProductPriceDTO(19.99);
+        ProductPriceDTO productPriceDTO1 = new ProductPriceDTO(1L,14.99);
+        ProductPriceDTO productPriceDTO2 = new ProductPriceDTO(1L,14.99);
+        ProductPriceDTO productPriceDTO3 = new ProductPriceDTO(2L,19.99);
 
         assertEquals(productPriceDTO1, productPriceDTO2);
         assertNotEquals(productPriceDTO1, productPriceDTO3);
@@ -36,9 +36,9 @@ public class ProductPriceDTOTests {
     @Test
     public void testProductPriceDTOHashCode() {
 
-        ProductPriceDTO productPriceDTO1 = new ProductPriceDTO(14.99);
-        ProductPriceDTO productPriceDTO2 = new ProductPriceDTO(14.99);
-        ProductPriceDTO productPriceDTO3 = new ProductPriceDTO(19.99);
+        ProductPriceDTO productPriceDTO1 = new ProductPriceDTO(1L,14.99);
+        ProductPriceDTO productPriceDTO2 = new ProductPriceDTO(1L,14.99);
+        ProductPriceDTO productPriceDTO3 = new ProductPriceDTO(2L,19.99);
 
         assertEquals(productPriceDTO1.hashCode(), productPriceDTO2.hashCode());
         assertNotEquals(productPriceDTO1.hashCode(), productPriceDTO3.hashCode());

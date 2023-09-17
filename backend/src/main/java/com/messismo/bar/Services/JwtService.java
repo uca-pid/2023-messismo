@@ -18,12 +18,12 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-    @Value("${jwt.secret}")
-    private String SECRET_KEY;
-//    private static final String SECRET_KEY = "ee2ecef84938596217bd811c807a4eb225d510874e922e5e2e692d8a6e4464bf";
+//    @Value("${jwt.secret}")
+//    private String SECRET_KEY;
+    private static final String SECRET_KEY = "404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970";
 
-    @Value("${jwt.secret}")
-    private Integer EXPIRATION;
+//    @Value("${jwt.expiration}")
+//    private Integer EXPIRATION;
     public String extractUsername(String token){
         return extractClaim(token, Claims::getSubject);
     }
@@ -37,7 +37,8 @@ public class JwtService {
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + (EXPIRATION))) // DURA UNA HORA
+//                .setExpiration(new Date(System.currentTimeMillis() + (EXPIRATION))) // DURA UNA HORA
+                .setExpiration(new Date(System.currentTimeMillis() + (1000*60*60))) // DURA UNA HORA
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -62,7 +63,9 @@ public class JwtService {
     }
 
     private boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
+//        return extractExpiration(token).before(new Date());
+        Date expiration = extractExpiration(token);
+        return expiration != null && expiration.before(new Date());
     }
 
     private Date extractExpiration(String token) {

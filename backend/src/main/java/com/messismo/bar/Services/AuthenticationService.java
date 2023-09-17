@@ -13,6 +13,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -30,30 +31,42 @@ public class AuthenticationService {
 
     private final AuthenticationManager authenticationManager;
 
-    public AuthenticationResponse register(RegisterRequestDTO registerRequestDTO) {
-        User newUser = new User();
-        newUser.setUsername(registerRequestDTO.getUsername());
-        newUser.setPassword(passwordEncoder.encode(registerRequestDTO.getPassword()));
-        newUser.setRole(Role.EMPLOYEE);
-        userRepository.save(newUser);
-        String jwtToken = jWtService.generateToken(newUser);
-        return AuthenticationResponse.builder().token(jwtToken).build();
-    }
+//    public Object register(RegisterRequestDTO registerRequestDTO) {
+//        if(registerRequestDTO.getEmail() == null ||registerRequestDTO.getPassword() == null ||registerRequestDTO.getUsername() == null ){
+//            return ResponseEntity.status(HttpStatus.CONFLICT).body("Missing data for user registration");
+//        }
+//        Optional<User> foundByUsername = userRepository.findByUsername(registerRequestDTO.getUsername());
+//        Optional<User> foundByEmail = userRepository.findByEmail(registerRequestDTO.getEmail());
+//        if(foundByUsername.isPresent() || foundByEmail.isPresent()){
+//            return ResponseEntity.status(HttpStatus.CONFLICT).body("Username or email already in use");
+//        }
+//        else {
+//            User newUser = new User();
+//            newUser.setUsername(registerRequestDTO.getUsername());
+//            newUser.setPassword(passwordEncoder.encode(registerRequestDTO.getPassword()));
+//            newUser.setRole(Role.EMPLOYEE);
+//            userRepository.save(newUser);
+//            String jwtToken = jWtService.generateToken(newUser);
+//            return AuthenticationResponse.builder().token(jwtToken).build();
+//        }
+//    }
 
-    public AuthenticationResponse authenticate(AuthenticationRequestDTO authenticationRequestDTO) {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequestDTO.getUsername(), authenticationRequestDTO.getPassword()));
-        User user = userRepository.findByUsername(authenticationRequestDTO.getUsername()).orElseThrow();
-        String jwtToken = jWtService.generateToken(user);
-        return AuthenticationResponse.builder().token(jwtToken).build();
-    }
+//    public AuthenticationResponse authenticate(AuthenticationRequestDTO authenticationRequestDTO) {
+//        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequestDTO.getUsername(), authenticationRequestDTO.getPassword()));
+//        User user = userRepository.findByUsername(authenticationRequestDTO.getUsername()).orElseThrow();
+//        String jwtToken = jWtService.generateToken(user);
+//        return AuthenticationResponse.builder().token(jwtToken).build();
+//    }
 
     public ResponseEntity<?> loginUser(AuthenticationRequestDTO authenticationRequestDTO) {
         try {
+            if(authenticationRequestDTO.getUsername()==null || authenticationRequestDTO.getPassword()==null){
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Missing data for user login");
+            }
             Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequestDTO.getUsername(), authenticationRequestDTO.getPassword()));
             User user = userRepository.findByUsername(authenticationRequestDTO.getUsername()).orElseThrow();
             String jwtToken = jWtService.generateToken(user);
             return ResponseEntity.status(HttpStatus.OK).body(jwtToken);
-//            return ResponseEntity.status(HttpStatus.OK).body(loginResponseDTO);
         } catch (AuthenticationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid user credentials");
         }
@@ -61,19 +74,23 @@ public class AuthenticationService {
 
 
     public ResponseEntity<?> registerEmployee(RegisterRequestDTO registerRequestDTO) {
+
         try {
-            Optional<User> employee = userRepository.findByUsername(registerRequestDTO.getUsername());
-            if (employee.isPresent()) { // USER ALREADY EXISTS
+            if(registerRequestDTO.getEmail() == null ||registerRequestDTO.getPassword() == null ||registerRequestDTO.getUsername() == null ){
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("Missing data for user registration");
+            }
+            Optional<User> employeeByUsername = userRepository.findByUsername(registerRequestDTO.getUsername());
+            Optional<User> employeeByMail = userRepository.findByEmail(registerRequestDTO.getEmail());
+            if (employeeByUsername.isPresent() || employeeByMail.isPresent()) { // USER ALREADY EXISTS
                 return ResponseEntity.status(HttpStatus.CONFLICT).body("The user already exists");
             } else {    // CREATE EMPLOYEE
-                String encodedPassword = passwordEncoder.encode(registerRequestDTO.getPassword());
                 User newEmployee = new User();
                 newEmployee.setUsername(registerRequestDTO.getUsername());
                 newEmployee.setPassword(passwordEncoder.encode(registerRequestDTO.getPassword()));
                 newEmployee.setRole(Role.EMPLOYEE);
                 userRepository.save(newEmployee);
                 String jwtToken = jWtService.generateToken(newEmployee);
-                return ResponseEntity.status(HttpStatus.CREATED).body(newEmployee);
+                return ResponseEntity.status(HttpStatus.CREATED).body(jwtToken);
             }
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error during registration");

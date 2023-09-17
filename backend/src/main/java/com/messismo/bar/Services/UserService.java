@@ -20,25 +20,20 @@ import java.util.List;
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
-    
+
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found")) ;
+        return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 
 
     public ResponseEntity<?> getAllEmployees() {
-        try{
-            List<User> users = userRepository.findAll();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(users);
-        } catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("CANNOT retrieve employees right now");
-        }
+        return ResponseEntity.status(HttpStatus.OK).body(userRepository.findAll());
     }
 
     public ResponseEntity<?> validateEmployee(Long userId) {
-        try{
+        try {
             User user = userRepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("User DOES NOT exist"));
             Collection<? extends GrantedAuthority> authorities = user.getAuthorities();
             boolean isEmployee = false;
@@ -50,11 +45,35 @@ public class UserService implements UserDetailsService {
             }
             if (!isEmployee) {
                 user.setRole(Role.VALIDATED_EMPLOYEE);
-                return ResponseEntity.status(HttpStatus.OK).body("User IS NOW an employee");
+                userRepository.save(user);
+                return ResponseEntity.status(HttpStatus.OK).body("User IS NOW a VALIDATED_EMPLOYEE");
             } else {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User IS already an employee");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User IS already a VALIDATED_EMPLOYEE");
             }
-        } catch (Exception e){
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User DOES NOT exist");
+        }
+    }
+
+    public ResponseEntity<?> validateAdmin(Long userId) {
+        try {
+            User user = userRepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("User DOES NOT exist"));
+            Collection<? extends GrantedAuthority> authorities = user.getAuthorities();
+            boolean isValidatedEmployee = false;
+            for (GrantedAuthority authority : authorities) {
+                if ("VALIDATED_EMPLOYEE".equals(authority.getAuthority())) {
+                    isValidatedEmployee = true;
+                    break;
+                }
+            }
+            if (isValidatedEmployee) {
+                user.setRole(Role.VALIDATED_ADMIN);
+                userRepository.save(user);
+                return ResponseEntity.status(HttpStatus.OK).body("User IS NOW a VALIDATED_ADMIN");
+            } else {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User MUST be first a VALIDATED_EMPLOYEE");
+            }
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User DOES NOT exist");
         }
     }

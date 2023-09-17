@@ -17,9 +17,9 @@ public class AdminController {
 
     private final UserService userService;
 
-    @PutMapping("/product/updatePrice/{productId}")
-    public ResponseEntity<?> updateProductPrice(@PathVariable Long productId, @RequestBody ProductPriceDTO body) {
-        return productService.modifyProductPrice(productId, body.getUnitPrice());
+    @PutMapping("/product/updatePrice")
+    public ResponseEntity<?> updateProductPrice( @RequestBody ProductPriceDTO body) {
+        return productService.modifyProductPrice(body);
     }
 
     @DeleteMapping("/product/deleteProduct/{productId}")

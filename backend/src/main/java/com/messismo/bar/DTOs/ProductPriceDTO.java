@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ProductPriceDTO {
 
+    private Long productId;
+
     private Double unitPrice;
 
 }
