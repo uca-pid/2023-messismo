@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/admin")
+@RequestMapping("/api/v1/validatedAdmin")
 @CrossOrigin("*")
-public class AdminController {
+public class ValidatedAdminController {
 
     private final ProductService productService;
 
@@ -32,7 +32,7 @@ public class AdminController {
         return userService.getAllEmployees();
     }
 
-    @PutMapping("/employee/validateEmployee/{userId}")
+    @PutMapping("/validateEmployee/{userId}")
     public ResponseEntity<?> validateEmployee(@PathVariable Long userId) {
         return userService.validateEmployee(userId);
     }

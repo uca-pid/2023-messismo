@@ -25,7 +25,7 @@ services:
         "spring.datasource.password":"postgres",
         "spring.jpa.generate-ddl":"true",
         "spring.jpa.hibernate.ddl-auto":"create-drop",
-        "spring.jpa.properties.hibernate.format-sql":"true"
+        "spring.jpa.properties.hibernate.format-sql":"true",
         "jwt.secret":"ee2ecef84938596217bd811c807a4eb225d510874e922e5e2e692d8a6e4464bf",
         "jwt.expiration":"3600000"
             }'

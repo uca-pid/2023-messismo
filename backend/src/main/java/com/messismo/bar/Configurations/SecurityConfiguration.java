@@ -1,6 +1,7 @@
 package com.messismo.bar.Configurations;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,6 +17,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -30,24 +33,19 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests(auth -> {
-            auth.requestMatchers("/api/v1/auth/**").permitAll();
-            auth.requestMatchers("/api/v1/admin/**").hasRole("SUPER_ADMIN");
-            auth.requestMatchers("/api/v1/validatedEmployee/**").hasAnyRole("SUPER_ADMIN", "VALIDATED_ADMIN", "VALIDATED_EMPLOYEE");
-            auth.requestMatchers("/api/v1/employee/**").hasAnyRole("ADMIN", "VALIDATED_ADMIN", "VALIDATED_EMPLOYEE", "EMPLOYEE");
-            auth.anyRequest().authenticated();
+            auth.requestMatchers(new AntPathRequestMatcher("/h2-console/**")).permitAll();
+            auth.requestMatchers(new AntPathRequestMatcher("/api/v1/auth/**")).permitAll();
+            auth.requestMatchers(new AntPathRequestMatcher("/api/v1/superAdmin/**")).hasRole("SUPER_ADMIN");
+//            auth.requestMatchers(new AntPathRequestMatcher("/api/v1/validatedAdmin/**")).hasAnyRole("SUPER_ADMIN","VALIDATED_ADMIN");
+//            auth.requestMatchers(new AntPathRequestMatcher("/api/v1/validatedEmployee/**")).hasAnyRole("SUPER_ADMIN", "VALIDATED_ADMIN", "VALIDATED_EMPLOYEE");
+//            auth.requestMatchers(new AntPathRequestMatcher("/api/v1/employee/**")).hasAnyRole("SUPER_ADMIN", "VALIDATED_ADMIN", "VALIDATED_EMPLOYEE", "EMPLOYEE");
+//            auth.anyRequest().authenticated();
         });
+
+
         httpSecurity.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-        //                .csrf()
-//                .disable()
-//                .authorizeHttpRequests()
-//                .requestMatchers("/api/v1/auth/**")
-//                .permitAll()
-//                .anyRequest()
-//                .authenticated();
-//        httpSecurity
-//                .sessionManagement()
-//                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         httpSecurity.authenticationProvider(authenticationProvider).addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        httpSecurity.headers().frameOptions().disable();
         return httpSecurity.build();
     }
 

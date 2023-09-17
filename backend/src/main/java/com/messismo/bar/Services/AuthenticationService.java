@@ -87,6 +87,7 @@ public class AuthenticationService {
                 User newEmployee = new User();
                 newEmployee.setUsername(registerRequestDTO.getUsername());
                 newEmployee.setPassword(passwordEncoder.encode(registerRequestDTO.getPassword()));
+                newEmployee.setEmail(registerRequestDTO.getEmail());
                 newEmployee.setRole(Role.EMPLOYEE);
                 userRepository.save(newEmployee);
                 String jwtToken = jWtService.generateToken(newEmployee);

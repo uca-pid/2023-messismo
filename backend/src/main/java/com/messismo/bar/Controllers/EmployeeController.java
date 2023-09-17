@@ -14,7 +14,7 @@ public class EmployeeController {
 
     private final ProductService productServiceService;
 
-    @GetMapping("/getMenu")
+    @GetMapping("/getAllProducts")
     public ResponseEntity<?> getAllProducts() {
         return productServiceService.getAllProducts();
     }

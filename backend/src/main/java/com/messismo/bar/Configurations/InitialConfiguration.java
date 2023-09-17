@@ -19,7 +19,7 @@ public class InitialConfiguration {
             if (userRepository.findByUsername("admin").isPresent()) {
                 return;
             }
-            User admin = new User(0L, "admin","admin@gmail.com", passwordEncode.encode("password"), Role.SUPER_ADMIN);
+            User admin = new User(1L, "admin","admin@gmail.com", passwordEncode.encode("password"), Role.SUPER_ADMIN);
             userRepository.save(admin);
         };
     }
