@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/manager")
+@RequestMapping("/api/v1/admin")
 @CrossOrigin("*")
-public class ManagerController {
+public class AdminController {
 
     private final UserService userService;
 

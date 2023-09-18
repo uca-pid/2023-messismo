@@ -1,2 +1,5 @@
-package com.messismo.bar.Entities;public class TokenType {
+package com.messismo.bar.Entities;
+
+public enum TokenType {
+    BEARER
 }

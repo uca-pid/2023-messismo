@@ -38,13 +38,13 @@ public class UserService implements UserDetailsService {
             Collection<? extends GrantedAuthority> authorities = user.getAuthorities();
             boolean isEmployee = false;
             for (GrantedAuthority authority : authorities) {
-                if ("VALIDATED_EMPLOYEE".equals(authority.getAuthority())) {
+                if ("VALIDATEDEMPLOYEE".equals(authority.getAuthority())) {
                     isEmployee = true;
                     break;
                 }
             }
             if (!isEmployee) {
-                user.setRole(Role.VALIDATED_EMPLOYEE);
+                user.setRole(Role.VALIDATEDEMPLOYEE);
                 userRepository.save(user);
                 return ResponseEntity.status(HttpStatus.OK).body("User IS NOW a VALIDATED_EMPLOYEE");
             } else {
@@ -61,15 +61,15 @@ public class UserService implements UserDetailsService {
             Collection<? extends GrantedAuthority> authorities = user.getAuthorities();
             boolean isValidatedEmployee = false;
             for (GrantedAuthority authority : authorities) {
-                if ("VALIDATED_EMPLOYEE".equals(authority.getAuthority())) {
+                if ("VALIDATEDEMPLOYEE".equals(authority.getAuthority())) {
                     isValidatedEmployee = true;
                     break;
                 }
             }
             if (isValidatedEmployee) {
-                user.setRole(Role.VALIDATED_ADMIN);
+                user.setRole(Role.MANAGER);
                 userRepository.save(user);
-                return ResponseEntity.status(HttpStatus.OK).body("User IS NOW a VALIDATED_ADMIN");
+                return ResponseEntity.status(HttpStatus.OK).body("User IS NOW a MANAGER");
             } else {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User MUST be first a VALIDATED_EMPLOYEE");
             }

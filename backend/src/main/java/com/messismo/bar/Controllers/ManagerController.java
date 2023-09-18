@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/validatedAdmin")
+@RequestMapping("/api/v1/manager")
 @CrossOrigin("*")
-public class ValidatedAdminController {
+public class ManagerController {
 
     private final ProductService productService;
 

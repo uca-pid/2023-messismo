@@ -9,31 +9,31 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-@Configuration
-@RequiredArgsConstructor
-public class SomeConfigs {
-    private final UserDetailsService userService;
-    @Bean
-    public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-        authenticationProvider.setUserDetailsService(userService);
-        authenticationProvider.setPasswordEncoder(passwordEncoder());
-        return authenticationProvider;
-    }
+//@Configuration
+//@RequiredArgsConstructor
+//public class SomeConfigs {
+//    private final UserDetailsService userService;
 //    @Bean
 //    public AuthenticationProvider authenticationProvider() {
-//        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-//        authProvider.setUserDetailsService(userService);
-//        authProvider.setPasswordEncoder(passwordEncoder());
-//        return authProvider;
+//        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+//        authenticationProvider.setUserDetailsService(userService);
+//        authenticationProvider.setPasswordEncoder(passwordEncoder());
+//        return authenticationProvider;
 //    }
-//
+////    @Bean
+////    public AuthenticationProvider authenticationProvider() {
+////        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+////        authProvider.setUserDetailsService(userService);
+////        authProvider.setPasswordEncoder(passwordEncoder());
+////        return authProvider;
+////    }
+////
+////    @Bean
+////    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+////        return config.getAuthenticationManager();
+////    }
 //    @Bean
-//    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-//        return config.getAuthenticationManager();
+//    public PasswordEncoder passwordEncoder() {
+//        return new BCryptPasswordEncoder();
 //    }
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-}
+//}

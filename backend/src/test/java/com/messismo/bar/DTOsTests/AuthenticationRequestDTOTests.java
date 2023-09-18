@@ -13,18 +13,18 @@ public class AuthenticationRequestDTOTests {
     public void testAuthenticationRequestDTOGettersAndSetters() {
 
         AuthenticationRequestDTO authenticationRequestDTO1 = new AuthenticationRequestDTO();
-        authenticationRequestDTO1.setUsername("username1");
+        authenticationRequestDTO1.setEmail("username1");
         authenticationRequestDTO1.setPassword("password1");
         AuthenticationRequestDTO authenticationRequestDTO2 = new AuthenticationRequestDTO();
-        authenticationRequestDTO2.setUsername("username1");
+        authenticationRequestDTO2.setEmail("username1");
         authenticationRequestDTO2.setPassword("password1");
         AuthenticationRequestDTO authenticationRequestDTO3 = new AuthenticationRequestDTO();
-        authenticationRequestDTO3.setUsername("username3");
+        authenticationRequestDTO3.setEmail("username3");
         authenticationRequestDTO3.setPassword("password3");
 
-        assertEquals(authenticationRequestDTO1.getUsername(), authenticationRequestDTO2.getUsername());
+        assertEquals(authenticationRequestDTO1.getEmail(), authenticationRequestDTO2.getEmail());
         assertEquals(authenticationRequestDTO1.getPassword(), authenticationRequestDTO2.getPassword());
-        assertNotEquals(authenticationRequestDTO1.getUsername(), authenticationRequestDTO3.getUsername());
+        assertNotEquals(authenticationRequestDTO1.getEmail(), authenticationRequestDTO3.getEmail());
         assertNotEquals(authenticationRequestDTO1.getPassword(), authenticationRequestDTO3.getPassword());
     }
 

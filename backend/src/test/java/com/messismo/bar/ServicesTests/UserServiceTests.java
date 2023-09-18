@@ -35,11 +35,11 @@ public class UserServiceTests {
 
         MockitoAnnotations.initMocks(this);
 
-        User user1 = new User(1L, "admin", "hola", "password1", Role.SUPER_ADMIN);
-        User user2 = new User(2L, "messi2", "messi2@gmail.com", "password123", Role.EMPLOYEE);
-        User user3 = new User(3L, "messi3", "messi3@gmail.com", "password123", Role.EMPLOYEE);
-        User user4 = new User(4L, "messi4", "messi4@gmail.com", "password123", Role.VALIDATED_EMPLOYEE);
-        User user5 = new User(5L, "messi4", "messi4@gmail.com", "password123", Role.VALIDATED_ADMIN);
+        User user1 = new User(1L, "admin", "hola", "password1", Role.ADMIN,new ArrayList<>());
+        User user2 = new User(2L, "messi2", "messi2@gmail.com", "password123", Role.EMPLOYEE,new ArrayList<>());
+        User user3 = new User(3L, "messi3", "messi3@gmail.com", "password123", Role.EMPLOYEE,new ArrayList<>());
+        User user4 = new User(4L, "messi4", "messi4@gmail.com", "password123", Role.VALIDATEDEMPLOYEE,new ArrayList<>());
+        User user5 = new User(5L, "messi4", "messi4@gmail.com", "password123", Role.MANAGER,new ArrayList<>());
         List<User> users = new ArrayList<>();
         users.add(user1);
         users.add(user2);
@@ -82,9 +82,9 @@ public class UserServiceTests {
 
     @Test
     public void testUserServiceGetAllEmployees() {
-        User user1 = new User(1L, "admin", "hola", "password1", Role.SUPER_ADMIN);
-        User user2 = new User(2L, "messi2", "messi2@gmail.com", "password123", Role.EMPLOYEE);
-        User user3 = new User(3L, "messi3", "messi3@gmail.com", "password123", Role.EMPLOYEE);
+        User user1 = new User(1L, "admin", "hola", "password1", Role.ADMIN,new ArrayList<>());
+        User user2 = new User(2L, "messi2", "messi2@gmail.com", "password123", Role.EMPLOYEE,new ArrayList<>());
+        User user3 = new User(3L, "messi3", "messi3@gmail.com", "password123", Role.EMPLOYEE,new ArrayList<>());
         List<User> users = new ArrayList<>();
         users.add(user1);
         users.add(user2);
@@ -130,7 +130,7 @@ public class UserServiceTests {
     @Test
     public void testUserServiceValidateAdmin() {
 
-        ResponseEntity<String> response = ResponseEntity.status(HttpStatus.OK).body("User IS NOW a VALIDATED_ADMIN");
+        ResponseEntity<String> response = ResponseEntity.status(HttpStatus.OK).body("User IS NOW a MANAGER");
 
         assertEquals(response, userService.validateAdmin(4L));
     }

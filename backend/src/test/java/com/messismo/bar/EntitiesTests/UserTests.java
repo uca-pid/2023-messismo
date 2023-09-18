@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -33,7 +34,7 @@ public class UserTests {
         user3.setUsername("user3");
         user3.setUsername("user3@gmail.com");
         user3.setPassword("password456");
-        user3.setRole(Role.SUPER_ADMIN);
+        user3.setRole(Role.ADMIN);
 
         assertEquals(user1.getId(), user2.getId());
         assertEquals(user1.getUsername(), user2.getUsername());
@@ -50,9 +51,9 @@ public class UserTests {
     @Test
     public void testUserEquals() {
 
-        User user1 = new User(1L, "messi", "messi@gmail.com", "password123", Role.EMPLOYEE);
-        User user2 = new User(1L, "messi", "messi@gmail.com", "password123", Role.EMPLOYEE);
-        User user3 = new User(2L, "messi","user3@gmail.com", "password456", Role.SUPER_ADMIN);
+        User user1 = new User(1L, "messi", "messi@gmail.com", "password123", Role.EMPLOYEE,new ArrayList<>());
+        User user2 = new User(1L, "messi", "messi@gmail.com", "password123", Role.EMPLOYEE,new ArrayList<>());
+        User user3 = new User(2L, "messi","user3@gmail.com", "password456", Role.ADMIN,new ArrayList<>());
 
         assertEquals(user1, user2);
         assertNotEquals(user1, user3);
@@ -60,15 +61,15 @@ public class UserTests {
 
     @Test
     public void testUserHashCode() {
-        User user1 = new User(1L, "messi", "messi@gmail.com", "password123", Role.EMPLOYEE);
-        User user2 = new User(1L, "messi", "messi@gmail.com", "password123", Role.EMPLOYEE);
+        User user1 = new User(1L, "messi", "messi@gmail.com", "password123", Role.EMPLOYEE,new ArrayList<>());
+        User user2 = new User(1L, "messi", "messi@gmail.com", "password123", Role.EMPLOYEE,new ArrayList<>());
 
         assertEquals(user1.hashCode(), user2.hashCode());
     }
 
     @Test
     public void testUserGetAuthorities() {
-        User user1 = new User(1L, "username", "messi@gmail.com", "password", Role.EMPLOYEE);
+        User user1 = new User(1L, "username", "messi@gmail.com", "password", Role.EMPLOYEE,new ArrayList<>());
         Collection<? extends GrantedAuthority> authorities = user1.getAuthorities();
         List<GrantedAuthority> expectedAuthorities = List.of(new SimpleGrantedAuthority("EMPLOYEE"));
 
@@ -77,7 +78,7 @@ public class UserTests {
 
     @Test
     public void testUserDetailsProperties() {
-        User user1 = new User(1L, "messi", "messi@gmail.com", "password123", Role.EMPLOYEE);
+        User user1 = new User(1L, "messi", "messi@gmail.com", "password123", Role.EMPLOYEE,new ArrayList<>());
 
         assertTrue(user1.isAccountNonExpired());
         assertTrue(user1.isAccountNonLocked());
