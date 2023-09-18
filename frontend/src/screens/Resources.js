@@ -2,13 +2,13 @@ import React, { useEffect, useState } from "react";
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import Header from '../components/Header';
+import { useDispatch, useSelector } from 'react-redux';
+import { setUsers } from '../redux/userSlice';
 
 const SIDEBAR_WIDTH = '16%';
 
 const Container = styled.div`
     display: flex;
-    
-
 `;
 
 const MainContent = styled.div`
@@ -143,6 +143,27 @@ const users = [
   ];
 
 function Resources(){
+
+    // const dispatch = useDispatch();
+    // const users = useSelector((state) => state.auth.users);
+
+    // useEffect(() => {
+    //     const apiCall = async () => {
+    //         try {
+    //             const response = await fetch('/api/users');
+    //             if (!response.ok) {
+    //                 throw new Error('Error obtaining users');
+    //             }
+    //             const data = await response.json();
+    //             dispatch(setUsers(data)); // almacena users en el estado de redux
+    //         } catch (error) {
+    //             console.error('Error loading users:', error);
+    //         }
+    //     };
+
+    //     apiCall(); // obtener users
+    // }, [dispatch]);
+
     const pending = users.filter(user => user.pending === 'yes');
     const admins = users.filter(user => user.type === 'admin' && user.pending === 'no');
     const employees = users.filter(user => user.type === 'employee' && user.pending === 'no');
