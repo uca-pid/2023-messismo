@@ -287,29 +287,22 @@ const ErrorMessage = styled.h4`
 
 
 function SignInUpForm(){
+
     const [click, setClick] = useState(false);
     const handleClick = () => setClick(!click);
 
     const [checked, setChecked] = useState(false);
-
-    const [SignInPopUp, setSignInPopUp] = useState(false)
-    const duringSignInPopUp = SignInPopUp ? "during-popup" : ""
-
-    const [SignUpPopUp, setSignUpPopUp] = useState(false)
-    const duringSignUpPopUp = SignUpPopUp ? "during-popup" : ""
-
     const [userRole, setUserRole] = useState("employee");
     const handleChange = (e) => {
         setChecked(e.target.checked);
         setUserRole(e.target.checked ? "admin" : "employee");
     };
 
-    const [isRegistered, setIsRegistered] = useState(false);
-    const handleRegister = () => {
-        setIsRegistered(false);
-    };
+    //v SignIn v//
+    const [SignInPopUp, setSignInPopUp] = useState(false)
+    const duringSignInPopUp = SignInPopUp ? "during-popup" : ""
 
-    const handleLogin = () => {
+    const handleLogin = (userData) => {
         if (signinvalues.email === 'asd@asd.com' && signinvalues.password === 'asdfghjkl1Q') {
             window.location.href = '/homepage';
         } 
@@ -319,40 +312,19 @@ function SignInUpForm(){
     };
 
     const [isSignInValid, setIsSignInValid] = useState(false);
-    const [isSignUpValid, setIsSignUpValid] = useState(false);
 
     const [signinvalues, setSignInValues] = useState({
         email: '',
         password: ''
     })
 
-    const [signupvalues, setSignUpValues] = useState({
-        username: '',
-        email: '',
-        password: ''
-    })
-
     const [signinerrors, setSignInErrors] = useState({})
-    const [signuperrors, setSignUpErrors] = useState({})
-
-    // const handleInput = (e) => {
-    //     e.preventDefault()
-    //     setValues({...values, [e.target.name]: [e.target.value]})
-    // }
-
 
     useEffect(() => {
         const validationErrors = signinvalidation(signinvalues);
         setSignInErrors(validationErrors);
         setIsSignInValid(Object.keys(validationErrors).length === 0);
     }, [signinvalues]);
-
-    useEffect(() => {
-        const validationErrors = signupvalidation(signupvalues);
-        setSignUpErrors(validationErrors);
-        setIsSignUpValid(Object.keys(validationErrors).length === 0);
-    }, [signupvalues]);
-
 
     const handleSignInInput = (e) => {
         setSignInErrors((prevErrors) => ({
@@ -363,17 +335,6 @@ function SignInUpForm(){
         setSignInValues({ ...signinvalues, [e.target.name]: e.target.value });
     }
 
-    const handleSignUpInput = (e) => {
-        setSignUpErrors((prevErrors) => ({
-            ...prevErrors,
-            [e.target.name]: '',
-
-        }));
-        setSignUpValues({ ...signupvalues, [e.target.name]: e.target.value });
-    }
-
-
-
     function handleSignInValidation() {
         const validationErrors = signinvalidation(signinvalues);
         setSignInErrors(validationErrors);
@@ -383,6 +344,41 @@ function SignInUpForm(){
         else {
             setIsSignInValid(false);
         }
+    }
+    //^ SignIn ^//
+
+    //v SignUp v//
+    const [SignUpPopUp, setSignUpPopUp] = useState(false)
+    const duringSignUpPopUp = SignUpPopUp ? "during-popup" : ""
+
+    const [isRegistered, setIsRegistered] = useState(false);
+    const handleRegister = (userData) => {
+        setIsRegistered(false);
+    };
+
+    const [isSignUpValid, setIsSignUpValid] = useState(false);
+
+    const [signupvalues, setSignUpValues] = useState({
+        username: '',
+        email: '',
+        password: ''
+    })
+
+    const [signuperrors, setSignUpErrors] = useState({})
+
+    useEffect(() => {
+        const validationErrors = signupvalidation(signupvalues);
+        setSignUpErrors(validationErrors);
+        setIsSignUpValid(Object.keys(validationErrors).length === 0);
+    }, [signupvalues]);
+
+    const handleSignUpInput = (e) => {
+        setSignUpErrors((prevErrors) => ({
+            ...prevErrors,
+            [e.target.name]: '',
+
+        }));
+        setSignUpValues({ ...signupvalues, [e.target.name]: e.target.value });
     }
 
     function handleSignUpValidation() {
@@ -395,8 +391,7 @@ function SignInUpForm(){
             setIsSignUpValid(false);
         }
     }
-
-
+    //^ SignUp ^//
 
     return(
             <BackgroundBox clicked={click}>
@@ -422,7 +417,11 @@ function SignInUpForm(){
                         onClick={() => {
                             handleSignInValidation();
                             if(isSignInValid) {
-                                handleLogin();
+                                const userData = {
+                                    email: signinvalues.email,
+                                    password: signinvalues.password,
+                                }
+                                handleLogin(userData);
                             }
                         }}
                         style={{ textDecoration: 'none' }}
@@ -467,7 +466,13 @@ function SignInUpForm(){
                         onClick={() => {
                             handleSignUpValidation();
                             if(isSignUpValid) {
-                                handleRegister();
+                                const userData = {
+                                    username: signupvalues.username,
+                                    email: signupvalues.email,
+                                    password: signupvalues.password,
+                                    role: userRole,
+                                }
+                                handleRegister(userData);
                                 setSignUpPopUp(true);
                             }
                         }}
