@@ -5,7 +5,7 @@ import 'fontsource-roboto';
 import { Link, useNavigate } from 'react-router-dom';
 import SUpPopUp from '../components/SignUpPopUp';
 import SInPopUp from '../components/SignInPopUp';
-import signupvalidation from '../Validation'
+import signupvalidation from '../SignUpValidation'
 import signinvalidation from '../SignInValidation'
 
 const Label = styled.label`
@@ -310,7 +310,7 @@ function SignInUpForm(){
     };
 
     const handleLogin = () => {
-        if (values.email === 'asd@asd.com' && values.password === 'asdfghjkl1Q') {
+        if (signinvalues.email === 'asd@asd.com' && signinvalues.password === 'asdfghjkl1Q') {
             window.location.href = '/homepage';
         } 
         else {
@@ -321,13 +321,19 @@ function SignInUpForm(){
     const [isSignInValid, setIsSignInValid] = useState(false);
     const [isSignUpValid, setIsSignUpValid] = useState(false);
 
-    const [values, setValues] = useState({
+    const [signinvalues, setSignInValues] = useState({
+        email: '',
+        password: ''
+    })
+
+    const [signupvalues, setSignUpValues] = useState({
         username: '',
         email: '',
         password: ''
     })
 
-    const [errors, setErrors] = useState({})
+    const [signinerrors, setSignInErrors] = useState({})
+    const [signuperrors, setSignUpErrors] = useState({})
 
     // const handleInput = (e) => {
     //     e.preventDefault()
@@ -336,40 +342,41 @@ function SignInUpForm(){
 
 
     useEffect(() => {
-        const validationErrors = signinvalidation(values);
-        setErrors(validationErrors);
+        const validationErrors = signinvalidation(signinvalues);
+        setSignInErrors(validationErrors);
         setIsSignInValid(Object.keys(validationErrors).length === 0);
-    }, [values]);
+    }, [signinvalues]);
 
     useEffect(() => {
-        const validationErrors = signupvalidation(values);
-        setErrors(validationErrors);
+        const validationErrors = signupvalidation(signupvalues);
+        setSignUpErrors(validationErrors);
         setIsSignUpValid(Object.keys(validationErrors).length === 0);
-    }, [values]);
+    }, [signupvalues]);
 
-
-
-    const handleSignUpInput = (e) => {
-        setErrors((prevErrors) => ({
-            ...prevErrors,
-            [e.target.name]: '',
-
-        }));
-        setValues({ ...values, [e.target.name]: e.target.value });
-    }
 
     const handleSignInInput = (e) => {
-        setErrors((prevErrors) => ({
+        setSignInErrors((prevErrors) => ({
             ...prevErrors,
             [e.target.name]: '',
 
         }));
-        setValues({ ...values, [e.target.name]: e.target.value });
+        setSignInValues({ ...signinvalues, [e.target.name]: e.target.value });
     }
 
+    const handleSignUpInput = (e) => {
+        setSignUpErrors((prevErrors) => ({
+            ...prevErrors,
+            [e.target.name]: '',
+
+        }));
+        setSignUpValues({ ...signupvalues, [e.target.name]: e.target.value });
+    }
+
+
+
     function handleSignInValidation() {
-        const validationErrors = signinvalidation(values);
-        setErrors(validationErrors);
+        const validationErrors = signinvalidation(signinvalues);
+        setSignInErrors(validationErrors);
         if (Object.keys(validationErrors).length === 0){
             setIsSignInValid(true);
         }
@@ -379,8 +386,8 @@ function SignInUpForm(){
     }
 
     function handleSignUpValidation() {
-        const validationErrors = signupvalidation(values);
-        setErrors(validationErrors);
+        const validationErrors = signupvalidation(signupvalues);
+        setSignUpErrors(validationErrors);
         if (Object.keys(validationErrors).length === 0){
             setIsSignUpValid(true);
         }
@@ -401,13 +408,13 @@ function SignInUpForm(){
                         placeholder='Email'
                         onChange={handleSignInInput}
                         />
-                        {errors.email && <ErrorMessage>{errors.email}</ErrorMessage>}
+                        {signinerrors.email && <ErrorMessage>{signinerrors.email}</ErrorMessage>}
                         <Input 
                         type='password' name='password' id='passwordId'
                         placeholder='Password'
                         onChange={handleSignInInput}
                         />
-                        {errors.password && <ErrorMessage>{errors.password}</ErrorMessage>}
+                        {signinerrors.password && <ErrorMessage>{signinerrors.password}</ErrorMessage>}
                         <ForgotLink href='#'>Forgot your Password?</ForgotLink>
                         {/* <NavLink to={'/homepage'} style={{ textDecoration: 'none' }}>Sign In</NavLink> */}
 
@@ -419,7 +426,7 @@ function SignInUpForm(){
                             }
                         }}
                         style={{ textDecoration: 'none' }}
-                        disabled = {Object.keys(errors).length > 0 || !isSignInValid}
+                        disabled = {Object.keys(signinerrors).length > 0 || !isSignInValid}
                         >
                             Sign In
                         </NavLink>
@@ -432,20 +439,20 @@ function SignInUpForm(){
                         placeholder='Username'
                         onChange={handleSignUpInput}
                         />
-                        {errors.username && <ErrorMessage>{errors.username}</ErrorMessage>}
+                        {signuperrors.username && <ErrorMessage>{signuperrors.username}</ErrorMessage>}
                         
                         <Input type='email' name='email' id='emailId'
                         placeholder='Email'
                         onChange={handleSignUpInput}
                         />
-                        {errors.email && <ErrorMessage>{errors.email}</ErrorMessage>}
+                        {signuperrors.email && <ErrorMessage>{signuperrors.email}</ErrorMessage>}
                         
                         <Input 
                         type='password' name='password' id='passwordId'
                         placeholder='Password'
                         onChange={handleSignUpInput}
                         />
-                        {errors.password && <ErrorMessage>{errors.password}</ErrorMessage>}
+                        {signuperrors.password && <ErrorMessage>{signuperrors.password}</ErrorMessage>}
 
                         <Label>
                             <span>{checked ? 'Admin' : 'Employee'}</span>
@@ -465,7 +472,7 @@ function SignInUpForm(){
                             }
                         }}
                         style={{ textDecoration: 'none' }}
-                        disabled = {Object.keys(errors).length > 0 || !isSignUpValid}
+                        disabled = {Object.keys(signuperrors).length > 0 || !isSignUpValid}
                         >
                             Sign Up
                         </NavLink>

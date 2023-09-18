@@ -1,4 +1,4 @@
-function Validation(values) {
+function SignUpValidation(values) {
     let error = {}
     const usernameRegex = /^[a-zA-Z]+$/;
     const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i
@@ -28,4 +28,4 @@ function Validation(values) {
     return error;
 }
 
-export default Validation;
+export default SignUpValidation;
