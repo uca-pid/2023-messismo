@@ -5,7 +5,8 @@ import 'fontsource-roboto';
 import { Link, useNavigate } from 'react-router-dom';
 import SUpPopUp from '../components/SignUpPopUp';
 import SInPopUp from '../components/SignInPopUp';
-import validation from '../Validation'
+import signupvalidation from '../Validation'
+import signinvalidation from '../SignInValidation'
 
 const Label = styled.label`
   display: flex;
@@ -286,7 +287,6 @@ const ErrorMessage = styled.h4`
 
 
 function SignInUpForm(){
-    const navigate = useNavigate();
     const [click, setClick] = useState(false);
     const handleClick = () => setClick(!click);
 
@@ -309,16 +309,17 @@ function SignInUpForm(){
         setIsRegistered(false);
     };
 
-    const handleLogin = (email, password) => {
-        if(email === 'asd@asd.com' && password === 'asdfghjkl1Q'){
-            navigate('/homepage')
-        }
-        else{
+    const handleLogin = () => {
+        if (values.email === 'asd@asd.com' && values.password === 'asdfghjkl1Q') {
+            window.location.href = '/homepage';
+        } 
+        else {
             setSignInPopUp(true);
         }
     };
 
-    const [isValid, setIsValid] = useState(false);
+    const [isSignInValid, setIsSignInValid] = useState(false);
+    const [isSignUpValid, setIsSignUpValid] = useState(false);
 
     const [values, setValues] = useState({
         username: '',
@@ -335,12 +336,20 @@ function SignInUpForm(){
 
 
     useEffect(() => {
-        const validationErrors = validation(values);
+        const validationErrors = signinvalidation(values);
         setErrors(validationErrors);
-        setIsValid(Object.keys(validationErrors).length === 0);
+        setIsSignInValid(Object.keys(validationErrors).length === 0);
     }, [values]);
 
-    const handleInput = (e) => {
+    useEffect(() => {
+        const validationErrors = signupvalidation(values);
+        setErrors(validationErrors);
+        setIsSignUpValid(Object.keys(validationErrors).length === 0);
+    }, [values]);
+
+
+
+    const handleSignUpInput = (e) => {
         setErrors((prevErrors) => ({
             ...prevErrors,
             [e.target.name]: '',
@@ -349,16 +358,38 @@ function SignInUpForm(){
         setValues({ ...values, [e.target.name]: e.target.value });
     }
 
-    function handleValidation() {
-        const validationErrors = validation(values);
+    const handleSignInInput = (e) => {
+        setErrors((prevErrors) => ({
+            ...prevErrors,
+            [e.target.name]: '',
+
+        }));
+        setValues({ ...values, [e.target.name]: e.target.value });
+    }
+
+    function handleSignInValidation() {
+        const validationErrors = signinvalidation(values);
         setErrors(validationErrors);
         if (Object.keys(validationErrors).length === 0){
-            setIsValid(true);
+            setIsSignInValid(true);
         }
         else {
-            setIsValid(false);
+            setIsSignInValid(false);
         }
     }
+
+    function handleSignUpValidation() {
+        const validationErrors = signupvalidation(values);
+        setErrors(validationErrors);
+        if (Object.keys(validationErrors).length === 0){
+            setIsSignUpValid(true);
+        }
+        else {
+            setIsSignUpValid(false);
+        }
+    }
+
+
 
     return(
             <BackgroundBox clicked={click}>
@@ -368,13 +399,13 @@ function SignInUpForm(){
                         <Title>Sign In</Title>
                         <Input type='email' name='email' id='emailId'
                         placeholder='Email'
-                        onChange={handleInput}
+                        onChange={handleSignInInput}
                         />
                         {errors.email && <ErrorMessage>{errors.email}</ErrorMessage>}
                         <Input 
                         type='password' name='password' id='passwordId'
                         placeholder='Password'
-                        onChange={handleInput}
+                        onChange={handleSignInInput}
                         />
                         {errors.password && <ErrorMessage>{errors.password}</ErrorMessage>}
                         <ForgotLink href='#'>Forgot your Password?</ForgotLink>
@@ -382,13 +413,13 @@ function SignInUpForm(){
 
                         <NavLink
                         onClick={() => {
-                            handleValidation();
-                            if(isValid) {
-                                handleLogin(values.email, values.password);
+                            handleSignInValidation();
+                            if(isSignInValid) {
+                                handleLogin();
                             }
                         }}
                         style={{ textDecoration: 'none' }}
-                        disabled = {Object.keys(errors).length > 0 || !isValid}
+                        disabled = {Object.keys(errors).length > 0 || !isSignInValid}
                         >
                             Sign In
                         </NavLink>
@@ -399,20 +430,20 @@ function SignInUpForm(){
                         <Title>Sign Up</Title>
                         <Input type='text' name='username' id='usernameId'
                         placeholder='Username'
-                        onChange={handleInput}
+                        onChange={handleSignUpInput}
                         />
                         {errors.username && <ErrorMessage>{errors.username}</ErrorMessage>}
                         
                         <Input type='email' name='email' id='emailId'
                         placeholder='Email'
-                        onChange={handleInput}
+                        onChange={handleSignUpInput}
                         />
                         {errors.email && <ErrorMessage>{errors.email}</ErrorMessage>}
                         
                         <Input 
                         type='password' name='password' id='passwordId'
                         placeholder='Password'
-                        onChange={handleInput}
+                        onChange={handleSignUpInput}
                         />
                         {errors.password && <ErrorMessage>{errors.password}</ErrorMessage>}
 
@@ -427,14 +458,14 @@ function SignInUpForm(){
 
                         <NavLink
                         onClick={() => {
-                            handleValidation();
-                            if(isValid) {
+                            handleSignUpValidation();
+                            if(isSignUpValid) {
                                 handleRegister();
                                 setSignUpPopUp(true);
                             }
                         }}
                         style={{ textDecoration: 'none' }}
-                        disabled = {Object.keys(errors).length > 0 || !isValid}
+                        disabled = {Object.keys(errors).length > 0 || !isSignUpValid}
                         >
                             Sign Up
                         </NavLink>

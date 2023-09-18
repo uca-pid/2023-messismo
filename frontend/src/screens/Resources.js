@@ -30,6 +30,7 @@ const Title = styled.h1`
     color: white;
     font-family: 'Roboto';
     font-size: 30px;
+    margin-left: 10px;
 `;
 
 const UserContainer = styled.div`
@@ -125,6 +126,7 @@ const UserItem = styled.div`
 const Subheader = styled.h2`
     color: white;
     font-size: 24px;
+    margin-left: 10px;
 `;
 
 
