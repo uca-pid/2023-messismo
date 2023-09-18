@@ -12,8 +12,8 @@ services:
         ipv4_address: 192.168.55.10
     ports:
       - "8080:8080"
-    volumes:
-      - C:\Users\Usuario\Documents\bar:/app
+#    volumes:
+#      - C:\Users\Usuario\Documents\bar:/app
     environment:
       SPRING_APPLICATION_JSON: '{
         "spring.jpa.database": "POSTGRESQL",
@@ -25,9 +25,7 @@ services:
         "spring.datasource.password":"postgres",
         "spring.jpa.generate-ddl":"true",
         "spring.jpa.hibernate.ddl-auto":"create-drop",
-        "spring.jpa.properties.hibernate.format-sql":"true",
-        "jwt.secret":"ee2ecef84938596217bd811c807a4eb225d510874e922e5e2e692d8a6e4464bf",
-        "jwt.expiration":"3600000"
+        "spring.jpa.properties.hibernate.format-sql":"true"
             }'
   postgres:
     container_name: postgres

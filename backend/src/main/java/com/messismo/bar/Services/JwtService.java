@@ -17,13 +17,6 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-    @Value("${jwt.secret-key}")
-    private String secretKey;
-    @Value("${jwt.expiration}")
-    private long jwtExpiration;
-    @Value("${jwt.refresh-token.expiration}")
-    private long refreshExpiration;
-
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
@@ -41,12 +34,16 @@ public class JwtService {
             Map<String, Object> extraClaims,
             UserDetails userDetails
     ) {
+        //    @Value("${jwt.expiration}")
+        long jwtExpiration = 86400000;
         return buildToken(extraClaims, userDetails, jwtExpiration);
     }
 
     public String generateRefreshToken(
             UserDetails userDetails
     ) {
+        //    @Value("${jwt.refresh-token.expiration}")
+        long refreshExpiration = 604800000;
         return buildToken(new HashMap<>(), userDetails, refreshExpiration);
     }
 
@@ -88,6 +85,7 @@ public class JwtService {
     }
 
     private Key getSignInKey() {
+        String secretKey = "ee2ecef84938596217bd811c807a4eb225d510874e922e5e2e692d8a6e4464bf";
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
