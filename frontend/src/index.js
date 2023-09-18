@@ -1,14 +1,18 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
+import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
-import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Welcome from './screens/Welcome';
 import SignInUpForm from './screens/SignInUpForm';
 import Home from './screens/Home';
 import Products from './screens/Products';
 import Resources from './screens/Resources';
 import HeaderProvider from './HeaderContext';
+import PrivateRoute from './components/PrivateRoute';
+import { Provider } from 'react-redux';
+import store from './redux/store';
 
 const router = createBrowserRouter([
   { path: '/', element: <Welcome/> },
@@ -24,8 +28,3 @@ root.render(
     <RouterProvider router={router}/>
   </React.StrictMode>
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();

@@ -20,6 +20,7 @@ const WelcomeImage = styled.img`
 `;
 
 function WelcomePage() {
+
   const [isBlurred, setIsBlurred] = useState(false);
   const navigate = useNavigate();
 
