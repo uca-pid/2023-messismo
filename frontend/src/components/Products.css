@@ -1,7 +1,6 @@
 .container {
-    background-color: white;
     width: 100vw;
-    height: 100vh;
+    flex: 1;
     display: flex;
     align-items: center; /* Centrar verticalmente */
     flex-direction: column;
@@ -14,15 +13,15 @@
 
 .product {
     width: 100%;
-    background-color: beige;
+    background-color: whitesmoke;
     padding: 0.2px;
     margin-top: 1%;
     border-width: 2px;
     display: flex;
     flex-direction: column;
     /*justify-content: space-between;*/
-    max-height: 80vh; /* Altura máxima del modal */
-    border-bottom: 2px solid orange;
+    /*max-height: 80vh; /* Altura máxima del modal */
+    border-bottom: 2px solid black;
     border-radius: 7px;
 
 }
@@ -30,7 +29,7 @@
 .firstLine {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: flex-start;
     margin-bottom: 0%;
 }
 
@@ -48,10 +47,9 @@
 }
 
 .descripcion {
-    margin-left: 2%;
-    margin-right: 3%;
     font-size: small;
-    margin-top: 1%;
+    margin-top: 0%;
+
 }
 
 .product:hover {
@@ -59,19 +57,45 @@
   }
 
   .categoria {
-    margin-left: 2%;
     margin-bottom: 0%;
+    margin-top: 0%;
+    padding: 0%;
+    font-size: medium;
   }
 
-  .buttons {
+  .buttons-edit {
     width: 20%;
+    margin-top: 0%;
+    margin-bottom: 0%;
+    display: flex;
+    justify-content: flex-end;
 
   }
 
   .names {
-    width: 90%;
+    width: 80%;
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 1%;
 
   }
 
 
+.final-line {
+    margin-top: 0%;
+    flex: 1;
+    flex-direction: column;
+    justify-content: flex-start;
+    margin-left: 1.5%;
+    margin-bottom: 1%;
+}
 
+.add-product {
+    width: 60%;
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 1%;
+}

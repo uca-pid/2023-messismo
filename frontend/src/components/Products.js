@@ -41,7 +41,7 @@ const Products = () => {
       precio: "$2500",
     },
     {
-      nombre: "Bastones de muzzarellaa",
+      nombre: "Bastones de muzzarella",
       categoria: "Entradas",
       descripcion: "Bastones de muzzarella con sal marina",
       precio: "$50",
@@ -126,21 +126,21 @@ const Products = () => {
   };
 
   const handleSaveProduct = (newProductData) => {
-    // Aquí puedes manejar la lógica para guardar el nuevo producto
-    // newProductData contiene los datos del nuevo producto
     console.log(newProductData);
   };
   return (
     <div className="container">
       <h1>Productos</h1>
+      <div className="add-product">
       <Button
-        variant="outlined"
+        variant="contained"
         endIcon={<AddIcon />}
-        style={{ color: "black", borderColor: "black" }}
+        style={{ color: "white", borderColor: "#007bff"}}
         onClick={handleOpenProductsModal}
       >
-        Agregar Producto
+        Añadir Producto
       </Button>
+      </div>
       <Dialog
         open={openFormModal}
         onClose={handleCloseProductsModal}
@@ -156,13 +156,12 @@ const Products = () => {
       {products.map((producto, index) => (
         <div className="entradas" key={index}>
           <div className="product">
-            <p className="categoria">Categoria: {producto.categoria}</p>
             <div className="firstLine">
               <div className="names">
-                <p className="text">{producto.nombre}</p>
+                <p className="text" style={{fontWeight: "bold"}}>{producto.nombre}</p>
                 <p className="text">{producto.precio}</p>
               </div>
-              <div className="buttons">
+              <div className="buttons-edit">
                 <IconButton
                   aria-label="edit"
                   size="large"
@@ -185,7 +184,10 @@ const Products = () => {
                 )}
               </div>
             </div>
+            <div className="final-line">
             <p className="descripcion">{producto.descripcion}</p>
+            <p className="categoria">{producto.categoria}</p>
+            </div>
           </div>
         </div>
       ))}

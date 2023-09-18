@@ -14,7 +14,6 @@ function App() {
   return (
     <BrowserRouter>
       <div style={styles.container}>
-      <Navbar></Navbar>
       <div style={styles.content}>
       <Routes>
         <Route path="/menu" Component={Menu}></Route>

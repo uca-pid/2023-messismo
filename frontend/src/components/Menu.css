@@ -27,7 +27,7 @@
 
 }
 
-.firstLine {
+.firstLine-2 {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -40,13 +40,13 @@
     font-size: x-large;
 }
 
-.text {
+.text-2 {
     margin-left: 2%;
     margin-right: 2%;
     margin-bottom: 0%;
 }
 
-.descripcion {
+.descripcion-2 {
     margin-left: 2%;
     margin-right: 3%;
     font-size: small;
