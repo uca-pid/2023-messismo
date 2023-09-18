@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/superAdmin")
+@RequestMapping("/api/v1/manager")
 @CrossOrigin("*")
-public class SuperAdminController {
+public class ManagerController {
 
     private final UserService userService;
 
