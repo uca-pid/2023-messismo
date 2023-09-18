@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react'
 import '../App.css';
 import { styled } from 'styled-components';
 import 'fontsource-roboto';
-import { Link } from 'react-router-dom';
-import SignUpPopUp from '../components/SignUpPopUp';
+import { Link, useNavigate } from 'react-router-dom';
+import SUpPopUp from '../components/SignUpPopUp';
+import SInPopUp from '../components/SignInPopUp';
 import validation from '../Validation'
 
 const Label = styled.label`
@@ -285,13 +286,17 @@ const ErrorMessage = styled.h4`
 
 
 function SignInUpForm(){
+    const navigate = useNavigate();
     const [click, setClick] = useState(false);
     const handleClick = () => setClick(!click);
 
     const [checked, setChecked] = useState(false);
 
-    const [popUp, setPopUp] = useState(false)
-    const duringPopUp = popUp ? "during-popup" : ""
+    const [SignInPopUp, setSignInPopUp] = useState(false)
+    const duringSignInPopUp = SignInPopUp ? "during-popup" : ""
+
+    const [SignUpPopUp, setSignUpPopUp] = useState(false)
+    const duringSignUpPopUp = SignUpPopUp ? "during-popup" : ""
 
     const [userRole, setUserRole] = useState("employee");
     const handleChange = (e) => {
@@ -301,8 +306,16 @@ function SignInUpForm(){
 
     const [isRegistered, setIsRegistered] = useState(false);
     const handleRegister = () => {
-        
         setIsRegistered(false);
+    };
+
+    const handleLogin = (email, password) => {
+        if(email === 'asd@asd.com' && password === 'asdfghjkl1Q'){
+            navigate('/homepage')
+        }
+        else{
+            setSignInPopUp(true);
+        }
     };
 
     const [isValid, setIsValid] = useState(false);
@@ -355,13 +368,31 @@ function SignInUpForm(){
                         <Title>Sign In</Title>
                         <Input type='email' name='email' id='emailId'
                         placeholder='Email'
+                        onChange={handleInput}
                         />
+                        {errors.email && <ErrorMessage>{errors.email}</ErrorMessage>}
                         <Input 
                         type='password' name='password' id='passwordId'
                         placeholder='Password'
+                        onChange={handleInput}
                         />
+                        {errors.password && <ErrorMessage>{errors.password}</ErrorMessage>}
                         <ForgotLink href='#'>Forgot your Password?</ForgotLink>
-                        <NavLink to={'/homepage'} style={{ textDecoration: 'none' }}>Sign In</NavLink>
+                        {/* <NavLink to={'/homepage'} style={{ textDecoration: 'none' }}>Sign In</NavLink> */}
+
+                        <NavLink
+                        onClick={() => {
+                            handleValidation();
+                            if(isValid) {
+                                handleLogin(values.email, values.password);
+                            }
+                        }}
+                        style={{ textDecoration: 'none' }}
+                        disabled = {Object.keys(errors).length > 0 || !isValid}
+                        >
+                            Sign In
+                        </NavLink>
+
                     </Form>
 
                     <Form className='signup' show={click}>
@@ -398,8 +429,8 @@ function SignInUpForm(){
                         onClick={() => {
                             handleValidation();
                             if(isValid) {
-                                setPopUp(true);
                                 handleRegister();
+                                setSignUpPopUp(true);
                             }
                         }}
                         style={{ textDecoration: 'none' }}
@@ -428,7 +459,8 @@ function SignInUpForm(){
                     </Text>
                     
                 </Box2>
-                {popUp && <SignUpPopUp setPopUp={setPopUp} isRegistered={isRegistered}/>}
+                {SignInPopUp && <SInPopUp setSignInPopUp={setSignInPopUp} isRegistered={isRegistered}/>}
+                {SignUpPopUp && <SUpPopUp setSignUpPopUp={setSignUpPopUp} isRegistered={isRegistered}/>}
             </BackgroundBox>
     )
 }
