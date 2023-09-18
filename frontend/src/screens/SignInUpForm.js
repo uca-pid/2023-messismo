@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import '../App.css';
 import { styled } from 'styled-components';
 import 'fontsource-roboto';
@@ -305,6 +305,8 @@ function SignInUpForm(){
         setIsRegistered(false);
     };
 
+    const [isValid, setIsValid] = useState(false);
+
     const [values, setValues] = useState({
         username: '',
         email: '',
@@ -313,13 +315,36 @@ function SignInUpForm(){
 
     const [errors, setErrors] = useState({})
 
+    // const handleInput = (e) => {
+    //     e.preventDefault()
+    //     setValues({...values, [e.target.name]: [e.target.value]})
+    // }
+
+
+    useEffect(() => {
+        const validationErrors = validation(values);
+        setErrors(validationErrors);
+        setIsValid(Object.keys(validationErrors).length === 0);
+    }, [values]);
+
     const handleInput = (e) => {
-        e.preventDefault()
-        setValues({...values, [e.target.name]: [e.target.value]})
+        setErrors((prevErrors) => ({
+            ...prevErrors,
+            [e.target.name]: '',
+
+        }));
+        setValues({ ...values, [e.target.name]: e.target.value });
     }
 
     function handleValidation() {
-        setErrors(validation(values))
+        const validationErrors = validation(values);
+        setErrors(validationErrors);
+        if (Object.keys(validationErrors).length === 0){
+            setIsValid(true);
+        }
+        else {
+            setIsValid(false);
+        }
     }
 
     return(
@@ -367,7 +392,24 @@ function SignInUpForm(){
                         </Label>
 
                         {/* <NavLink onClick={ () => { setPopUp(true); handleRegister(); } } style={{ textDecoration: 'none' }}>Sign Up</NavLink> */}
-                        <NavLink onClick={ () => { handleValidation() } }>Sign Up</NavLink>
+                        {/* <NavLink onClick={ () => { handleValidation() } }>Sign Up</NavLink> */}
+
+                        <NavLink
+                        onClick={() => {
+                            handleValidation();
+                            if(isValid) {
+                                setPopUp(true);
+                                handleRegister();
+                            }
+                        }}
+                        style={{ textDecoration: 'none' }}
+                        disabled = {Object.keys(errors).length > 0 || !isValid}
+                        >
+                            Sign Up
+                        </NavLink>
+
+
+
                     </Form>
                 </Box1>
 
