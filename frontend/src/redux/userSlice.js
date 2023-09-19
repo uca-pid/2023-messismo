@@ -18,11 +18,17 @@ const userSlice = createSlice({
   reducers: {
 
     acceptUser: (state, action) => {
-
+      const userFound = state.find(user => user.id === action.payload)
+      if(userFound){
+        userFound.pending = 'no'
+      }
     },
 
     rejectUser: (state, action) => {
-      
+      const userFound = state.find(user => user.id === action.payload)
+      if(userFound){
+        state.splice(state.indexOf(userFound), 1)
+      }
     },
 
     deleteUser: (state, action) => {

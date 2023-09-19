@@ -3,25 +3,15 @@ import styled from 'styled-components';
 import Header from '../components/Header';
 import { useSelector, useDispatch } from 'react-redux';
 import { acceptUser, rejectUser, deleteUser } from '../redux/userSlice';
-
-const SIDEBAR_WIDTH = '16%';
+import Navbar from "../components/Navbar";
 
 const Container = styled.div`
     display: flex;
+    flex-direction: column;
 `;
 
 const MainContent = styled.div`
-    flex: 1;
-    padding: 100px;
-
-    @media (max-width: 1600px){
-        inset: 0 95% 0 0;
-    }
-    min-width: 600px;
-`;
-
-const SidebarContainer = styled.div`
-    width: ${SIDEBAR_WIDTH};
+    padding: 3rem;
 `;
 
 const Title = styled.h1`
@@ -36,14 +26,17 @@ const UserContainer = styled.div`
 
     display: flex;
     margin-top: 20px;
+    flex-wrap: wrap;
 
-    @media (max-width: 1600px){
+    @media (max-width: 800px){
         display: block;
     }
 `;
 
 const Resource = styled.div`
 
+    display: flex;
+    flex-wrap: wrap;
     font-family: 'Roboto';
 
     .user-data{
@@ -65,7 +58,6 @@ const Resource = styled.div`
     }
     
 `;
-
 
 const Button = styled.button`
     border-radius: 3px;
@@ -120,6 +112,7 @@ const Button = styled.button`
 
 const UserItem = styled.div`
     width: 100%;
+    
 `;
 
 const Subheader = styled.h2`
@@ -173,9 +166,7 @@ function Resources(){
     return(
         <Container>
 
-            <SidebarContainer>
-                <Header />
-            </SidebarContainer>
+            <Navbar />
             
             <MainContent>
 

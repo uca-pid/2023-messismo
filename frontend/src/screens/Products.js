@@ -1,23 +1,33 @@
 import React from "react";
 import styled from 'styled-components';
-import Header from '../components/Header';
+import Navbar from "../components/Navbar";
 
 const Container = styled.div`
     display: flex;
     flex-direction: column;
+    height: 100vh;
+`;
+
+const MainContent = styled.div`
+    display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
+    flex-grow: 1;
 `;
 
 function Products(){
 
     return(
         <Container className='products'>
-            <Header/>
-            <div style={{color: 'white'}}>
-                PRODUCTS
-            </div>
+            
+            <Navbar />
+            <MainContent>
+                <div style={{color: 'white'}}>
+                    PRODUCTS
+                </div>
+            </MainContent>
+
         </Container>
     )
 }

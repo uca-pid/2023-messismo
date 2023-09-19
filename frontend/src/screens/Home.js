@@ -2,23 +2,20 @@ import React from 'react'
 import { styled } from 'styled-components';
 import 'fontsource-roboto';
 import Header from '../components/Header';
-
-const SIDEBAR_WIDTH = '16%';
+import Navbar from "../components/Navbar";
 
 const Container = styled.div`
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-`;
-
-const SidebarContainer = styled.div`
-    width: ${SIDEBAR_WIDTH};
+    height: 100vh;
 `;
 
 const MainContent = styled.div`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     align-items: center;
+    flex-grow: 1;
 `;
 
 const WelcomeImage = styled.img`
@@ -62,18 +59,13 @@ function HomePage(){
     return(
         <Container>
 
-            <SidebarContainer>
-                <Header />
-            </SidebarContainer>
+            <Navbar />
 
             <MainContent>
-        
                 <WelcomeImage src="/images/welcomeback2.png"/>
-
                 <Resource>
                     <p>{signedinuser.map(renderUser)}</p>
                 </Resource>
-
             </MainContent>
 
         </Container>
