@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
 import Header from '../components/Header';
-import { useDispatch, useSelector } from 'react-redux';
-import { setUsers } from '../redux/userSlice';
+import { useSelector, useDispatch } from 'react-redux';
+import { acceptUser, rejectUser, deleteUser } from '../redux/userSlice';
 
 const SIDEBAR_WIDTH = '16%';
 
@@ -132,24 +131,22 @@ const Subheader = styled.h2`
 function Resources(){
 
     const users = useSelector(state => state.users)
+    const dispatch = useDispatch()
 
     const pending = users.filter(user => user.pending === 'yes');
     const admins = users.filter(user => user.type === 'admin' && user.pending === 'no');
     const employees = users.filter(user => user.type === 'employee' && user.pending === 'no');
     
     const handleAccept = (id) => {
-
-        console.log(`Accepted: ${id}`);
+        dispatch(acceptUser(id))
     };
     
     const handleReject = (id) => {
-
-        console.log(`Rejected: ${id}`);
+        dispatch(rejectUser(id))
     };
 
     const handleDelete = (id) => {
-
-        console.log(`Deleted: ${id}`);
+        dispatch(deleteUser(id))
     };
 
     const renderUser = (user) => (
