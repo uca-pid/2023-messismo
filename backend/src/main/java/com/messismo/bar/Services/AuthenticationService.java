@@ -4,7 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.messismo.bar.DTOs.AuthenticationRequestDTO;
 import com.messismo.bar.DTOs.AuthenticationResponseDTO;
 import com.messismo.bar.DTOs.RegisterRequestDTO;
-import com.messismo.bar.Entities.*;
+import com.messismo.bar.Entities.Role;
+import com.messismo.bar.Entities.Token;
+import com.messismo.bar.Entities.TokenType;
+import com.messismo.bar.Entities.User;
 import com.messismo.bar.Repositories.TokenRepository;
 import com.messismo.bar.Repositories.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -36,48 +39,6 @@ public class AuthenticationService {
 
     private final TokenRepository tokenRepository;
 
-
-//    public ResponseEntity<?> loginUser(AuthenticationRequestDTO authenticationRequestDTO) {
-//        try {
-//            if(authenticationRequestDTO.getUsername()==null || authenticationRequestDTO.getPassword()==null){
-//                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Missing data for user login");
-//            }
-//            Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequestDTO.getUsername(), authenticationRequestDTO.getPassword()));
-//            User user = userRepository.findByUsername(authenticationRequestDTO.getUsername()).orElseThrow();
-//            String jwtToken = jWtService.generateToken(user);
-//            return ResponseEntity.status(HttpStatus.OK).body(jwtToken);
-//        } catch (AuthenticationException e) {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid user credentials");
-//        }
-//    }
-//
-//
-//    public ResponseEntity<?> registerEmployee(RegisterRequestDTO registerRequestDTO) {
-//
-//        try {
-//            if(registerRequestDTO.getEmail() == null ||registerRequestDTO.getPassword() == null ||registerRequestDTO.getUsername() == null ){
-//                return ResponseEntity.status(HttpStatus.CONFLICT).body("Missing data for user registration");
-//            }
-//            Optional<User> employeeByUsername = userRepository.findByUsername(registerRequestDTO.getUsername());
-//            Optional<User> employeeByMail = userRepository.findByEmail(registerRequestDTO.getEmail());
-//            if (employeeByUsername.isPresent() || employeeByMail.isPresent()) { // USER ALREADY EXISTS
-//                return ResponseEntity.status(HttpStatus.CONFLICT).body("The user already exists");
-//            } else {    // CREATE EMPLOYEE
-//                User newEmployee = new User();
-//                newEmployee.setUsername(registerRequestDTO.getUsername());
-//                newEmployee.setPassword(passwordEncoder.encode(registerRequestDTO.getPassword()));
-//                newEmployee.setEmail(registerRequestDTO.getEmail());
-//                newEmployee.setRole(Role.EMPLOYEE);
-//                userRepository.save(newEmployee);
-//                String jwtToken = jWtService.generateToken(newEmployee);
-//                return ResponseEntity.status(HttpStatus.CREATED).body(jwtToken);
-//            }
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error during registration");
-//        }
-//    }
-
-
     public ResponseEntity<?> register(RegisterRequestDTO request) {
         if (request.getEmail() == null || request.getPassword() == null || request.getUsername() == null) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Missing data for user registration");
@@ -96,7 +57,7 @@ public class AuthenticationService {
             String jwtToken = jwtService.generateToken(newEmployee);
             String refreshToken = jwtService.generateRefreshToken(newEmployee);
             saveUserToken(newEmployee, jwtToken);
-            AuthenticationResponseDTO authenticationResponseDTO = new AuthenticationResponseDTO(jwtToken, refreshToken, newEmployee.getUsername(), newEmployee.getRole());
+            AuthenticationResponseDTO authenticationResponseDTO = new AuthenticationResponseDTO(jwtToken, refreshToken, newEmployee.getEmail(), newEmployee.getRole());
             return ResponseEntity.status(HttpStatus.CREATED).body(authenticationResponseDTO);
         }
     }
@@ -112,10 +73,9 @@ public class AuthenticationService {
             String refreshToken = jwtService.generateRefreshToken(user);
             revokeAllUserTokens(user);
             saveUserToken(user, jwtToken);
-            AuthenticationResponseDTO authenticationResponseDTO = new AuthenticationResponseDTO(jwtToken, refreshToken, user.getUsername(), user.getRole());
+            AuthenticationResponseDTO authenticationResponseDTO = new AuthenticationResponseDTO(jwtToken, refreshToken, user.getEmail(), user.getRole());
             return ResponseEntity.status(HttpStatus.OK).body(authenticationResponseDTO);
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid user credentials");
         }
     }
@@ -155,7 +115,7 @@ public class AuthenticationService {
                 String accessToken = jwtService.generateToken(user);
                 revokeAllUserTokens(user);
                 saveUserToken(user, accessToken);
-                AuthenticationResponseDTO authenticationResponseDTO = new AuthenticationResponseDTO(accessToken,refreshToken, user.getUsername(), user.getRole());
+                AuthenticationResponseDTO authenticationResponseDTO = new AuthenticationResponseDTO(accessToken, refreshToken, user.getEmail(), user.getRole());
                 new ObjectMapper().writeValue(response.getOutputStream(), authenticationResponseDTO);
             }
         }

@@ -5,12 +5,14 @@ import com.messismo.bar.Services.ProductService;
 import com.messismo.bar.Services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/manager")
 @CrossOrigin("*")
+@PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
 public class ManagerController {
 
     private final ProductService productService;
@@ -18,7 +20,7 @@ public class ManagerController {
     private final UserService userService;
 
     @PutMapping("/product/updatePrice")
-    public ResponseEntity<?> updateProductPrice( @RequestBody ProductPriceDTO body) {
+    public ResponseEntity<?> updateProductPrice(@RequestBody ProductPriceDTO body) {
         return productService.modifyProductPrice(body);
     }
 

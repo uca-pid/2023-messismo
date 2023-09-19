@@ -4,7 +4,7 @@ package com.messismo.bar.Entities;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-@Getter
+
 @RequiredArgsConstructor
 public enum Permission {
 
@@ -25,6 +25,6 @@ public enum Permission {
     EMPLOYEE_CREATE("employee:create"),
     EMPLOYEE_DELETE("employee:delete")
     ;
-
+    @Getter
     private final String permission;
 }

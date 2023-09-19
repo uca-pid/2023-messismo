@@ -21,7 +21,7 @@ public class ProductService {
 
 
     public ResponseEntity<?> modifyProductPrice(ProductPriceDTO productPriceDTO) {
-        if(productPriceDTO.getUnitPrice()==null){
+        if (productPriceDTO.getUnitPrice() == null) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Product price CANNOT be updated");
         }
         try {
@@ -45,13 +45,13 @@ public class ProductService {
     }
 
     public ResponseEntity<?> addProduct(ProductDTO productDTO) {
-        if (productDTO.getCategory() == null || productDTO.getName() == null|| productDTO.getName().isEmpty() || productDTO.getUnitPrice() == null || productDTO.getDescription() == null) {
+        if (productDTO.getCategory() == null || productDTO.getName() == null || productDTO.getName().isEmpty() || productDTO.getUnitPrice() == null || productDTO.getDescription() == null) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Missing information to create a  product");
         }
         try {
 
             Optional<Product> product = productRepository.findByName(productDTO.getName());
-            if (product.isPresent()) { // PRODUCT ALREADY EXISTS
+            if (product.isPresent()) {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body("The product already exists");
             } else {
                 Product newProduct = new Product();

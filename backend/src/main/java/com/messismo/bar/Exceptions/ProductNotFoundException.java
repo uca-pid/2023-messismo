@@ -1,6 +1,6 @@
 package com.messismo.bar.Exceptions;
 
-public class ProductNotFoundException extends Exception{
+public class ProductNotFoundException extends Exception {
     public ProductNotFoundException() {
         super();
     }
