@@ -16,79 +16,92 @@ import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
 import Form from "./Form";
 import EditForm from "./EditForm";
+
+
 const Products = () => {
   const [userType, setUserType] = useState("admin");
   const [openFormModal, setOpenFormModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [isEditFormOpen, setIsEditFormOpen] = useState(false);
-  const products = [
+  const [products, setProducts] = useState([
     {
+      id: 1,
       nombre: "Papas con cheddar",
       categoria: "Entradas",
       descripcion: "Papas fritas con queso cheddar",
       precio: "$3000",
     },
     {
+      id: 2,
       nombre: "Papas bravas",
       categoria: "Entradas",
       descripcion: "Papas fritas con salsa brava, picante",
       precio: "$3000",
     },
     {
+      id: 3,
       nombre: "Bueñuelos de espinaca",
       categoria: "Entradas",
       descripcion: "Bueñuelos de espinaca hechos con mucho amor",
       precio: "$2500",
     },
     {
+      id: 4,
       nombre: "Bastones de muzzarella",
       categoria: "Entradas",
       descripcion: "Bastones de muzzarella con sal marina",
       precio: "$50",
     },
     {
+      id: 5,
       nombre: "Negroni",
       categoria: "Tragos",
       descripcion: "Este es el producto 1",
       precio: "$100",
     },
     {
+      id: 6,
       nombre: "Gin Tonic",
       categoria: "Tragos",
       descripcion: "Este es el producto 2",
       precio: "$50",
     },
     {
+      id: 7,
       nombre: "Fernet",
       categoria: "Tragos",
       descripcion: "Este es el producto 1",
       precio: "$100",
     },
     {
+      id: 8,
       nombre: "Hamburguesa Martin",
       categoria: "Platos",
       descripcion: "Este es el producto 2",
       precio: "$50",
     },
     {
+      id: 9,
       nombre: "Pancho Carla",
       categoria: "Platos",
       descripcion: "Este es el producto 1",
       precio: "$100",
     },
     {
+      id: 10,
       nombre: "Agua sin gas",
       categoria: "Bebidas sin alcohol",
       descripcion: "Agua sin gas 500ml ",
       precio: "$50",
     },
     {
+      id: 11,
       nombre: "Agua con gas",
       categoria: "Bebidas sin alcohol",
       descripcion: "Agua sin gas 500ml ",
       precio: "$50",
     },
-  ];
+  ]);
 
   const [open, setOpen] = React.useState(false);
 
@@ -116,6 +129,17 @@ const Products = () => {
     setOpen(true);
   };
 
+  const deleteProduct = () => {
+    if (selectedProduct) {
+      const updatedProducts = products.filter(
+        (product) => product !== selectedProduct
+      );
+      setProducts(updatedProducts);
+      setSelectedProduct(null);
+      setOpen(false);
+    }
+  };
+
   const handleEditClick = (producto) => {
     setEditingProduct(producto);
     setIsEditFormOpen(true);
@@ -126,20 +150,45 @@ const Products = () => {
   };
 
   const handleSaveProduct = (newProductData) => {
-    console.log(newProductData);
+    setProducts([...products, newProductData]);
+    console.log(products);
   };
+
+  const handleEditProduct = (newProductData) => {
+
+    
+    const productToUpdate = products.find((product) => product.id === editingProduct.id);
+      
+        // Si el producto se encontró
+        if (productToUpdate) {
+          // Actualiza los valores del producto utilizando el spread operator
+          const updatedProduct = { ...productToUpdate, ...newProductData };
+      
+          // Crea una nueva lista de productos con el producto actualizado
+          const updatedProducts = products.map((product) =>
+            product.id === editingProduct.id ? updatedProduct : product
+          );
+      
+          // Actualiza el estado con la nueva lista de productos
+          setProducts(updatedProducts);
+        }
+
+        handleCloseEditForm();
+      };
+  
+
   return (
     <div className="container">
       <h1>Productos</h1>
       <div className="add-product">
-      <Button
-        variant="contained"
-        endIcon={<AddIcon />}
-        style={{ color: "white", borderColor: "#007bff"}}
-        onClick={handleOpenProductsModal}
-      >
-        Añadir Producto
-      </Button>
+        <Button
+          variant="contained"
+          endIcon={<AddIcon />}
+          style={{ color: "white", borderColor: "#007bff" }}
+          onClick={handleOpenProductsModal}
+        >
+          Añadir Producto
+        </Button>
       </div>
       <Dialog
         open={openFormModal}
@@ -158,7 +207,9 @@ const Products = () => {
           <div className="product">
             <div className="firstLine">
               <div className="names">
-                <p className="text" style={{fontWeight: "bold"}}>{producto.nombre}</p>
+                <p className="text" style={{ fontWeight: "bold" }}>
+                  {producto.nombre}
+                </p>
                 <p className="text">{producto.precio}</p>
               </div>
               <div className="buttons-edit">
@@ -171,22 +222,22 @@ const Products = () => {
                   <EditIcon />
                 </IconButton>
                 {userType === "admin" || userType === "manager" ? (
-                <IconButton
-                  aria-label="delete"
-                  size="large"
-                  style={{ color: "red" }}
-                  onClick={() => handleDeleteClick(producto)}
-                >
-                  <DeleteIcon />
-                </IconButton>
+                  <IconButton
+                    aria-label="delete"
+                    size="large"
+                    style={{ color: "red" }}
+                    onClick={() => handleDeleteClick(producto)}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
                 ) : (
-                    console.log("hola")
+                  console.log("hola")
                 )}
               </div>
             </div>
             <div className="final-line">
-            <p className="descripcion">{producto.descripcion}</p>
-            <p className="categoria">{producto.categoria}</p>
+              <p className="descripcion">{producto.descripcion}</p>
+              <p className="categoria">{producto.categoria}</p>
             </div>
           </div>
         </div>
@@ -204,7 +255,7 @@ const Products = () => {
             <EditForm
               product={editingProduct}
               userType={userType}
-              onSave={handleSaveProduct}
+              onSave={handleEditProduct}
               onClose={handleCloseEditForm}
             />
           </DialogContent>
@@ -212,42 +263,37 @@ const Products = () => {
       )}
       {open && (
         <Dialog
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-        PaperProps={{
-          style: {
-            backgroundColor: "white",
-            boxShadow: "none",
-            zIndex: 1000,
-          },
-        }}
-      >
-        <DialogTitle id="alert-dialog-title">
-          {selectedProduct &&
-            `¿Estás seguro que quieres eliminar el producto ${selectedProduct.nombre}?`}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            El producto será eliminado permanentemente de la lista.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Cancelar</Button>
-          <Button
-            onClick={handleClose}
-            style={{ color: "red" }}
-            autoFocus
-          >
-            Eliminar
-          </Button>
-        </DialogActions>
-      </Dialog>
+          open={open}
+          onClose={handleClose}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+          PaperProps={{
+            style: {
+              backgroundColor: "white",
+              boxShadow: "none",
+              zIndex: 1000,
+            },
+          }}
+        >
+          <DialogTitle id="alert-dialog-title">
+            {selectedProduct &&
+              `¿Estás seguro que quieres eliminar el producto ${selectedProduct.nombre}?`}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              El producto será eliminado permanentemente de la lista.
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose}>Cancelar</Button>
+            <Button onClick={deleteProduct} style={{ color: "red" }} autoFocus>
+              Eliminar
+            </Button>
+          </DialogActions>
+        </Dialog>
       )}
     </div>
   );
+};
 
-      };
-
-  export default Products;
+export default Products;

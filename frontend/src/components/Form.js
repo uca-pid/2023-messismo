@@ -34,6 +34,27 @@ const Form = (props) => {
     props.onClose();
   };
 
+  const handleAddProduct = () => {
+    // Gather the data entered in the form
+    const newProductData = {
+      nombre,
+      categoria,
+      descripcion,
+      precio,
+    };
+
+    props.onSave(newProductData);
+    props.onClose();
+
+    // Reset the form fields
+    setNombre("");
+    setCategoria("");
+    setDescripcion("");
+    setPrecio("");
+
+
+  }
+
   return (
     <div>
       <h2 style={{marginBottom: '7%'}}>Nuevo Producto</h2>
@@ -94,6 +115,7 @@ const Form = (props) => {
             borderColor: "green",
             width: "40%"
           }}
+          onClick={handleAddProduct}
 
         >
           Agregar

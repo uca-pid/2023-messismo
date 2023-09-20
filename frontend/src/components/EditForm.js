@@ -13,7 +13,7 @@ const EditForm = (props) => {
   const [descripcion, setDescripcion] = useState("");
   const [precio, setPrecio] = useState("");
 
-  console.log(props.product.nombre);
+  
   const handleNombreChange = (event) => {
     setNombre(event.target.value);
   };
@@ -33,6 +33,27 @@ const EditForm = (props) => {
   const cancelarButton = (event) => {
     props.onClose();
   };
+
+  const handleEditProduct = () => {
+    // Gather the data entered in the form
+    const newProductData = {
+      nombre,
+      categoria,
+      descripcion,
+      precio,
+    };
+
+    props.onSave(newProductData);
+    props.onClose();
+
+    // Reset the form fields
+    setNombre("");
+    setCategoria("");
+    setDescripcion("");
+    setPrecio("");
+
+
+  }
 
   return (
     <div>
@@ -105,8 +126,9 @@ const EditForm = (props) => {
             borderColor: "green",
             width: "40%",
           }}
+          onClick={handleEditProduct}
         >
-          Agregar
+          Guardar
         </Button>
       </div>
     </div>
