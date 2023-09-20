@@ -1,7 +1,7 @@
 import React from 'react'
 import { styled } from 'styled-components';
 import 'fontsource-roboto';
-import Header from '../components/Header';
+import { useSelector } from 'react-redux';
 import Navbar from "../components/Navbar";
 
 const Container = styled.div`
@@ -11,7 +11,7 @@ const Container = styled.div`
 `;
 
 const MainContent = styled.div`
-    display: flex;
+    display: ${props => (props.visible ? 'flex' : 'none')};
     flex-direction: column;
     justify-content: center;
     align-items: center;
@@ -49,6 +49,9 @@ const signedinuser = [
 
 function HomePage(){
 
+    const clicked = useSelector((state) => state.navigation.clicked);
+    const contentVisible = !clicked;
+
     const renderUser = (user) => (
         <div key={user.id}>
           <h3>{user.username}</h3>
@@ -61,7 +64,7 @@ function HomePage(){
 
             <Navbar />
 
-            <MainContent>
+            <MainContent visible={contentVisible}>
                 <WelcomeImage src="/images/welcomeback2.png"/>
                 <Resource>
                     <p>{signedinuser.map(renderUser)}</p>

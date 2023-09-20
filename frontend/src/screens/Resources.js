@@ -11,6 +11,7 @@ const Container = styled.div`
 `;
 
 const MainContent = styled.div`
+    display: ${props => (props.visible ? '' : 'none')};
     padding: 3rem;
 `;
 
@@ -129,6 +130,9 @@ function Resources(){
     const pending = users.filter(user => user.pending === 'yes');
     const admins = users.filter(user => user.type === 'admin' && user.pending === 'no');
     const employees = users.filter(user => user.type === 'employee' && user.pending === 'no');
+
+    const clicked = useSelector((state) => state.navigation.clicked);
+    const contentVisible = !clicked;
     
     const handleAccept = (id) => {
         dispatch(acceptUser(id))
@@ -168,7 +172,7 @@ function Resources(){
 
             <Navbar />
             
-            <MainContent>
+            <MainContent visible={contentVisible}>
 
                 <Title>
                     RESOURCES

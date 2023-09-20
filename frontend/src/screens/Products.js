@@ -1,6 +1,7 @@
 import React from "react";
 import styled from 'styled-components';
 import Navbar from "../components/Navbar";
+import { useSelector } from 'react-redux';
 
 const Container = styled.div`
     display: flex;
@@ -9,7 +10,7 @@ const Container = styled.div`
 `;
 
 const MainContent = styled.div`
-    display: flex;
+    display: ${props => (props.visible ? 'flex' : 'none')};
     flex-direction: column;
     justify-content: center;
     align-items: center;
@@ -18,11 +19,14 @@ const MainContent = styled.div`
 
 function Products(){
 
+    const clicked = useSelector((state) => state.navigation.clicked);
+    const contentVisible = !clicked;
+
     return(
         <Container className='products'>
             
             <Navbar />
-            <MainContent>
+            <MainContent visible={contentVisible}>
                 <div style={{color: 'white'}}>
                     PRODUCTS
                 </div>
