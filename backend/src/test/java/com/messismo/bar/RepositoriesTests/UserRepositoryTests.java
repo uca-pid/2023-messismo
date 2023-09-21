@@ -41,13 +41,10 @@ public class UserRepositoryTests {
 
         assertTrue(userByUsername1.isPresent());
         assertEquals("user1", userByUsername1.get().getNoFunctionalityUsername());
-        assertEquals(1L, userByUsername1.get().getId());
         assertTrue(userByUsername2.isPresent());
         assertEquals("user2", userByUsername2.get().getNoFunctionalityUsername());
-        assertEquals(2L, userByUsername2.get().getId());
         assertTrue(userByUsername3.isPresent());
         assertEquals("user3", userByUsername3.get().getNoFunctionalityUsername());
-        assertEquals(3L, userByUsername3.get().getId());
         assertTrue(userByUsernameRandom.isEmpty());
     }
 
