@@ -1,6 +1,5 @@
 import React from "react";
 import styled from 'styled-components';
-import Header from '../components/Header';
 import { useSelector, useDispatch } from 'react-redux';
 import { acceptUser, rejectUser, deleteUser } from '../redux/userSlice';
 import Navbar from "../components/Navbar";

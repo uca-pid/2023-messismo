@@ -9,6 +9,7 @@ import { Link } from 'react-router-dom'
 import BurgerIcon from './BurgerIcon'
 import { useSelector, useDispatch } from 'react-redux';
 import { toggleClicked } from '../redux/navSlice';
+import { signout } from '../redux/authSlice';
 
 const NavLink = styled(Link)`
 
@@ -139,6 +140,10 @@ function Navbar() {
         dispatch(toggleClicked());
     };
 
+    const handleSignOut = () => {
+        dispatch(signout())
+    }
+
     return(
 
         <NavContainer clicked={clicked}>
@@ -164,7 +169,7 @@ function Navbar() {
                     </NavLink>
                 )}
 
-                <NavLink to={'/'}>
+                <NavLink to={'/'} onClick={() => {handleSignOut()}}>
                     <ImExit className='icon'/>
                     <span>Sign Out</span>
                 </NavLink>

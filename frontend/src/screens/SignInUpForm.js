@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react'
 import '../App.css';
 import { styled } from 'styled-components';
 import 'fontsource-roboto';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { signInUser, signUpUser } from '../redux/authSlice';
 import SUpPopUp from '../components/SignUpPopUp';
 import SInPopUp from '../components/SignInPopUp';
 import signupvalidation from '../SignUpValidation'
@@ -288,6 +290,8 @@ const ErrorMessage = styled.h4`
 
 function SignInUpForm(){
 
+    const dispatch = useDispatch()
+
     const [click, setClick] = useState(false);
     const handleClick = () => setClick(!click);
 
@@ -309,6 +313,11 @@ function SignInUpForm(){
         else {
             setSignInPopUp(true);
         }
+
+        const email = userData.email;
+        const password = userData.password;
+
+        dispatch(signInUser({email, password}))
     };
 
     const [isSignInValid, setIsSignInValid] = useState(false);
@@ -353,7 +362,15 @@ function SignInUpForm(){
 
     const [isRegistered, setIsRegistered] = useState(false);
     const handleRegister = (userData) => {
+
         setIsRegistered(false);
+
+        const username = userData.username;
+        const email = userData.email;
+        const password = userData.password;
+        const role = userData.role;
+        dispatch(signUpUser({username, email, password, role}))
+
     };
 
     const [isSignUpValid, setIsSignUpValid] = useState(false);
