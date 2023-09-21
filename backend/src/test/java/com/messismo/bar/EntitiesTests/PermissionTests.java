@@ -1,2 +1,4 @@
-package com.messismo.bar.EntitiesTests;public class PermissionTests {
+package com.messismo.bar.EntitiesTests;
+
+public class PermissionTests {
 }

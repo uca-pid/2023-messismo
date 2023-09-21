@@ -18,7 +18,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -57,7 +56,8 @@ public class AuthenticationService {
             String jwtToken = jwtService.generateToken(newEmployee);
             String refreshToken = jwtService.generateRefreshToken(newEmployee);
             saveUserToken(newEmployee, jwtToken);
-            AuthenticationResponseDTO authenticationResponseDTO = new AuthenticationResponseDTO(jwtToken, refreshToken, newEmployee.getEmail(), newEmployee.getRole());
+            AuthenticationResponseDTO authenticationResponseDTO = new AuthenticationResponseDTO(jwtToken, refreshToken,
+                    newEmployee.getEmail(), newEmployee.getRole());
             return ResponseEntity.status(HttpStatus.CREATED).body(authenticationResponseDTO);
         }
     }
@@ -67,13 +67,15 @@ public class AuthenticationService {
             if (request.getEmail() == null || request.getPassword() == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Missing data for user login");
             }
-            Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+            authenticationManager
+                    .authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
             User user = userRepository.findByEmail(request.getEmail()).orElseThrow();
             String jwtToken = jwtService.generateToken(user);
             String refreshToken = jwtService.generateRefreshToken(user);
             revokeAllUserTokens(user);
             saveUserToken(user, jwtToken);
-            AuthenticationResponseDTO authenticationResponseDTO = new AuthenticationResponseDTO(jwtToken, refreshToken, user.getEmail(), user.getRole());
+            AuthenticationResponseDTO authenticationResponseDTO = new AuthenticationResponseDTO(jwtToken, refreshToken,
+                    user.getEmail(), user.getRole());
             return ResponseEntity.status(HttpStatus.OK).body(authenticationResponseDTO);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid user credentials");
@@ -92,7 +94,8 @@ public class AuthenticationService {
 
     private void revokeAllUserTokens(User user) {
         var validUserTokens = tokenRepository.findAllValidTokenByUser(user.getId());
-        if (validUserTokens.isEmpty()) return;
+        if (validUserTokens.isEmpty())
+            return;
         validUserTokens.forEach(token -> {
             token.setExpired(true);
             token.setRevoked(true);
@@ -115,7 +118,8 @@ public class AuthenticationService {
                 String accessToken = jwtService.generateToken(user);
                 revokeAllUserTokens(user);
                 saveUserToken(user, accessToken);
-                AuthenticationResponseDTO authenticationResponseDTO = new AuthenticationResponseDTO(accessToken, refreshToken, user.getEmail(), user.getRole());
+                AuthenticationResponseDTO authenticationResponseDTO = new AuthenticationResponseDTO(accessToken,
+                        refreshToken, user.getEmail(), user.getRole());
                 new ObjectMapper().writeValue(response.getOutputStream(), authenticationResponseDTO);
             }
         }

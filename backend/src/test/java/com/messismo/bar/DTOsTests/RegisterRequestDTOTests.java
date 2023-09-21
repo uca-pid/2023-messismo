@@ -2,14 +2,8 @@ package com.messismo.bar.DTOsTests;
 
 import com.messismo.bar.DTOs.RegisterRequestDTO;
 import org.junit.jupiter.api.Test;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import java.util.Collection;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class RegisterRequestDTOTests {
     @Test
@@ -40,9 +34,9 @@ public class RegisterRequestDTOTests {
     @Test
     public void testRegisterRequestDTOEquals() {
 
-        RegisterRequestDTO registerRequestDTO1 = new RegisterRequestDTO("messi","messi@gmail.com","password123");
-        RegisterRequestDTO registerRequestDTO2 = new RegisterRequestDTO("messi","messi@gmail.com","password123");
-        RegisterRequestDTO registerRequestDTO3 = new RegisterRequestDTO("user3","user3@gmail.com","password456");
+        RegisterRequestDTO registerRequestDTO1 = new RegisterRequestDTO("messi", "messi@gmail.com", "password123");
+        RegisterRequestDTO registerRequestDTO2 = new RegisterRequestDTO("messi", "messi@gmail.com", "password123");
+        RegisterRequestDTO registerRequestDTO3 = new RegisterRequestDTO("user3", "user3@gmail.com", "password456");
 
         assertEquals(registerRequestDTO1, registerRequestDTO2);
         assertNotEquals(registerRequestDTO1, registerRequestDTO3);
@@ -51,12 +45,63 @@ public class RegisterRequestDTOTests {
     @Test
     public void testRegisterRequestDTOHashCode() {
 
-        RegisterRequestDTO registerRequestDTO1 = new RegisterRequestDTO("messi","messi@gmail.com","password123");
-        RegisterRequestDTO registerRequestDTO2 = new RegisterRequestDTO("messi","messi@gmail.com","password123");
-        RegisterRequestDTO registerRequestDTO3 = new RegisterRequestDTO("user3","user3@gmail.com","password456");
+        RegisterRequestDTO registerRequestDTO1 = new RegisterRequestDTO("messi", "messi@gmail.com", "password123");
+        RegisterRequestDTO registerRequestDTO2 = new RegisterRequestDTO("messi", "messi@gmail.com", "password123");
+        RegisterRequestDTO registerRequestDTO3 = new RegisterRequestDTO("user3", "user3@gmail.com", "password456");
 
         assertEquals(registerRequestDTO1.hashCode(), registerRequestDTO2.hashCode());
         assertNotEquals(registerRequestDTO1.hashCode(), registerRequestDTO3.hashCode());
     }
+
+    @Test
+    public void testRegisterRequestDTOWithBuilder() {
+
+        RegisterRequestDTO registerRequestDTO = RegisterRequestDTO.builder().username("exampleUser").email("user@example.com").password("secretPassword").build();
+
+        assertEquals("exampleUser", registerRequestDTO.getUsername());
+        assertEquals("user@example.com", registerRequestDTO.getEmail());
+        assertEquals("secretPassword", registerRequestDTO.getPassword());
+    }
+
+    @Test
+    public void testRegisterRequestDTOWithBuilder_WithNoUsername() {
+
+        RegisterRequestDTO registerRequestDTO = RegisterRequestDTO.builder().email("user@example.com").password("secretPassword").build();
+
+        assertNull(registerRequestDTO.getUsername());
+        assertEquals("user@example.com", registerRequestDTO.getEmail());
+        assertEquals("secretPassword", registerRequestDTO.getPassword());
+    }
+
+    @Test
+    public void testRegisterRequestDTOWithBuilder_WithNoEmail() {
+
+        RegisterRequestDTO registerRequestDTO = RegisterRequestDTO.builder().username("exampleUser").password("secretPassword").build();
+
+        assertEquals("exampleUser", registerRequestDTO.getUsername());
+        assertNull(registerRequestDTO.getEmail());
+        assertEquals("secretPassword", registerRequestDTO.getPassword());
+    }
+
+    @Test
+    public void testRegisterRequestDTOWithBuilder_WithNoPassword() {
+
+        RegisterRequestDTO registerRequestDTO = RegisterRequestDTO.builder().username("exampleUser").email("user@example.com").build();
+
+        assertEquals("exampleUser", registerRequestDTO.getUsername());
+        assertEquals("user@example.com", registerRequestDTO.getEmail());
+        assertNull(registerRequestDTO.getPassword());
+    }
+
+    @Test
+    public void testRegisterRequestDTOWithEmptyBuilder() {
+
+        RegisterRequestDTO registerRequestDTO = RegisterRequestDTO.builder().build();
+
+        assertNull(registerRequestDTO.getUsername());
+        assertNull(registerRequestDTO.getEmail());
+        assertNull(registerRequestDTO.getPassword());
+    }
+
 
 }

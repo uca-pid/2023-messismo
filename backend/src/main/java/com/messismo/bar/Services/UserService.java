@@ -39,7 +39,7 @@ public class UserService implements UserDetailsService {
             Collection<? extends GrantedAuthority> authorities = user.getAuthorities();
             boolean isEmployee = false;
             for (GrantedAuthority authority : authorities) {
-                if ("VALIDATEDEMPLOYEE".equals(authority.getAuthority())) {
+                if ("ROLE_VALIDATEDEMPLOYEE".equals(authority.getAuthority())||"ROLE_MANAGER".equals(authority.getAuthority())||"ROLE_ADMIN".equals(authority.getAuthority())) {
                     isEmployee = true;
                     break;
                 }
@@ -49,7 +49,7 @@ public class UserService implements UserDetailsService {
                 userRepository.save(user);
                 return ResponseEntity.status(HttpStatus.OK).body("User IS NOW a VALIDATED_EMPLOYEE");
             } else {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User IS already a VALIDATED_EMPLOYEE");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User IS already a VALIDATED_EMPLOYEE OR SUPERIOR");
             }
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User DOES NOT exist");
@@ -62,7 +62,7 @@ public class UserService implements UserDetailsService {
             Collection<? extends GrantedAuthority> authorities = user.getAuthorities();
             boolean isValidatedEmployee = false;
             for (GrantedAuthority authority : authorities) {
-                if ("VALIDATEDEMPLOYEE".equals(authority.getAuthority())) {
+                if ("ROLE_VALIDATEDEMPLOYEE".equals(authority.getAuthority())) {
                     isValidatedEmployee = true;
                     break;
                 }

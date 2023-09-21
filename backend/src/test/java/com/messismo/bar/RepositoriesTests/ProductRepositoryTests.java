@@ -11,7 +11,6 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @DataJpaTest
 @ActiveProfiles("test")
@@ -19,9 +18,6 @@ public class ProductRepositoryTests {
 
     @Autowired
     private ProductRepository productRepository;
-
-
-
 
     @Test
     public void testProductRepositoryFindByProductId_ExistingProduct() {
@@ -104,7 +100,6 @@ public class ProductRepositoryTests {
             productRepository.findByName(null).orElseThrow(() -> new NoSuchElementException("Null Product not found"));
         });
     }
-
 
 
 }
