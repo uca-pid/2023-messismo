@@ -67,7 +67,7 @@ function HomePage(){
             <MainContent visible={contentVisible}>
                 <WelcomeImage src="/images/welcomeback2.png"/>
                 <Resource>
-                    <p>{signedinuser.map(renderUser)}</p>
+                    {signedinuser.map(renderUser)}
                 </Resource>
             </MainContent>
 

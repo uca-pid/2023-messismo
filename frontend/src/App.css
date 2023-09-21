@@ -21,7 +21,3 @@ body{
   filter: blur(5px);
   transition: filter 2s;
 }
-
-.during-popup{
-  background: linear-gradient(rgba(175, 86, 86, 0.9), rgba(18, 221, 136, 0.9));
-}

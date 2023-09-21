@@ -30,7 +30,6 @@ export const signUpUser = createAsyncThunk('signupuser', async(body) => {
   return await res.json();
 })
 
-
 const authSlice = createSlice({
   name: 'auth',
   initialState,

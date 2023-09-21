@@ -3,7 +3,7 @@ import '../App.css';
 import { styled } from 'styled-components';
 import 'fontsource-roboto';
 import { Link } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { signInUser, signUpUser } from '../redux/authSlice';
 import SUpPopUp from '../components/SignUpPopUp';
 import SInPopUp from '../components/SignInPopUp';
@@ -89,12 +89,6 @@ const BackgroundBox = styled.div`
         transform: ${props => props.clicked ? "100%": "none"};
         transition: transform 0.5s;
     }
-`;
-
-const Logo = styled.img`
-    max-width: 5%;
-    height: auto;
-    display: flex;
 `;
 
 const Box1 = styled.div`
@@ -219,8 +213,6 @@ const NavLink = styled(Link)`
     }
 `;
 
-
-
 const Title = styled.h1`
     font-size: 3.5rem;
     margin-bottom: 2rem;
@@ -304,7 +296,6 @@ function SignInUpForm(){
 
     //v SignIn v//
     const [SignInPopUp, setSignInPopUp] = useState(false)
-    const duringSignInPopUp = SignInPopUp ? "during-popup" : ""
 
     const handleLogin = (userData) => {
         if (signinvalues.email === 'asd@asd.com' && signinvalues.password === 'asdfghjkl1Q') {
@@ -358,7 +349,6 @@ function SignInUpForm(){
 
     //v SignUp v//
     const [SignUpPopUp, setSignUpPopUp] = useState(false)
-    const duringSignUpPopUp = SignUpPopUp ? "during-popup" : ""
 
     const [isRegistered, setIsRegistered] = useState(false);
     const handleRegister = (userData) => {
@@ -416,19 +406,18 @@ function SignInUpForm(){
                 <Box1 clicked={click}>
                     <Form className='signin' show={!click}>
                         <Title>Sign In</Title>
-                        <Input type='email' name='email' id='emailId'
+                        <Input type='email' name='email' id='emailSiId'
                         placeholder='Email'
                         onChange={handleSignInInput}
                         />
                         {signinerrors.email && <ErrorMessage>{signinerrors.email}</ErrorMessage>}
                         <Input 
-                        type='password' name='password' id='passwordId'
+                        type='password' name='password' id='passwordSiId'
                         placeholder='Password'
                         onChange={handleSignInInput}
                         />
                         {signinerrors.password && <ErrorMessage>{signinerrors.password}</ErrorMessage>}
                         <ForgotLink href='#'>Forgot your Password?</ForgotLink>
-                        {/* <NavLink to={'/homepage'} style={{ textDecoration: 'none' }}>Sign In</NavLink> */}
 
                         <NavLink
                         onClick={() => {
@@ -457,14 +446,14 @@ function SignInUpForm(){
                         />
                         {signuperrors.username && <ErrorMessage>{signuperrors.username}</ErrorMessage>}
                         
-                        <Input type='email' name='email' id='emailId'
+                        <Input type='email' name='email' id='emailSuId'
                         placeholder='Email'
                         onChange={handleSignUpInput}
                         />
                         {signuperrors.email && <ErrorMessage>{signuperrors.email}</ErrorMessage>}
                         
                         <Input 
-                        type='password' name='password' id='passwordId'
+                        type='password' name='password' id='passwordSuId'
                         placeholder='Password'
                         onChange={handleSignUpInput}
                         />
@@ -475,9 +464,6 @@ function SignInUpForm(){
                             <SwitchInput checked={checked} type="checkbox" onChange={handleChange} />
                             <Switch />
                         </Label>
-
-                        {/* <NavLink onClick={ () => { setPopUp(true); handleRegister(); } } style={{ textDecoration: 'none' }}>Sign Up</NavLink> */}
-                        {/* <NavLink onClick={ () => { handleValidation() } }>Sign Up</NavLink> */}
 
                         <NavLink
                         onClick={() => {
