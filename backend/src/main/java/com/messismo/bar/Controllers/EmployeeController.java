@@ -2,7 +2,6 @@ package com.messismo.bar.Controllers;
 
 import com.messismo.bar.Services.ProductService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,7 +20,5 @@ public class EmployeeController {
     public ResponseEntity<?> getAllProducts() {
         return productServiceService.getAllProducts();
     }
-
-
 
 }
