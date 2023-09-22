@@ -12,10 +12,9 @@ services:
         ipv4_address: 192.168.55.10
     ports:
       - "8080:8080"
-#    volumes:
-#      - C:\Users\Usuario\Documents\bar:/app
     environment:
       SPRING_APPLICATION_JSON: '{
+        "spring.profiles.active": "dev",
         "spring.jpa.database": "POSTGRESQL",
         "spring.sql.init.platform":"postgres",
         "spring.jpa.properties.hibernate.dialect":"org.hibernate.dialect.PostgreSQLDialect",
@@ -54,6 +53,12 @@ services:
       - persistedData:/etc/data
     ports:
       - 80:80
+  messismo_frontend:
+    container_name: messismo_frontend
+    image: messismo_frontend
+    build: ./frontend
+    ports:
+      - "3000:3000"
 networks:
   hfnet:
     driver: bridge

@@ -22,9 +22,6 @@ public class EmployeeController {
         return productServiceService.getAllProducts();
     }
 
-    @GetMapping("/holi")
-    public ResponseEntity<?> holi() {
-        return ResponseEntity.status(HttpStatus.OK).body("HOLI");
-    }
+
 
 }

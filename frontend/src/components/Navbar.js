@@ -1,5 +1,5 @@
 import React from 'react'
-import 'fontsource-roboto';
+// import 'fontsource-roboto';
 import { FaHome } from 'react-icons/fa'
 import { BsPersonCircle } from 'react-icons/bs'
 import { PiCoffeeFill } from 'react-icons/pi'
@@ -26,7 +26,7 @@ const NavLink = styled(Link)`
     span{
         color: white;
         margin-right: 1rem;
-        font-family: 'Roboto';
+        font-family: 'Roboto',serif;
         font-size: 20px;
     }
 
