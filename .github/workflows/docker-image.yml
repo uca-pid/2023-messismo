@@ -34,12 +34,10 @@ jobs:
       id: docker-compose
       continue-on-error: true
       
-    - name: Conditional Failure Step
-      if: ${{ steps.docker-compose.outputs.EXIT_CODE != '0' }}
-      run: echo "Docker-compose up failed."
-      
     - name: Conditional Step
       if: ${{ steps.docker-compose.outputs.EXIT_CODE == '0' }}
       run: |
-        echo "Docker-ompose up was successful."
-        docker-compose down
+        echo "Docker Compose up was successful."
+        if [ "$DOCKER_COMPOSE_EXISTS" = true ]; then
+          docker-compose down
+        fi
