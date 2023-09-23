@@ -42,7 +42,7 @@ jobs:
           docker-compose down
         fi
 
-    - name: Cambiar al directorio /backend
+    - name: Change directory to /backend if it exists
       id: change-directory
       run: |
         if [ -d "backend" ]; then
@@ -76,7 +76,7 @@ jobs:
       with:
         node-version: 18.x
 
-    - name: npm install, make test-coverage
+    - name: npm install and test
       run: |
         if [ -d "frontend" ]; then
           cd frontend
