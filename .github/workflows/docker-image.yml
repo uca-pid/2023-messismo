@@ -85,4 +85,5 @@ jobs:
         fi
 
     - name: Coveralls
+      if: steps.change-directory.outputs.directory_changed == 'true'
       uses: coverallsapp/github-action@v2
