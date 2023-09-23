@@ -41,6 +41,11 @@ jobs:
         if [ "$DOCKER_COMPOSE_EXISTS" = true ]; then
           docker-compose down
         fi
+
+    - name: Change directory to /backend  
+      run: |
+        if [ -d "backend" ]; then
+          cd backend
     - name: Set up JDK 17
       uses: actions/setup-java@v3
       with:
