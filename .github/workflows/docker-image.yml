@@ -42,17 +42,25 @@ jobs:
           docker-compose down
         fi
 
-    - name: Change directory to /backend  
+    - name: Cambiar al directorio /backend
+      id: change-directory
       run: |
         if [ -d "backend" ]; then
-          cd backend
+          cd backend && echo "Changed directory to backend"
+          echo "::set-output name=directory_changed::true"
+        else
+          echo "::set-output name=directory_changed::false"
         fi
+      shell: bash
+
     - name: Set up JDK 17
+      if: steps.change-directory.outputs.directory_changed == 'true'
       uses: actions/setup-java@v3
       with:
         java-version: '17'
         distribution: 'temurin'
         cache: maven
+
         
     - name: Build with Maven
       run: |
