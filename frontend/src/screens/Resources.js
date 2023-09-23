@@ -1,8 +1,10 @@
 import React from "react";
 import styled from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
-import { acceptUser, rejectUser, deleteUser } from '../redux/userSlice';
+// import { acceptUser, rejectUser, deleteUser } from '../redux/userSlice';
+import { validateUser, upgradeUser } from '../redux/userSlice';
 import Navbar from "../components/Navbar";
+import userService from "../services/user.service";
 
 const Container = styled.div`
     display: flex;
@@ -102,6 +104,28 @@ const Button = styled.button`
         }
     }
 
+    &.button-validate{
+
+        background-color: #a4d4cc;
+        margin-right: 1rem;
+
+        &:hover{
+            background-color: green;
+        }
+
+    }
+
+    &.button-upgrade{
+
+        background-color: #a4d4cc;
+        margin-right: 1rem;
+
+        &:hover{
+            background-color: green;
+        }
+
+    }
+
     &:active{
         background-color: #a4d4cc;
         box-shadow: 0 3px #666;
@@ -123,44 +147,50 @@ const Subheader = styled.h2`
 
 function Resources(){
 
+    const { user: currentUser } = useSelector((state) => state.auth);
     const users = useSelector(state => state.users)
     const dispatch = useDispatch()
 
-    const pending = users.filter(user => user.pending === 'yes');
-    const admins = users.filter(user => user.type === 'admin' && user.pending === 'no');
-    const employees = users.filter(user => user.type === 'employee' && user.pending === 'no');
+    const employees = users.filter(user => user.role === 'EMPLOYEE');
+    const validated = users.filter(user => user.role === 'VALIDATEDEMPLOYEE');
+    const managers = users.filter(user => user.role === 'MANAGER');
+    const admins = users.filter(user => user.role === 'ADMIN');
 
     const clicked = useSelector((state) => state.navigation.clicked);
     const contentVisible = !clicked;
     
-    const handleAccept = (id) => {
-        dispatch(acceptUser(id))
-    };
-    
-    const handleReject = (id) => {
-        dispatch(rejectUser(id))
+    const handleValidate = (id) => {
+        dispatch(validateUser(id))
     };
 
-    const handleDelete = (id) => {
-        dispatch(deleteUser(id))
+    const handleUpgrade = (id) => {
+        dispatch(upgradeUser(id))
     };
+    
+    // const handleReject = (id) => {
+    //     dispatch(rejectUser(id))
+    // };
+
+    // const handleDelete = (id) => {
+    //     dispatch(deleteUser(id))
+    // };
 
     const renderUser = (user) => (
         
         <div key={user.id} className="user-data">
             <h3 className="user-username">{user.username}</h3>
             <p className="user-email">{user.email}</p>
-            <p className="user-hiredate">Hire Date {user.joined}</p>
-            <p className="user-type">{user.type}</p>
-            {user.pending === 'yes' && (
+            <p className="user-role">{user.role}</p>
+            {user.role === 'EMPLOYEE' && (
                 <div>
-                    <Button className="button-accept" onClick={() => handleAccept(user.id)}>Accept</Button>
-                    <Button className="button-reject" onClick={() => handleReject(user.id)}>Reject</Button>
+                    <Button className="button-validate" onClick={() => handleValidate(user.id)}>Validate</Button>
+                    {/* <Button className="button-reject" onClick={() => handleReject(user.id)}>Reject</Button> */}
                 </div>
             )}
-            {user.pending === 'no' && (
+            {user.role === 'VALIDATEDEMPLOYEE' && (
                 <div>
-                    <Button className="button-delete" onClick={() => handleDelete(user.id)}>Delete</Button>
+                    <Button className="button-upgrade" onClick={() => handleUpgrade(user.id)}>Upgrade</Button>
+                    {/* <Button className="button-delete" onClick={() => handleDelete(user.id)}>Delete</Button> */}
                 </div>
             )}
         </div>
@@ -180,9 +210,23 @@ function Resources(){
                 <UserContainer>
 
                     <UserItem>
-                        <Subheader>Pending</Subheader>
+                        <Subheader>Employees</Subheader>
                         <Resource>
-                            {pending.map(renderUser)}
+                            {employees.map(renderUser)}
+                        </Resource>
+                    </UserItem>
+
+                    <UserItem>
+                        <Subheader>Validated Employees</Subheader>
+                        <Resource>
+                            {validated.map(renderUser)}
+                        </Resource>
+                    </UserItem>
+
+                    <UserItem>
+                        <Subheader>Managers</Subheader>
+                        <Resource>
+                            {managers.map(renderUser)}
                         </Resource>
                     </UserItem>
 
@@ -190,13 +234,6 @@ function Resources(){
                         <Subheader>Admins</Subheader>
                         <Resource>
                             {admins.map(renderUser)}
-                        </Resource>
-                    </UserItem>
-
-                    <UserItem>
-                        <Subheader>Employees</Subheader>
-                        <Resource>
-                            {employees.map(renderUser)}
                         </Resource>
                     </UserItem>
 
