@@ -5,6 +5,7 @@ import SignInUpForm from './screens/SignInUpForm';
 import Home from './screens/Home';
 import Products from './screens/Products';
 import Resources from './screens/Resources';
+import ProductsList from "./components/ProductsList";
 
 function App(){
     return(

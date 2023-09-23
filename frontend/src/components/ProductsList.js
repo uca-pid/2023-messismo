@@ -16,6 +16,7 @@ import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
 import Form from "./Form";
 import EditForm from "./EditForm";
+import { makeStyles } from '@mui/styles';
 
 
 const ProductsList = () => {
@@ -123,6 +124,13 @@ const ProductsList = () => {
 
   const [selectedProduct, setSelectedProduct] = useState(null);
 
+const useStyles = makeStyles((theme) => ({
+  // Define una clase personalizada para aumentar el tamaño del botón
+  largeButton: {
+    fontSize: '1.5rem', // Ajusta el tamaño de la fuente según tus necesidades
+  },
+}));
+
   const handleDeleteClick = (producto) => {
     setSelectedProduct(producto);
     console.log(producto);
@@ -183,7 +191,7 @@ const ProductsList = () => {
         <Button
           variant="contained"
           endIcon={<AddIcon />}
-          style={{ color: "white", borderColor: "#007bff", marginTop: '4%' }}
+          style={{ color: "white", borderColor: "#007bff", marginTop: '4%'}}
           onClick={handleOpenProductsModal}
         >
           Añadir Producto
@@ -191,6 +199,7 @@ const ProductsList = () => {
       </div>
       <Dialog
         open={openFormModal}
+        dividers={true}
         onClose={handleCloseProductsModal}
         aria-labelledby="form-dialog-title"
         className="custom-dialog"

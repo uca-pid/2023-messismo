@@ -64,7 +64,7 @@ const EditForm = (props) => {
         id="nombre"
         onChange={handleNombreChange}
         variant="outlined"
-        style={{ width: "80%" }}
+        style={{ width: "80%", marginTop: '3%', marginBottom: '3%'}}
         defaultValue={props.product.nombre}
       />
       <p>Categoria</p>
@@ -72,7 +72,7 @@ const EditForm = (props) => {
         labelId="demo-simple-select-label"
         id="demo-simple-select"
         onChange={handleCategoriaChange}
-        style={{ width: "80%" }}
+        style={{ width: "80%", marginTop: '3%', marginBottom: '3%' }}
         defaultValue={props.product.categoria}
       >
         <MenuItem value={"Entradas"}>Entradas</MenuItem>
@@ -87,7 +87,7 @@ const EditForm = (props) => {
         id="descripcion"
         onChange={handleDescripcionChange}
         variant="outlined"
-        style={{ width: "80%" }}
+        style={{ width: "80%", marginTop: '3%', marginBottom: '3%' }}
         defaultValue={props.product.descripcion}
       />
       <p>Precio</p>
@@ -98,7 +98,7 @@ const EditForm = (props) => {
             id="precio"
             onChange={handlePrecioChange}
             variant="outlined"
-            style={{ width: "80%" }}
+            style={{ width: "80%", marginTop: '3%', marginBottom: '3%' }}
             defaultValue={props.product.precio}
           />
         </div>

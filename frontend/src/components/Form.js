@@ -35,7 +35,7 @@ const Form = (props) => {
   };
 
   const handleAddProduct = () => {
-    // Gather the data entered in the form
+
     const newProductData = {
       nombre,
       categoria,
@@ -46,7 +46,7 @@ const Form = (props) => {
     props.onSave(newProductData);
     props.onClose();
 
-    // Reset the form fields
+  
     setNombre("");
     setCategoria("");
     setDescripcion("");
@@ -65,7 +65,7 @@ const Form = (props) => {
         value={nombre}
         onChange={handleNombreChange}
         variant="outlined"
-        style={{ width: '80%' }}
+        style={{ width: '80%', marginTop: '3%', marginBottom: '3%' }}
       />
       <p>Categoria</p>
       <Select
@@ -73,7 +73,7 @@ const Form = (props) => {
           id="demo-simple-select"
           value={categoria}
           onChange={handleCategoriaChange}
-          style={{ width: '80%' }}
+          style={{ width: '80%', marginTop: '3%', marginBottom: '3%'}}
         >
           <MenuItem value={"Entradas"}>Entradas</MenuItem>
           <MenuItem value={"Platos"}>Platos</MenuItem>
@@ -88,7 +88,7 @@ const Form = (props) => {
         value={descripcion}
         onChange={handleDescripcionChange}
         variant="outlined"
-        style={{ width: '80%' }}
+        style={{ width: '80%', marginTop: '3%', marginBottom: '3%' }}
       />
       <p>Precio</p>
       <TextField
@@ -97,7 +97,7 @@ const Form = (props) => {
         value={precio}
         onChange={handlePrecioChange}
         variant="outlined"
-        style={{ width: '80%' }}
+        style={{ width: '80%', marginTop: '3%', marginBottom: '3%' }}
       />
       <div className="buttons-add">
         <Button
@@ -113,7 +113,7 @@ const Form = (props) => {
             backgroundColor: "green",
             color: "white",
             borderColor: "green",
-            width: "40%"
+            width: "40%",
           }}
           onClick={handleAddProduct}
 
