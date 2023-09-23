@@ -182,7 +182,7 @@ function Navbar() {
             <BgDiv className={ `initial ${clicked ? ' active' : ''}` }/>
 
         </NavContainer>
->>>>>>> 186b3fef579080a3e0729f4c7395798a0e340439
+
 
     )
 }

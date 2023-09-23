@@ -2,6 +2,8 @@ import React from "react";
 import styled from 'styled-components';
 import Navbar from "../components/Navbar";
 import { useSelector } from 'react-redux';
+import ProductsList from "../components/ProductsList";
+import ProductList from "../components/ProductList";
 
 const Container = styled.div`
     display: flex;
@@ -24,14 +26,10 @@ function Products(){
 
     return(
         <Container className='products'>
-            
             <Navbar />
             <MainContent visible={contentVisible}>
-                <div style={{color: 'white'}}>
-                    PRODUCTS
-                </div>
+                <ProductsList/>
             </MainContent>
-
         </Container>
     )
 }

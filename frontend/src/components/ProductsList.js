@@ -18,7 +18,7 @@ import Form from "./Form";
 import EditForm from "./EditForm";
 
 
-const Products = () => {
+const ProductsList = () => {
   const [userType, setUserType] = useState("admin");
   const [openFormModal, setOpenFormModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
@@ -159,17 +159,17 @@ const Products = () => {
     
     const productToUpdate = products.find((product) => product.id === editingProduct.id);
       
-        // Si el producto se encontró
+    
         if (productToUpdate) {
-          // Actualiza los valores del producto utilizando el spread operator
+      
           const updatedProduct = { ...productToUpdate, ...newProductData };
       
-          // Crea una nueva lista de productos con el producto actualizado
+      
           const updatedProducts = products.map((product) =>
             product.id === editingProduct.id ? updatedProduct : product
           );
       
-          // Actualiza el estado con la nueva lista de productos
+  
           setProducts(updatedProducts);
         }
 
@@ -179,12 +179,11 @@ const Products = () => {
 
   return (
     <div className="container">
-      <h1>Productos</h1>
       <div className="add-product">
         <Button
           variant="contained"
           endIcon={<AddIcon />}
-          style={{ color: "white", borderColor: "#007bff" }}
+          style={{ color: "white", borderColor: "#007bff", marginTop: '4%' }}
           onClick={handleOpenProductsModal}
         >
           Añadir Producto
@@ -296,4 +295,4 @@ const Products = () => {
   );
 };
 
-export default Products;
+export default ProductsList;
