@@ -331,8 +331,8 @@ function SignInUpForm(){
         dispatch(register({ username, email, password }))
         .unwrap()
         .then(() => {
-          navigate("/homepage");
-          window.location.reload();
+            navigate("/homepage");
+            window.location.reload();
         })
         .catch(() => {
           setSignUpPopUp(true);

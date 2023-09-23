@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { validateUser, upgradeUser } from '../redux/userSlice';
 import Navbar from "../components/Navbar";
 import userService from "../services/user.service";
+import { Navigate } from 'react-router-dom';
 
 const Container = styled.div`
     display: flex;
@@ -149,6 +150,10 @@ function Resources(){
 
     const { user: currentUser } = useSelector((state) => state.auth);
     const users = useSelector(state => state.users)
+    const clicked = useSelector((state) => state.navigation.clicked);
+
+    const isAdminOrManager = currentUser && (currentUser.role === 'MANAGER' || currentUser.role === 'ADMIN');
+    
     const dispatch = useDispatch()
 
     const employees = users.filter(user => user.role === 'EMPLOYEE');
@@ -156,7 +161,6 @@ function Resources(){
     const managers = users.filter(user => user.role === 'MANAGER');
     const admins = users.filter(user => user.role === 'ADMIN');
 
-    const clicked = useSelector((state) => state.navigation.clicked);
     const contentVisible = !clicked;
     
     const handleValidate = (id) => {
@@ -174,6 +178,14 @@ function Resources(){
     // const handleDelete = (id) => {
     //     dispatch(deleteUser(id))
     // };
+
+    if (!currentUser) {
+        return <Navigate to="/" />;
+    }
+    if (!isAdminOrManager) {
+        return <Navigate to="/homepage" />;
+    }
+
 
     const renderUser = (user) => (
         

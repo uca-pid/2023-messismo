@@ -1,12 +1,16 @@
+import React, { useEffect } from 'react'
 import "./App.css"
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useDispatch } from 'react-redux';
+import { logout } from "./redux/auth";
 import Welcome from './screens/Welcome';
 import SignInUpForm from './screens/SignInUpForm';
 import Home from './screens/Home';
 import Products from './screens/Products';
 import Resources from './screens/Resources';
 
-function App(){
+function App(){    
+
     return(
         <div className="App">
 
