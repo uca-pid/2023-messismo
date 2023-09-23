@@ -1,6 +1,6 @@
 import React from 'react'
 import { styled } from 'styled-components';
-import 'fontsource-roboto';
+// import 'fontsource-roboto';
 import { useSelector } from 'react-redux';
 import Navbar from "../components/Navbar";
 
@@ -24,7 +24,7 @@ const WelcomeImage = styled.img`
 
 const Resource = styled.div`
 
-    font-family: 'Roboto';
+    font-family: 'Roboto',serif;
     color: #a4d4cc;
     text-transform: uppercase;
     letter-spacing: 1px;

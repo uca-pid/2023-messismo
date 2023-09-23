@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import 'fontsource-roboto';
+// import 'fontsource-roboto';
 import { Link } from 'react-router-dom';
 
 const PopUp = styled.div`
@@ -38,7 +38,7 @@ const Content = styled.div`
     font-size: 1.5rem;
     letter-spacing: 0.1rem;
     color: white;
-    font-family: 'Roboto';
+    font-family: 'Roboto',serif;
 `;
 
 const AcceptLink = styled(Link)`

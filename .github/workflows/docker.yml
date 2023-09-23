@@ -1,0 +1,48 @@
+name: Docker Compose Build and Test
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:latest
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_DB: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Build and Start Docker Compose
+        run: |
+          docker-compose up -d
+          docker-compose ps
+
+      - name: Wait for Services to Start
+        run: |
+          while ! nc -z localhost 5432; do sleep 1; done
+          while ! nc -z localhost 8080; do sleep 1; done
+          while ! nc -z localhost 3000; do sleep 1; done
+          while ! nc -z localhost 8081; do sleep 1; done
+
+      - name: Run Backend Tests
+        run: |
+          mvn test
+
+      - name: Run Frontend Tests
+        run: |
+          npm test
+
+      - name: Stop and Remove Docker Compose Containers
+        run: docker-compose down

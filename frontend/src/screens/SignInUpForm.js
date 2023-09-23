@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import '../App.css';
 import { styled } from 'styled-components';
-import 'fontsource-roboto';
+// import 'fontsource-roboto';
 import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { signInUser, signUpUser } from '../redux/authSlice';
@@ -17,7 +17,7 @@ const Label = styled.label`
   cursor: pointer;
   color: #a7d0cd;
   font-size: 1.2rem;
-  font-family: 'Roboto';
+  font-family: 'Roboto',serif;
   margin-top: 1rem;
 `;
 
@@ -69,25 +69,25 @@ const BackgroundBox = styled.div`
     .signin{
         z-index: ${props => props.clicked ? "-600": "500"};
         transform: ${props => props.clicked ? "none": "0%"};
-        transition: transform 0.5s;
+        transition: transform 0.5s ease-in-out;
     }
 
     .signup{
         z-index: ${props => props.clicked ? "500": "-600"};
         transform: ${props => props.clicked ? "100%": "none"};
-        transition: transform 0.5s;
+        transition: transform 0.5s ease-in-out;
     }
 
     .signintext{
         z-index: ${props => props.clicked ? "-600": "500"};
         transform: ${props => props.clicked ? "none": "0%"};
-        transition: transform 0.5s;
+        transition: transform 0.5s ease-in-out;
     }
 
     .signuptext{
         z-index: ${props => props.clicked ? "500": "-600"};
         transform: ${props => props.clicked ? "100%": "none"};
-        transition: transform 0.5s;
+        transition: transform 0.5s ease-in-out;
     }
 `;
 
@@ -105,7 +105,7 @@ const Box1 = styled.div`
     transform: ${(props) => 
         props.clicked ? "translateX(89.3%)": "translateX(10%)"
     };
-    transition: transform 0.5s;
+    transition: transform 0.5s ease-in-out;
 
     &::after,&::before{
         content:"";
@@ -144,7 +144,7 @@ const Box2 = styled.div`
     transform: ${(props) => 
         props.clicked ? "translateX(-123%)": "translateX(0%)"
     };
-    transition: transform 0.5s;
+    transition: transform 0.5s ease-in-out;
 
     border-radius: ${(props) => 
         props.clicked ? "23px 0 0 23px": "0 23px 23px 0"
@@ -177,7 +177,7 @@ const Input = styled.input`
     padding: 1rem 2rem;
     margin: 0.5rem 0;
     width: 100%;
-    font-family: 'Roboto';
+    font-family: 'Roboto',serif;
 
     &:focus{
         outline: none;
@@ -197,7 +197,7 @@ const NavLink = styled(Link)`
     cursor: pointer;
     letter-spacing: 1px;
     box-shadow: 0 3px #999;
-    font-family: 'Roboto';
+    font-family: 'Roboto',serif;
     text-align: center;
 
     &:hover{
@@ -216,7 +216,7 @@ const NavLink = styled(Link)`
 const Title = styled.h1`
     font-size: 3.5rem;
     margin-bottom: 2rem;
-    font-family: 'Roboto';
+    font-family: 'Roboto',serif;
     color: #a7d0cd;
     text-align: center;
 `;
@@ -226,7 +226,7 @@ const ForgotLink = styled.a`
     color: #a7d0cd;
     margin-top: 1.5rem;
     font-size: 1.1rem;
-    font-family: 'Roboto';
+    font-family: 'Roboto',serif;
 `;
 
 const ButtonAnimate = styled.button`
@@ -236,7 +236,7 @@ const ButtonAnimate = styled.button`
     cursor: pointer;
     background-color: transparent;
     color: white;
-    font-family: 'Roboto';
+    font-family: 'Roboto',serif;
     background-color: rgba(167, 208, 205, 0.2);
     padding: 10px;
     text-align: center;
@@ -268,7 +268,7 @@ const Text = styled.div`
     font-size: 1.5rem;
     letter-spacing: 0.1rem;
     color: white;
-    font-family: 'Roboto';
+    font-family: 'Roboto',serif;
     background-color: rgba(167, 208, 205, 0.2);
     padding: 10px;
     display: ${props => (props.show ? 'block' : 'none')};
@@ -276,7 +276,7 @@ const Text = styled.div`
 
 const ErrorMessage = styled.h4`
     color: red;
-    font-family: 'Roboto';
+    font-family: 'Roboto',serif;
 `;
 
 
