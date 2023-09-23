@@ -20,5 +20,4 @@ body{
 .blur {
   filter: blur(5px);
   transition: filter 2s;
-
 }

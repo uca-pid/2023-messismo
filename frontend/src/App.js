@@ -1,42 +1,27 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import Form from './components/Form';
-import Home from './components/Home'
-import Navbar from './components/Navbar';
-import Menu from './components/Menu';
-import Products from './components/Products';
+import "./App.css"
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Welcome from './screens/Welcome';
+import SignInUpForm from './screens/SignInUpForm';
+import Home from './screens/Home';
+import Products from './screens/Products';
+import Resources from './screens/Resources';
 
+function App(){
+    return(
+        <div className="App">
 
-function App() {
-  
-  return (
-    <BrowserRouter>
-      <div style={styles.container}>
-      <div style={styles.content}>
-      <Routes>
-        <Route path="/menu" Component={Menu}></Route>
-        <Route path="/products" Component={Form}></Route>
-        <Route path="/" Component={Products}></Route>
-      </Routes>
-      </div>
-      </div>
-    </BrowserRouter>
-  );
+            <BrowserRouter>
+                <Routes>
+                    <Route path='/' element={ <Welcome /> } />
+                    <Route path='/signinupform' element={ <SignInUpForm/> } />
+                    <Route path='/homepage' element={ <Home/> } />
+                    <Route path='/products' element={ <Products/> } />
+                    <Route path='/resources' element={ <Resources/> } />
+                </Routes>
+            </BrowserRouter>
+
+        </div>
+    )
 }
 
-
-const styles = {
-  container: {
-    display: 'flex',
-    flexDirection: 'column',
-    minHeight: '100vh',
-  },
-  content: {
-    flex: 1, 
-    display: 'flex',
-    
-  },
-};
 export default App;
