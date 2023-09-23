@@ -65,7 +65,7 @@ const Form = (props) => {
         value={nombre}
         onChange={handleNombreChange}
         variant="outlined"
-        style={{ width: '80%', marginTop: '3%', marginBottom: '3%' }}
+        style={{ width: '80%', marginTop: '3%', marginBottom: '3%', fontSize: '1.5rem'}}
       />
       <p>Categoria</p>
       <Select
@@ -73,7 +73,7 @@ const Form = (props) => {
           id="demo-simple-select"
           value={categoria}
           onChange={handleCategoriaChange}
-          style={{ width: '80%', marginTop: '3%', marginBottom: '3%'}}
+          style={{ width: '80%', marginTop: '3%', marginBottom: '3%', fontSize: '1.5rem'}}
         >
           <MenuItem value={"Entradas"}>Entradas</MenuItem>
           <MenuItem value={"Platos"}>Platos</MenuItem>
@@ -88,7 +88,7 @@ const Form = (props) => {
         value={descripcion}
         onChange={handleDescripcionChange}
         variant="outlined"
-        style={{ width: '80%', marginTop: '3%', marginBottom: '3%' }}
+        style={{ width: '80%', marginTop: '3%', marginBottom: '3%', fontSize: '1.5rem'}}
       />
       <p>Precio</p>
       <TextField
@@ -97,12 +97,12 @@ const Form = (props) => {
         value={precio}
         onChange={handlePrecioChange}
         variant="outlined"
-        style={{ width: '80%', marginTop: '3%', marginBottom: '3%' }}
+        style={{ width: '80%', marginTop: '3%', marginBottom: '3%', fontSize: '1.3rem'}}
       />
       <div className="buttons-add">
         <Button
           variant="outlined"
-          style={{ color: "grey", borderColor: "grey" , width: "40%"}}
+          style={{ color: "grey", borderColor: "grey" , width: "40%", fontSize: '1.3rem'}}
           onClick={cancelarButton}
         >
           Cancelar
@@ -114,6 +114,7 @@ const Form = (props) => {
             color: "white",
             borderColor: "green",
             width: "40%",
+            fontSize: '1.5rem'
           }}
           onClick={handleAddProduct}
 

@@ -57,14 +57,14 @@ const EditForm = (props) => {
 
   return (
     <div>
-      <h2 style={{ marginBottom: "7%" }}>Editar Producto</h2>
+      <h2 style={{ marginBottom: "7%", fontSize: '1.3rem'}}>Editar Producto</h2>
       <p>Nombre</p>
       <TextField
         required
         id="nombre"
         onChange={handleNombreChange}
         variant="outlined"
-        style={{ width: "80%", marginTop: '3%', marginBottom: '3%'}}
+        style={{ width: "80%", marginTop: '3%', marginBottom: '3%', fontSize: '1.3rem'}}
         defaultValue={props.product.nombre}
       />
       <p>Categoria</p>
@@ -72,7 +72,7 @@ const EditForm = (props) => {
         labelId="demo-simple-select-label"
         id="demo-simple-select"
         onChange={handleCategoriaChange}
-        style={{ width: "80%", marginTop: '3%', marginBottom: '3%' }}
+        style={{ width: "80%", marginTop: '3%', marginBottom: '3%', fontSize: '1.3rem'}}
         defaultValue={props.product.categoria}
       >
         <MenuItem value={"Entradas"}>Entradas</MenuItem>
@@ -113,7 +113,7 @@ const EditForm = (props) => {
       <div className="buttons-add">
         <Button
           variant="outlined"
-          style={{ color: "grey", borderColor: "grey", width: "40%" }}
+          style={{ color: "grey", borderColor: "grey", width: "40%", fontSize: '1.3rem' }}
           onClick={cancelarButton}
         >
           Cancelar
@@ -125,6 +125,7 @@ const EditForm = (props) => {
             color: "white",
             borderColor: "green",
             width: "40%",
+            fontSize: '1.3rem'
           }}
           onClick={handleEditProduct}
         >

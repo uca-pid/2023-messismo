@@ -124,12 +124,6 @@ const ProductsList = () => {
 
   const [selectedProduct, setSelectedProduct] = useState(null);
 
-const useStyles = makeStyles((theme) => ({
-  // Define una clase personalizada para aumentar el tamaño del botón
-  largeButton: {
-    fontSize: '1.5rem', // Ajusta el tamaño de la fuente según tus necesidades
-  },
-}));
 
   const handleDeleteClick = (producto) => {
     setSelectedProduct(producto);
@@ -191,7 +185,7 @@ const useStyles = makeStyles((theme) => ({
         <Button
           variant="contained"
           endIcon={<AddIcon />}
-          style={{ color: "white", borderColor: "#007bff", marginTop: '4%'}}
+          style={{ color: "white", borderColor: "#007bff", marginTop: '4%', fontSize: '1.3rem' }}
           onClick={handleOpenProductsModal}
         >
           Añadir Producto
@@ -227,16 +221,16 @@ const useStyles = makeStyles((theme) => ({
                   color="red"
                   onClick={() => handleEditClick(producto)}
                 >
-                  <EditIcon />
+                  <EditIcon style={{ fontSize: '2rem' }}/>
                 </IconButton>
                 {userType === "admin" || userType === "manager" ? (
                   <IconButton
                     aria-label="delete"
                     size="large"
-                    style={{ color: "red" }}
+                    style={{ color: "red", fontSize: '1.5rem' }}
                     onClick={() => handleDeleteClick(producto)}
                   >
-                    <DeleteIcon />
+                    <DeleteIcon style={{ fontSize: '2rem' }}/>
                   </IconButton>
                 ) : (
                   console.log("hola")
