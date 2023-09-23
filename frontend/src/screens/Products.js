@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import Navbar from "../components/Navbar";
 import { useSelector } from 'react-redux';
 import ProductsList from "../components/ProductsList";
-import ProductList from "../components/ProductList";
+
 
 const Container = styled.div`
     display: flex;
