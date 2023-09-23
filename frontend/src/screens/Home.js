@@ -43,21 +43,23 @@ const Resource = styled.div`
 `;
 
 
-const signedinuser = [
-    { id: 104, username: 'SindeeBlake', email: 'SindeeBlake@moes.com', password: 'password', joined: '11/04/2021', type: 'user', pending: 'no' }
-  ];
+// const signedinuser = [
+//     { id: 104, username: 'SindeeBlake', email: 'SindeeBlake@moes.com', password: 'password', joined: '11/04/2021', type: 'user', pending: 'no' }
+//   ];
 
 function HomePage(){
 
     const clicked = useSelector((state) => state.navigation.clicked);
     const contentVisible = !clicked;
 
-    const renderUser = (user) => (
-        <div key={user.id}>
-          <h3>{user.username}</h3>
-          <p>{user.email}</p>
-        </div>
-    );
+    const signedInUser = useSelector(state => state.login)
+
+    // const renderUser = (user) => (
+    //     <div key={user.id}>
+    //       <h3>{user.username}</h3>
+    //       <p>{user.email}</p>
+    //     </div>
+    // );
 
     return(
         <Container>
@@ -67,7 +69,7 @@ function HomePage(){
             <MainContent visible={contentVisible}>
                 <WelcomeImage src="/images/welcomeback2.png"/>
                 <Resource>
-                    {signedinuser.map(renderUser)}
+                    {signedInUser.email}
                 </Resource>
             </MainContent>
 

@@ -6,7 +6,7 @@ import navigationReducer from './navSlice';
 
 const store = configureStore({
   reducer: {
-    auth: authReducer,
+    login: loginReducer,
     users: userReducer,
     navigation: navigationReducer,
   },

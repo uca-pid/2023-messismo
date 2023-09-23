@@ -5,6 +5,7 @@ import { styled } from 'styled-components';
 import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { signInUser, signUpUser } from '../redux/authSlice';
+import { loginUser, selectLogin } from '../redux/loginSlice';
 import SUpPopUp from '../components/SignUpPopUp';
 import SInPopUp from '../components/SignInPopUp';
 import signupvalidation from '../SignUpValidation'
@@ -282,7 +283,7 @@ const ErrorMessage = styled.h4`
 
 function SignInUpForm(){
 
-    const dispatch = useDispatch()
+    const dispatch = useDispatch();
 
     const [click, setClick] = useState(false);
     const handleClick = () => setClick(!click);
@@ -298,17 +299,11 @@ function SignInUpForm(){
     const [SignInPopUp, setSignInPopUp] = useState(false)
 
     const handleLogin = (userData) => {
-        if (signinvalues.email === 'asd@asd.com' && signinvalues.password === 'asdfghjkl1Q') {
-            window.location.href = '/homepage';
-        } 
-        else {
-            setSignInPopUp(true);
-        }
 
         const email = userData.email;
         const password = userData.password;
 
-        dispatch(signInUser({email, password}))
+        dispatch(loginUser(email, password));
     };
 
     const [isSignInValid, setIsSignInValid] = useState(false);
