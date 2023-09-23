@@ -3,6 +3,7 @@ import { styled } from 'styled-components';
 // import 'fontsource-roboto';
 import { useSelector } from 'react-redux';
 import Navbar from "../components/Navbar";
+import { Navigate } from 'react-router-dom';
 
 const Container = styled.div`
     display: flex;
@@ -43,23 +44,16 @@ const Resource = styled.div`
 `;
 
 
-// const signedinuser = [
-//     { id: 104, username: 'SindeeBlake', email: 'SindeeBlake@moes.com', password: 'password', joined: '11/04/2021', type: 'user', pending: 'no' }
-//   ];
-
 function HomePage(){
 
+    const { user: currentUser } = useSelector((state) => state.auth);
     const clicked = useSelector((state) => state.navigation.clicked);
+
+    if (!currentUser) {
+        return <Navigate to="/" />;
+    }
+
     const contentVisible = !clicked;
-
-    const signedInUser = useSelector(state => state.login)
-
-    // const renderUser = (user) => (
-    //     <div key={user.id}>
-    //       <h3>{user.username}</h3>
-    //       <p>{user.email}</p>
-    //     </div>
-    // );
 
     return(
         <Container>
@@ -69,7 +63,10 @@ function HomePage(){
             <MainContent visible={contentVisible}>
                 <WelcomeImage src="/images/welcomeback2.png"/>
                 <Resource>
-                    {signedInUser.email}
+                    <h3>{currentUser.access_token.substring(0, 20)}</h3>
+                    <h3>{currentUser.access_token.substr(currentUser.access_token.length - 20)}</h3>
+                    <h3>{currentUser.email}</h3>
+                    <h3>{currentUser.role}</h3>
                 </Resource>
             </MainContent>
 

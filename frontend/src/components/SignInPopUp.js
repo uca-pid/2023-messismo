@@ -69,15 +69,15 @@ const AcceptLink = styled(Link)`
     }
 `;
 
-const SignInPopUp = ({isRegistered, setSignInPopUp}) => {
+const SignInPopUp = ({setSignInPopUp}) => {
 
     return (
         <PopUp>
 
             <Content>
-                <h1>{isRegistered ? '' : "This account doesn't exist"}</h1>
-                <h4>{isRegistered ? '' : 'Enter a different account or get a new one'}</h4>
-                <AcceptLink to={'/'} onClick={ () => setSignInPopUp(false) }> Accept </AcceptLink>
+                <h1>{"This account doesn't exist"}</h1>
+                <h4>{'Enter a different account or get a new one'}</h4>
+                <AcceptLink onClick={ () => setSignInPopUp(false) }> Accept </AcceptLink>
             </Content>
 
         </PopUp>

@@ -5,11 +5,13 @@ import { BsPersonCircle } from 'react-icons/bs'
 import { PiCoffeeFill } from 'react-icons/pi'
 import { ImExit } from 'react-icons/im'
 import { styled } from 'styled-components'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import BurgerIcon from './BurgerIcon'
 import { useSelector, useDispatch } from 'react-redux';
 import { toggleClicked } from '../redux/navSlice';
-import { signout } from '../redux/authSlice';
+import { Navigate } from 'react-router-dom';
+import { logout } from "../redux/auth";
+
 
 const NavLink = styled(Link)`
 
@@ -130,6 +132,8 @@ const BgDiv = styled.div`
 
 function Navbar() {
 
+    let navigate = useNavigate();
+
     const userType = 'admin'
     const userPending = 'no'
 
@@ -141,7 +145,8 @@ function Navbar() {
     };
 
     const handleSignOut = () => {
-        dispatch(signout())
+        dispatch(logout())
+        navigate("/");
     }
 
     return(
