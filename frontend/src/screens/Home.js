@@ -63,8 +63,6 @@ function HomePage(){
             <MainContent visible={contentVisible}>
                 <WelcomeImage src="/images/welcomeback2.png"/>
                 <Resource>
-                    <h3>{currentUser.access_token.substring(0, 20)}</h3>
-                    <h3>{currentUser.access_token.substr(currentUser.access_token.length - 20)}</h3>
                     <h3>{currentUser.email}</h3>
                     <h3>{currentUser.role}</h3>
                 </Resource>

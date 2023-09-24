@@ -1,7 +1,8 @@
 import '../App.css';
 import React, { useEffect, useState } from "react";
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { useNavigate, Navigate } from 'react-router-dom';
 
 const Container = styled.div`
   display: flex;
@@ -22,8 +23,9 @@ const WelcomeImage = styled.img`
 function WelcomePage() {
 
   const [isBlurred, setIsBlurred] = useState(false);
+  const { isLoggedIn } = useSelector((state) => state.auth);
   const navigate = useNavigate();
-
+  
   useEffect(() => {
     const blurTimer = setTimeout(() => {
       setIsBlurred(true);
@@ -38,6 +40,10 @@ function WelcomePage() {
       clearTimeout(redirectTimer);
     };
   }, [navigate]);
+
+  if (isLoggedIn) {
+    return <Navigate to="/homepage" />;
+  }
 
   return (
     <Container>
