@@ -6,9 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -53,7 +51,7 @@ public class UserTests {
 
         User user1 = new User(1L, "messi", "messi@gmail.com", "password123", Role.EMPLOYEE);
         User user2 = new User(1L, "messi", "messi@gmail.com", "password123", Role.EMPLOYEE);
-        User user3 = new User(2L, "messi","user3@gmail.com", "password456", Role.ADMIN);
+        User user3 = new User(2L, "messi", "user3@gmail.com", "password456", Role.ADMIN);
 
         assertEquals(user1, user2);
         assertNotEquals(user1, user3);
@@ -90,8 +88,8 @@ public class UserTests {
     public void testUserDetailsGetNoFunctionalityUsername() {
         User user1 = new User(1L, "messi", "messi@gmail.com", "password123", Role.EMPLOYEE);
 
-        assertEquals(user1.getUsername(),"messi@gmail.com");
-        assertEquals(user1.getNoFunctionalityUsername(),"messi");
+        assertEquals(user1.getUsername(), "messi@gmail.com");
+        assertEquals(user1.getNoFunctionalityUsername(), "messi");
     }
 
 }

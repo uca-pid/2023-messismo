@@ -1,12 +1,9 @@
 package com.messismo.bar.DTOsTests;
 
 import com.messismo.bar.DTOs.ProductDTO;
-import com.messismo.bar.Entities.Role;
-import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
@@ -45,9 +42,9 @@ public class ProductDTOTests {
     @Test
     public void testProductDTOEquals() {
 
-        ProductDTO productDTO1 = new ProductDTO("Milanesa",14.99, "Entrada", "Milanesa con papas fritas");
-        ProductDTO productDTO2 = new ProductDTO("Milanesa",14.99, "Entrada", "Milanesa con papas fritas");
-        ProductDTO productDTO3 = new ProductDTO("Pollo",15.99, "Entrada", "Milanesa con papas fritas");
+        ProductDTO productDTO1 = new ProductDTO("Milanesa", 14.99, "Entrada", "Milanesa con papas fritas");
+        ProductDTO productDTO2 = new ProductDTO("Milanesa", 14.99, "Entrada", "Milanesa con papas fritas");
+        ProductDTO productDTO3 = new ProductDTO("Pollo", 15.99, "Entrada", "Milanesa con papas fritas");
 
         assertEquals(productDTO1, productDTO2);
         assertNotEquals(productDTO1, productDTO3);
@@ -56,9 +53,9 @@ public class ProductDTOTests {
     @Test
     public void testProductDTOHashCode() {
 
-        ProductDTO productDTO1 = new ProductDTO("Milanesa",14.99, "Entrada", "Milanesa con papas fritas");
-        ProductDTO productDTO2 = new ProductDTO("Milanesa",14.99, "Entrada", "Milanesa con papas fritas");
-        ProductDTO productDTO3 = new ProductDTO("Pollo",15.99, "Entrada", "Milanesa con papas fritas");
+        ProductDTO productDTO1 = new ProductDTO("Milanesa", 14.99, "Entrada", "Milanesa con papas fritas");
+        ProductDTO productDTO2 = new ProductDTO("Milanesa", 14.99, "Entrada", "Milanesa con papas fritas");
+        ProductDTO productDTO3 = new ProductDTO("Pollo", 15.99, "Entrada", "Milanesa con papas fritas");
 
         assertEquals(productDTO1.hashCode(), productDTO2.hashCode());
         assertNotEquals(productDTO1.hashCode(), productDTO3.hashCode());
@@ -66,7 +63,8 @@ public class ProductDTOTests {
 
     @Test
     public void testProductDTOWithBuilder() {
-        ProductDTO productDTO = ProductDTO.builder().name("Milanesa").unitPrice(14.99).category("Plato Principal").description("Con papas fritas").build();
+        ProductDTO productDTO = ProductDTO.builder().name("Milanesa").unitPrice(14.99).category("Plato Principal")
+                .description("Con papas fritas").build();
 
         assertEquals("Milanesa", productDTO.getName());
         assertEquals(14.99, productDTO.getUnitPrice());
@@ -76,7 +74,8 @@ public class ProductDTOTests {
 
     @Test
     public void testProductDTOWithBuilder_WithNoName() {
-        ProductDTO productDTO = ProductDTO.builder().unitPrice(14.99).category("Plato Principal").description("Con papas fritas").build();
+        ProductDTO productDTO = ProductDTO.builder().unitPrice(14.99).category("Plato Principal")
+                .description("Con papas fritas").build();
 
         Assertions.assertNull(productDTO.getName());
         assertEquals(14.99, productDTO.getUnitPrice());
@@ -86,7 +85,8 @@ public class ProductDTOTests {
 
     @Test
     public void testProductDTOWithBuilder_WithNoUnitPrice() {
-        ProductDTO productDTO = ProductDTO.builder().name("Milanesa").category("Plato Principal").description("Con papas fritas").build();
+        ProductDTO productDTO = ProductDTO.builder().name("Milanesa").category("Plato Principal")
+                .description("Con papas fritas").build();
 
         assertEquals("Milanesa", productDTO.getName());
         Assertions.assertNull(productDTO.getUnitPrice());
@@ -96,7 +96,8 @@ public class ProductDTOTests {
 
     @Test
     public void testProductDTOWithBuilder_WithNoCategory() {
-        ProductDTO productDTO = ProductDTO.builder().name("Milanesa").unitPrice(14.99).description("Con papas fritas").build();
+        ProductDTO productDTO = ProductDTO.builder().name("Milanesa").unitPrice(14.99).description("Con papas fritas")
+                .build();
 
         assertEquals("Milanesa", productDTO.getName());
         assertEquals(14.99, productDTO.getUnitPrice());
@@ -106,7 +107,8 @@ public class ProductDTOTests {
 
     @Test
     public void testProductDTOWithBuilder_WithNoDescription() {
-        ProductDTO productDTO = ProductDTO.builder().name("Milanesa").unitPrice(14.99).category("Plato Principal").build();
+        ProductDTO productDTO = ProductDTO.builder().name("Milanesa").unitPrice(14.99).category("Plato Principal")
+                .build();
 
         assertEquals("Milanesa", productDTO.getName());
         assertEquals(14.99, productDTO.getUnitPrice());
@@ -118,10 +120,10 @@ public class ProductDTOTests {
     public void testProductDTOWithEmptyBuilder() {
         ProductDTO productDTO = ProductDTO.builder().build();
 
-        Assertions.assertNull( productDTO.getName());
-        Assertions.assertNull( productDTO.getUnitPrice());
+        Assertions.assertNull(productDTO.getName());
+        Assertions.assertNull(productDTO.getUnitPrice());
         Assertions.assertNull(productDTO.getCategory());
-        Assertions.assertNull( productDTO.getDescription());
+        Assertions.assertNull(productDTO.getDescription());
     }
 
 }
