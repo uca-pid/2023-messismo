@@ -15,14 +15,14 @@ jobs:
       - name: Check Docker Compose file
         run: |
           if [ -f "docker-compose.yml" ]; then
-            echo "Docker Compose file found."
             DOCKER_COMPOSE_EXISTS=true
+            echo "Docker Compose file found."
           else
             echo "Docker Compose file not found in this directory."
             DOCKER_COMPOSE_EXISTS=false
           fi
 
-      - name: Run Docker Compose up
+      - name: Run Docker Compose up if it exists
         run: |
           if [ "$DOCKER_COMPOSE_EXISTS" = true ]; then
             docker-compose up
@@ -35,8 +35,8 @@ jobs:
       - name: Conditional Step
         if: ${{ steps.docker-compose.outputs.EXIT_CODE == '0' }}
         run: |
-          echo "Docker Compose up was successful."
           if [ "$DOCKER_COMPOSE_EXISTS" = true ]; then
+          echo "Docker Compose up was successful."
             docker-compose down
           fi
 
