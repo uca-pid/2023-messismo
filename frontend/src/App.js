@@ -8,7 +8,7 @@ import Resources from "./screens/Resources";
 
 function App() {
   return (
-    <div className="App">
+    <div className="App" data-testid="app-div">
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Welcome />} />
