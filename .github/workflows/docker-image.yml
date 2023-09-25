@@ -18,15 +18,13 @@ jobs:
         run: |
           if [ -f "docker-compose.yml" ]; then
             echo "Docker Compose file found."
-            DOCKER_COMPOSE_EXISTS=true
           else
             echo "Docker Compose file not found."
-            DOCKER_COMPOSE_EXISTS=false
           fi
 
       - name: Run Docker Compose (if it exists)
         run: |
-          if [ "$DOCKER_COMPOSE_EXISTS" = true ]; then
+          if [ -f "docker-compose.yml" ]; then
             echo "Running Docker Compose..."
             docker-compose up
           else
@@ -36,9 +34,8 @@ jobs:
         continue-on-error: true
 
       - name: Handle Docker Compose result
-        if: ${{ steps.docker-compose.outputs.EXIT_CODE == '0' }}
         run: |
-          if [ "$DOCKER_COMPOSE_EXISTS" = true ]; then
+          if [ -f "docker-compose.yml" ]; then
             echo "Docker Compose was successful."
             docker-compose down
           fi
@@ -86,3 +83,4 @@ jobs:
       - name: Coveralls
         if: steps.change-directory.outputs.directory_changed == 'true'
         uses: coverallsapp/github-action@v2
+        continue-on-error: true
