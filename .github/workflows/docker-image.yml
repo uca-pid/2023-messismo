@@ -26,7 +26,7 @@ jobs:
         run: |
           if [ -f "docker-compose.yml" ]; then
             echo "Running Docker Compose..."
-            docker-compose up
+            docker-compose up -d
           else
             echo "Skipping Docker Compose, as the file is not found."
           fi
