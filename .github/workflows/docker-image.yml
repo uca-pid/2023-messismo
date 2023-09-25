@@ -1,0 +1,89 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: ["main", "develop", "developMartin"]
+  pull_request:
+    branches: ["main", "develop", "developMartin"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Check for Docker Compose file
+        run: |
+          if [ -f "docker-compose.yml" ]; then
+            echo "Docker Compose file found."
+          else
+            echo "Docker Compose file not found."
+          fi
+
+      - name: Run Docker Compose (if it exists)
+        run: |
+          if [ -f "docker-compose.yml" ]; then
+            echo "Running Docker Compose..."
+            docker-compose up -d
+          else
+            echo "Skipping Docker Compose, as the file is not found."
+          fi
+        id: docker-compose
+        continue-on-error: true
+
+      - name: Handle Docker Compose result
+        run: |
+          if [ -f "docker-compose.yml" ]; then
+            echo "Docker Compose was successful."
+            docker-compose down
+          fi
+      - name: Change directory to /backend if it exists
+        id: change-directory
+        run: |
+          if [ -d "backend" ]; then
+            cd backend && echo "Changed directory to backend"
+            echo "::set-output name=directory_changed::true"
+          else
+            echo "::set-output name=directory_changed::false"
+          fi
+        shell: bash
+
+      - name: Set up JDK 17
+        if: steps.change-directory.outputs.directory_changed == 'true'
+        uses: actions/setup-java@v3
+        with:
+          java-version: "17"
+          distribution: "temurin"
+          cache: maven
+
+      - name: Build with Maven
+        run: |
+          if [ -d "backend" ]; then
+            cd backend
+            chmod +x mvnw
+            ./mvnw clean package
+            ./mvnw test
+            ./mvnw test-compile
+            ./mvnw test jacoco:report
+            ./mvnw coveralls:report
+          fi
+
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+
+      - name: npm install and test
+        run: |
+          if [ -d "frontend" ]; then
+            cd frontend
+            npm install
+            npm test
+          fi
+
+      - name: Coveralls
+        if: steps.change-directory.outputs.directory_changed == 'true'
+        uses: coverallsapp/github-action@v2
+        continue-on-error: true

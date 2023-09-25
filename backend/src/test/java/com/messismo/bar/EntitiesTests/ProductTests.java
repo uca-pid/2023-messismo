@@ -3,8 +3,6 @@ package com.messismo.bar.EntitiesTests;
 import com.messismo.bar.Entities.Product;
 import org.junit.jupiter.api.Test;
 
-import java.util.*;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
@@ -49,9 +47,9 @@ public class ProductTests {
     @Test
     public void testProductEquals() {
 
-        Product product1 = new Product(1L, "Milanesa",14.99, "Entrada", "Milanesa con papas fritas");
-        Product product2 = new Product(1L, "Milanesa",14.99, "Entrada", "Milanesa con papas fritas");
-        Product product3 = new Product(2L, "Pollo",15.99, "Entrada", "Milanesa con papas fritas");
+        Product product1 = new Product(1L, "Milanesa", 14.99, "Entrada", "Milanesa con papas fritas");
+        Product product2 = new Product(1L, "Milanesa", 14.99, "Entrada", "Milanesa con papas fritas");
+        Product product3 = new Product(2L, "Pollo", 15.99, "Entrada", "Milanesa con papas fritas");
 
         assertEquals(product1, product2);
         assertNotEquals(product1, product3);
@@ -60,9 +58,9 @@ public class ProductTests {
     @Test
     public void testProductHashCode() {
 
-        Product product1 = new Product(1L, "Milanesa",14.99, "Entrada", "Milanesa con papas fritas");
-        Product product2 = new Product(1L, "Milanesa",14.99, "Entrada", "Milanesa con papas fritas");
-        Product product3 = new Product(2L, "Pollo",15.99, "Entrada", "Milanesa con papas fritas");
+        Product product1 = new Product(1L, "Milanesa", 14.99, "Entrada", "Milanesa con papas fritas");
+        Product product2 = new Product(1L, "Milanesa", 14.99, "Entrada", "Milanesa con papas fritas");
+        Product product3 = new Product(2L, "Pollo", 15.99, "Entrada", "Milanesa con papas fritas");
 
         assertEquals(product1.hashCode(), product2.hashCode());
         assertNotEquals(product1.hashCode(), product3.hashCode());
