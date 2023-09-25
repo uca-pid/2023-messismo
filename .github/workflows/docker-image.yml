@@ -11,35 +11,37 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
-      - name: Check Docker Compose file
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Check for Docker Compose file
         run: |
           if [ -f "docker-compose.yml" ]; then
-            DOCKER_COMPOSE_EXISTS=true
             echo "Docker Compose file found."
+            DOCKER_COMPOSE_EXISTS=true
           else
-            echo "Docker Compose file not found in this directory."
+            echo "Docker Compose file not found."
             DOCKER_COMPOSE_EXISTS=false
           fi
 
-      - name: Run Docker Compose up if it exists
+      - name: Run Docker Compose (if it exists)
         run: |
           if [ "$DOCKER_COMPOSE_EXISTS" = true ]; then
+            echo "Running Docker Compose..."
             docker-compose up
           else
-            echo "Docker Compose file not found, skipping docker-compose up."
+            echo "Skipping Docker Compose, as the file is not found."
           fi
         id: docker-compose
         continue-on-error: true
 
-      - name: Conditional Step
+      - name: Handle Docker Compose result
         if: ${{ steps.docker-compose.outputs.EXIT_CODE == '0' }}
         run: |
           if [ "$DOCKER_COMPOSE_EXISTS" = true ]; then
-          echo "Docker Compose up was successful."
+            echo "Docker Compose was successful."
             docker-compose down
           fi
-
       - name: Change directory to /backend if it exists
         id: change-directory
         run: |
