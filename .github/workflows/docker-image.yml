@@ -1,0 +1,86 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: ["main", "develop"]
+  pull_request:
+    branches: ["main", "develop"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Check Docker Compose file
+        run: |
+          if [ -f "docker-compose.yml" ]]; then
+            echo "Docker Compose file found."
+            DOCKER_COMPOSE_EXISTS=true
+          else
+            echo "Docker Compose file not found in this directory."
+            DOCKER_COMPOSE_EXISTS=false
+          fi
+
+      - name: Run Docker Compose up
+        run: |
+          if [ "$DOCKER_COMPOSE_EXISTS" = true ]; then
+            docker-compose up
+          else
+            echo "Docker Compose file not found, skipping docker-compose up."
+          fi
+        id: docker-compose
+        continue-on-error: true
+
+      - name: Conditional Step
+        if: ${{ steps.docker-compose.outputs.EXIT_CODE == '0' }}
+        run: |
+          echo "Docker Compose up was successful."
+          if [ "$DOCKER_COMPOSE_EXISTS" = true ]; then
+            docker-compose down
+          fi
+
+      - name: Change directory to /backend if it exists
+        id: change-directory
+        run: |
+          if [ -d "backend" ]; then
+            cd backend && echo "Changed directory to backend"
+            echo "::set-output name=directory_changed::true"
+          else
+            echo "::set-output name=directory_changed::false"
+          fi
+        shell: bash
+
+      - name: Set up JDK 17
+        if: steps.change-directory.outputs.directory_changed == 'true'
+        uses: actions/setup-java@v3
+        with:
+          java-version: "17"
+          distribution: "temurin"
+          cache: maven
+
+      - name: Build with Maven
+        run: |
+          if [ -d "backend" ]; then
+            cd backend
+            mvn clean
+            mvn test
+            mvn package
+          fi
+
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+
+      - name: npm install and test
+        run: |
+          if [ -d "frontend" ]; then
+            cd frontend
+            npm install
+            npm test
+          fi
+
+      - name: Coveralls
+        if: steps.change-directory.outputs.directory_changed == 'true'
+        uses: coverallsapp/github-action@v2
