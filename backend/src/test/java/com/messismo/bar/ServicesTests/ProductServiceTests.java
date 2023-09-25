@@ -30,7 +30,7 @@ public class ProductServiceTests {
     @BeforeEach
     public void setUp() {
 
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
 
         Product product1 = new Product(1L, "Milanesa", 14.99, "Entrada", "Milanesa con papas fritas");
         Product product2 = new Product(2L, "Milanesas", 44.99, "Entrada2", "Milanesa con papas fritas2");

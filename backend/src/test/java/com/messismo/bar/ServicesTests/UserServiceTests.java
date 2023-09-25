@@ -33,7 +33,7 @@ public class UserServiceTests {
     @BeforeEach
     public void setUp() {
 
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
 
         User user1 = new User(1L, "admin", "admin@mail.com", "password1", Role.ADMIN);
         User user2 = new User(2L, "messi2", "messi2@gmail.com", "password123", Role.EMPLOYEE);

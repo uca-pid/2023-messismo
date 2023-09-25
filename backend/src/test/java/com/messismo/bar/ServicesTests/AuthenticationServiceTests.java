@@ -49,7 +49,7 @@ public class AuthenticationServiceTests {
     @BeforeEach
     public void setUp() {
 
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
 
         User newEmployee = new User();
         newEmployee.setUsername("martincito");
