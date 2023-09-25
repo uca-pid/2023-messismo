@@ -14,7 +14,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: Check Docker Compose file
         run: |
-          if [ -f "docker-compose.yml" ]]; then
+          if [ -f "docker-compose.yml" ]; then
             echo "Docker Compose file found."
             DOCKER_COMPOSE_EXISTS=true
           else
