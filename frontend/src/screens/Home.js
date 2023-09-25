@@ -3,6 +3,7 @@ import { styled } from 'styled-components';
 // import 'fontsource-roboto';
 import { useSelector } from 'react-redux';
 import Navbar from "../components/Navbar";
+import { Navigate } from 'react-router-dom';
 
 const Container = styled.div`
     display: flex;
@@ -43,21 +44,16 @@ const Resource = styled.div`
 `;
 
 
-const signedinuser = [
-    { id: 104, username: 'SindeeBlake', email: 'SindeeBlake@moes.com', password: 'password', joined: '11/04/2021', type: 'user', pending: 'no' }
-  ];
-
 function HomePage(){
 
+    const { user: currentUser } = useSelector((state) => state.auth);
     const clicked = useSelector((state) => state.navigation.clicked);
-    const contentVisible = !clicked;
 
-    const renderUser = (user) => (
-        <div key={user.id}>
-          <h3>{user.username}</h3>
-          <p>{user.email}</p>
-        </div>
-    );
+    if (!currentUser) {
+        return <Navigate to="/" />;
+    }
+
+    const contentVisible = !clicked;
 
     return(
         <Container>
@@ -67,7 +63,8 @@ function HomePage(){
             <MainContent visible={contentVisible}>
                 <WelcomeImage src="/images/welcomeback2.png"/>
                 <Resource>
-                    {signedinuser.map(renderUser)}
+                    <h3>{currentUser.email}</h3>
+                    <h3>{currentUser.role}</h3>
                 </Resource>
             </MainContent>
 

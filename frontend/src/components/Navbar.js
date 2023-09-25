@@ -1,15 +1,17 @@
-import React from 'react'
+import React, { useState, useEffect, useCallback } from "react";
 // import 'fontsource-roboto';
 import { FaHome } from 'react-icons/fa'
 import { BsPersonCircle } from 'react-icons/bs'
 import { PiCoffeeFill } from 'react-icons/pi'
 import { ImExit } from 'react-icons/im'
 import { styled } from 'styled-components'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import BurgerIcon from './BurgerIcon'
 import { useSelector, useDispatch } from 'react-redux';
 import { toggleClicked } from '../redux/navSlice';
-import { signout } from '../redux/authSlice';
+import { Navigate } from 'react-router-dom';
+import { logout } from "../redux/auth";
+
 
 const NavLink = styled(Link)`
 
@@ -19,15 +21,15 @@ const NavLink = styled(Link)`
 
     .icon{
         color: white;
-        font-size: 24px;
+        font-size: 20px;
         margin-right: 0.5rem;
     }
 
     span{
         color: white;
-        margin-right: 1rem;
+        margin-right: 2rem;
         font-family: 'Roboto',serif;
-        font-size: 20px;
+        font-size: 28px;
     }
 
 `;
@@ -130,18 +132,32 @@ const BgDiv = styled.div`
 
 function Navbar() {
 
-    const userType = 'admin'
-    const userPending = 'no'
+    let navigate = useNavigate();
+    const dispatch = useDispatch();
+    const [showManagerBoard, setShowManagerBoard] = useState(false);
+    const [showAdminBoard, setShowAdminBoard] = useState(false);
+
+    const { user: currentUser } = useSelector((state) => state.auth);
+    
+    useEffect(() => {
+        if (currentUser) {
+            setShowManagerBoard(currentUser.role === "MANAGER");
+            setShowAdminBoard(currentUser.role === "ADMIN");
+        } else {
+            setShowManagerBoard(false);
+            setShowAdminBoard(false);
+        }
+    }, [currentUser]);
 
     const clicked = useSelector((state) => state.navigation.clicked);
-    const dispatch = useDispatch();
 
     const handleClick = () => {
         dispatch(toggleClicked());
     };
 
     const handleSignOut = () => {
-        dispatch(signout())
+        dispatch(logout())
+        navigate("/");
     }
 
     return(
@@ -155,14 +171,14 @@ function Navbar() {
                     <span>Home</span>
                 </NavLink>
 
-                {userPending === 'no' && (
+                {(showManagerBoard || showAdminBoard) && (
                     <NavLink to={'/products'} onClick={clicked ? handleClick : undefined}>
                         <PiCoffeeFill className='icon'/>
                         <span>Products</span>
                     </NavLink>
                 )}
 
-                {userType === 'admin' && userPending === 'no' && (
+                {(showManagerBoard || showAdminBoard) && (
                     <NavLink to={'/resources'} onClick={clicked ? handleClick : undefined}>
                         <BsPersonCircle className='icon'/>
                         <span>Resources</span>
