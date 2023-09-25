@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { redirect } from "react-router-dom";
 import Navbar from "./Navbar";
 import "./Products.css";
@@ -17,6 +17,9 @@ import AddIcon from "@mui/icons-material/Add";
 import Form from "./Form";
 import EditForm from "./EditForm";
 import { makeStyles } from '@mui/styles';
+import productsService from "../services/products.service";
+import { useSelector, useDispatch } from 'react-redux';
+
 
 
 const ProductsList = () => {
@@ -24,85 +27,42 @@ const ProductsList = () => {
   const [openFormModal, setOpenFormModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [isEditFormOpen, setIsEditFormOpen] = useState(false);
-  const [products, setProducts] = useState([
-    {
-      id: 1,
-      nombre: "Papas con cheddar",
-      categoria: "Entradas",
-      descripcion: "Papas fritas con queso cheddar",
-      precio: "$3000",
-    },
-    {
-      id: 2,
-      nombre: "Papas bravas",
-      categoria: "Entradas",
-      descripcion: "Papas fritas con salsa brava, picante",
-      precio: "$3000",
-    },
-    {
-      id: 3,
-      nombre: "Bueñuelos de espinaca",
-      categoria: "Entradas",
-      descripcion: "Bueñuelos de espinaca hechos con mucho amor",
-      precio: "$2500",
-    },
-    {
-      id: 4,
-      nombre: "Bastones de muzzarella",
-      categoria: "Entradas",
-      descripcion: "Bastones de muzzarella con sal marina",
-      precio: "$50",
-    },
-    {
-      id: 5,
-      nombre: "Negroni",
-      categoria: "Tragos",
-      descripcion: "Este es el producto 1",
-      precio: "$100",
-    },
-    {
-      id: 6,
-      nombre: "Gin Tonic",
-      categoria: "Tragos",
-      descripcion: "Este es el producto 2",
-      precio: "$50",
-    },
-    {
-      id: 7,
-      nombre: "Fernet",
-      categoria: "Tragos",
-      descripcion: "Este es el producto 1",
-      precio: "$100",
-    },
-    {
-      id: 8,
-      nombre: "Hamburguesa Martin",
-      categoria: "Platos",
-      descripcion: "Este es el producto 2",
-      precio: "$50",
-    },
-    {
-      id: 9,
-      nombre: "Pancho Carla",
-      categoria: "Platos",
-      descripcion: "Este es el producto 1",
-      precio: "$100",
-    },
-    {
-      id: 10,
-      nombre: "Agua sin gas",
-      categoria: "Bebidas sin alcohol",
-      descripcion: "Agua sin gas 500ml ",
-      precio: "$50",
-    },
-    {
-      id: 11,
-      nombre: "Agua con gas",
-      categoria: "Bebidas sin alcohol",
-      descripcion: "Agua sin gas 500ml ",
-      precio: "$50",
-    },
-  ]);
+  const [products, setProducts] = useState([]);
+  const { user: currentUser } = useSelector((state) => state.auth);
+  const token = currentUser.access_token
+  // useEffect(() => {
+
+    
+  //   employeeService.getAllProducts()
+  //    .then((response) => {
+  //        const employees = response.data;
+
+  //        console.log("Empleados:", employees);
+  //      })
+  //      .catch((error) => {
+      
+  //        console.error("Error al obtener empleados:", error);
+  //      });
+  // }, []); // Asegúrate de incluir las dependencias adecuadas si es necesario
+
+  // // Resto del componente...
+
+  useEffect(() => {
+    productsService.getAllProducts()
+      .then(response => {
+        console.log("Respuesta de la llamada a getAllProducts:", response.data);
+        setProducts(response.data)
+      })
+      .catch(error => {
+     
+        console.error("Error en la llamada a getAllProducts:", error);
+      });
+  }, [openFormModal]);
+  
+
+
+
+
 
   const [open, setOpen] = React.useState(false);
 
@@ -210,9 +170,9 @@ const ProductsList = () => {
             <div className="firstLine">
               <div className="names">
                 <p className="text" style={{ fontWeight: "bold" }}>
-                  {producto.nombre}
+                  {producto.name}
                 </p>
-                <p className="text">{producto.precio}</p>
+                <p className="text">{producto.unitPrice}</p>
               </div>
               <div className="buttons-edit">
                 <IconButton
@@ -238,8 +198,8 @@ const ProductsList = () => {
               </div>
             </div>
             <div className="final-line">
-              <p className="descripcion">{producto.descripcion}</p>
-              <p className="categoria">{producto.categoria}</p>
+              <p className="descripcion">{producto.description}</p>
+              <p className="categoria">{producto.category}</p>
             </div>
           </div>
         </div>
