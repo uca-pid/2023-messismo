@@ -21,7 +21,7 @@ public class InitialConfiguration {
             RegisterRequestDTO admin = new RegisterRequestDTO();
             admin.setUsername("admin");
             admin.setEmail("admin@mail.com");
-            admin.setPassword("password");
+            admin.setPassword("Password1");
             authenticationService.register(admin);
             User createdAdmin = userRepository.findByEmail(admin.getEmail()).get();
             createdAdmin.setRole(Role.ADMIN);

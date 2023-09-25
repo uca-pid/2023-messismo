@@ -2,58 +2,15 @@ import React, { useState, useEffect } from 'react'
 import '../App.css';
 import { styled } from 'styled-components';
 // import 'fontsource-roboto';
-import { Link } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { signInUser, signUpUser } from '../redux/authSlice';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import SUpPopUp from '../components/SignUpPopUp';
 import SInPopUp from '../components/SignInPopUp';
-import signupvalidation from '../SignUpValidation'
-import signinvalidation from '../SignInValidation'
+import signupvalidation from '../SignUpValidation';
+import signinvalidation from '../SignInValidation';
+import { login, register } from "../redux/auth";
+import { clearMessage } from "../redux/message";
 
-const Label = styled.label`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  color: #a7d0cd;
-  font-size: 1.2rem;
-  font-family: 'Roboto',serif;
-  margin-top: 1rem;
-`;
-
-const Switch = styled.div`
-    position: relative;
-    width: 45px;
-    height: 20px;
-    background: #b3b3b3;
-    border-radius: 20px;
-    transition: 300ms all;
-
-    &:before {
-    transition: 300ms all;
-    content: "";
-    position: absolute;
-    width: 25px;
-    height: 25px;
-    border-radius: 20px;
-    top: 50%;
-    left: 0px;
-    background: white;
-    transform: translate(0, -50%);
-    }
-`;
-
-const SwitchInput = styled.input`
-    display: none;
-
-    &:checked + ${Switch} {
-        background: #a4d4cc;
-
-        &:before {
-            transform: translate(20px, -50%);
-        }
-    }
-`;
 
 const BackgroundBox = styled.div`
     background-color: black;
@@ -282,49 +239,68 @@ const ErrorMessage = styled.h4`
 
 function SignInUpForm(){
 
-    const dispatch = useDispatch()
-
-    const [click, setClick] = useState(false);
-    const handleClick = () => setClick(!click);
-
-    const [checked, setChecked] = useState(false);
-    const [userRole, setUserRole] = useState("employee");
-    const handleChange = (e) => {
-        setChecked(e.target.checked);
-        setUserRole(e.target.checked ? "admin" : "employee");
-    };
-
-    //v SignIn v//
-    const [SignInPopUp, setSignInPopUp] = useState(false)
-
-    const handleLogin = (userData) => {
-        if (signinvalues.email === 'asd@asd.com' && signinvalues.password === 'asdfghjkl1Q') {
-            window.location.href = '/homepage';
-        } 
-        else {
-            setSignInPopUp(true);
-        }
-
-        const email = userData.email;
-        const password = userData.password;
-
-        dispatch(signInUser({email, password}))
-    };
-
     const [isSignInValid, setIsSignInValid] = useState(false);
-
     const [signinvalues, setSignInValues] = useState({
         email: '',
         password: ''
     })
-
     const [signinerrors, setSignInErrors] = useState({})
+    const [SignInPopUp, setSignInPopUp] = useState(false)
+
+    const [isSignUpValid, setIsSignUpValid] = useState(false);
+    const [signupvalues, setSignUpValues] = useState({
+        username: '',
+        email: '',
+        password: ''
+    })
+    const [signuperrors, setSignUpErrors] = useState({})
+    const [SignUpPopUp, setSignUpPopUp] = useState(false)
+
+    const { isLoggedIn } = useSelector((state) => state.auth);
+    const { message } = useSelector((state) => state.message);
+
+    let navigate = useNavigate();
+    const dispatch = useDispatch();
 
     useEffect(() => {
         const validationErrors = signinvalidation(signinvalues);
         setSignInErrors(validationErrors);
         setIsSignInValid(Object.keys(validationErrors).length === 0);
     }, [signinvalues]);
+
+    useEffect(() => {
+        const validationErrors = signupvalidation(signupvalues);
+        setSignUpErrors(validationErrors);
+        setIsSignUpValid(Object.keys(validationErrors).length === 0);
+    }, [signupvalues]);
+
+    useEffect(() => {
+        dispatch(clearMessage());
+    }, [dispatch]);
+
+
+    const [click, setClick] = useState(false);
+    const handleClick = () => setClick(!click);
+
+    const handleLogin = (userData) => {
+
+        const email = userData.email;
+        const password = userData.password;
+
+        dispatch(login({ email, password }))
+          .unwrap()
+          .then(() => {
+            navigate("/homepage");
+            window.location.reload();
+          })
+          .catch(() => {
+            setSignInPopUp(true);
+          });
+    };
+
+    if (isLoggedIn) {
+        return <Navigate to="/homepage" />;
+    }
 
     const handleSignInInput = (e) => {
         setSignInErrors((prevErrors) => ({
@@ -345,39 +321,24 @@ function SignInUpForm(){
             setIsSignInValid(false);
         }
     }
-    //^ SignIn ^//
 
-    //v SignUp v//
-    const [SignUpPopUp, setSignUpPopUp] = useState(false)
-
-    const [isRegistered, setIsRegistered] = useState(false);
     const handleRegister = (userData) => {
-
-        setIsRegistered(false);
 
         const username = userData.username;
         const email = userData.email;
         const password = userData.password;
-        const role = userData.role;
-        dispatch(signUpUser({username, email, password, role}))
+
+        dispatch(register({ username, email, password }))
+        .unwrap()
+        .then(() => {
+            navigate("/homepage");
+            window.location.reload();
+        })
+        .catch(() => {
+          setSignUpPopUp(true);
+        });
 
     };
-
-    const [isSignUpValid, setIsSignUpValid] = useState(false);
-
-    const [signupvalues, setSignUpValues] = useState({
-        username: '',
-        email: '',
-        password: ''
-    })
-
-    const [signuperrors, setSignUpErrors] = useState({})
-
-    useEffect(() => {
-        const validationErrors = signupvalidation(signupvalues);
-        setSignUpErrors(validationErrors);
-        setIsSignUpValid(Object.keys(validationErrors).length === 0);
-    }, [signupvalues]);
 
     const handleSignUpInput = (e) => {
         setSignUpErrors((prevErrors) => ({
@@ -398,116 +359,118 @@ function SignInUpForm(){
             setIsSignUpValid(false);
         }
     }
-    //^ SignUp ^//
 
     return(
-            <BackgroundBox clicked={click}>
 
-                <Box1 clicked={click}>
-                    <Form className='signin' show={!click}>
-                        <Title>Sign In</Title>
-                        <Input type='email' name='email' id='emailSiId'
-                        placeholder='Email'
-                        onChange={handleSignInInput}
-                        />
-                        {signinerrors.email && <ErrorMessage>{signinerrors.email}</ErrorMessage>}
-                        <Input 
-                        type='password' name='password' id='passwordSiId'
-                        placeholder='Password'
-                        onChange={handleSignInInput}
-                        />
-                        {signinerrors.password && <ErrorMessage>{signinerrors.password}</ErrorMessage>}
-                        <ForgotLink href='#'>Forgot your Password?</ForgotLink>
+        <BackgroundBox clicked={click}>
 
-                        <NavLink
-                        onClick={() => {
-                            handleSignInValidation();
-                            if(isSignInValid) {
-                                const userData = {
-                                    email: signinvalues.email,
-                                    password: signinvalues.password,
-                                }
-                                handleLogin(userData);
+            <Box1 clicked={click}>
+                <Form className='signin' show={!click}>
+                    <Title>Sign In</Title>
+                    <Input type='email' name='email' id='emailSiId'
+                    placeholder='Email'
+                    onChange={handleSignInInput}
+                    />
+                    {signinerrors.email && <ErrorMessage>{signinerrors.email}</ErrorMessage>}
+                    <Input 
+                    type='password' name='password' id='passwordSiId'
+                    placeholder='Password'
+                    onChange={handleSignInInput}
+                    />
+                    {signinerrors.password && <ErrorMessage>{signinerrors.password}</ErrorMessage>}
+                    <ForgotLink href='#'>Forgot your Password?</ForgotLink>
+
+                    <NavLink
+                    onClick={() => {
+                        handleSignInValidation();
+                        if(isSignInValid) {
+                            const userData = {
+                                email: signinvalues.email,
+                                password: signinvalues.password,
                             }
-                        }}
-                        style={{ textDecoration: 'none' }}
-                        disabled = {Object.keys(signinerrors).length > 0 || !isSignInValid}
-                        >
-                            Sign In
-                        </NavLink>
+                            handleLogin(userData);
+                        }
+                    }}
+                    style={{ textDecoration: 'none' }}
+                    disabled = {Object.keys(signinerrors).length > 0 || !isSignInValid}
+                    >
+                        Sign In
+                    </NavLink>
 
-                    </Form>
+                </Form>
 
-                    <Form className='signup' show={click}>
-                        <Title>Sign Up</Title>
-                        <Input type='text' name='username' id='usernameId'
-                        placeholder='Username'
-                        onChange={handleSignUpInput}
-                        />
-                        {signuperrors.username && <ErrorMessage>{signuperrors.username}</ErrorMessage>}
-                        
-                        <Input type='email' name='email' id='emailSuId'
-                        placeholder='Email'
-                        onChange={handleSignUpInput}
-                        />
-                        {signuperrors.email && <ErrorMessage>{signuperrors.email}</ErrorMessage>}
-                        
-                        <Input 
-                        type='password' name='password' id='passwordSuId'
-                        placeholder='Password'
-                        onChange={handleSignUpInput}
-                        />
-                        {signuperrors.password && <ErrorMessage>{signuperrors.password}</ErrorMessage>}
+                <Form className='signup' show={click}>
 
-                        <Label>
-                            <span>{checked ? 'Admin' : 'Employee'}</span>
-                            <SwitchInput checked={checked} type="checkbox" onChange={handleChange} />
-                            <Switch />
-                        </Label>
-
-                        <NavLink
-                        onClick={() => {
-                            handleSignUpValidation();
-                            if(isSignUpValid) {
-                                const userData = {
-                                    username: signupvalues.username,
-                                    email: signupvalues.email,
-                                    password: signupvalues.password,
-                                    role: userRole,
-                                }
-                                handleRegister(userData);
-                                setSignUpPopUp(true);
-                            }
-                        }}
-                        style={{ textDecoration: 'none' }}
-                        disabled = {Object.keys(signuperrors).length > 0 || !isSignUpValid}
-                        >
-                            Sign Up
-                        </NavLink>
-
-
-
-                    </Form>
-                </Box1>
-
-                <Box2 clicked={click}>
-                    <Text className='signintext' show={!click}>
-                        <h1>Welcome Back</h1>
-                        Don't have an account yet?
-                        <br />
-                        <ButtonAnimate clicked={click} onClick={handleClick}></ButtonAnimate>
-                    </Text>
-                    <Text className='signuptext' show={click}>
-                        <h1>Hi There</h1>
-                        Already have an account?
-                        <br />
-                        <ButtonAnimate clicked={click} onClick={handleClick}></ButtonAnimate>
-                    </Text>
+                    <Title>Sign Up</Title>
+                    <Input type='text' name='username' id='usernameId'
+                    placeholder='Username'
+                    onChange={handleSignUpInput}
+                    />
+                    {signuperrors.username && <ErrorMessage>{signuperrors.username}</ErrorMessage>}
                     
-                </Box2>
-                {SignInPopUp && <SInPopUp setSignInPopUp={setSignInPopUp} isRegistered={isRegistered}/>}
-                {SignUpPopUp && <SUpPopUp setSignUpPopUp={setSignUpPopUp} isRegistered={isRegistered}/>}
-            </BackgroundBox>
+                    <Input type='email' name='email' id='emailSuId'
+                    placeholder='Email'
+                    onChange={handleSignUpInput}
+                    />
+                    {signuperrors.email && <ErrorMessage>{signuperrors.email}</ErrorMessage>}
+                    
+                    <Input 
+                    type='password' name='password' id='passwordSuId'
+                    placeholder='Password'
+                    onChange={handleSignUpInput}
+                    />
+                    {signuperrors.password && <ErrorMessage>{signuperrors.password}</ErrorMessage>}
+
+                    <NavLink
+                    onClick={() => {
+                        handleSignUpValidation();
+                        if(isSignUpValid) {
+                            const userData = {
+                                username: signupvalues.username,
+                                email: signupvalues.email,
+                                password: signupvalues.password,
+                            }
+                            handleRegister(userData);
+                        }
+                    }}
+                    style={{ textDecoration: 'none' }}
+                    disabled = {Object.keys(signuperrors).length > 0 || !isSignUpValid}
+                    >
+                        Sign Up
+                    </NavLink>
+
+                </Form>
+
+            </Box1>
+
+            <Box2 clicked={click}>
+                <Text className='signintext' show={!click}>
+                    <h1>Welcome Back</h1>
+                    Don't have an account yet?
+                    <br />
+                    <ButtonAnimate clicked={click} onClick={handleClick}></ButtonAnimate>
+                </Text>
+                <Text className='signuptext' show={click}>
+                    <h1>Hi There</h1>
+                    Already have an account?
+                    <br />
+                    <ButtonAnimate clicked={click} onClick={handleClick}></ButtonAnimate>
+                </Text>
+                
+            </Box2>
+
+            { SignInPopUp && <SInPopUp setSignInPopUp={setSignInPopUp} /> }
+            { SignUpPopUp && <SUpPopUp setSignUpPopUp={setSignUpPopUp} /> }
+
+            {message && (
+                <div className="form-group">
+                    <div className="alert alert-danger" role="alert">
+                        {message}
+                    </div>
+                </div>
+            )}
+
+        </BackgroundBox>
     )
 }
 
