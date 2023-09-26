@@ -15,7 +15,7 @@ const Container = styled.div`
 const MainContent = styled.div`
     display: ${props => (props.visible ? 'flex' : 'none')};
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     flex-grow: 1;
     font-size:1.5rem;
@@ -26,7 +26,7 @@ function Products(){
     const { user: currentUser } = useSelector((state) => state.auth);
     const clicked = useSelector((state) => state.navigation.clicked);
 
-    const isAdminOrManager = currentUser && (currentUser.role === 'MANAGER' || currentUser.role === 'ADMIN');
+    const isAdminOrManager = currentUser && (currentUser.role === 'MANAGER' || currentUser.role === 'ADMIN'  );
 
     const contentVisible = !clicked;
 

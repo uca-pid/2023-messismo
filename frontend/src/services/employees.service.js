@@ -11,9 +11,13 @@ const getAllEmployees = () => {
 
 
 const validateEmployee = (employeeId) => {
-    console.log(employeeId)
-    return axios.put(`http://localhost:8080/api/v1/manager/validateEmployee/${employeeId}`, { headers: authHeader() , method: 'PUT',      
-    'Content-Type' : 'application/json'})
+    const data = {
+      userId: employeeId,
+    }
+    return axios.put("http://localhost:8080/api/v1/manager/validateEmployee", data, {
+      headers: authHeader(),
+      'Content-Type': 'application/json',
+    })
     .then(response => {
         console.log("Empleado validado con éxito:", response.data);
       })
@@ -23,7 +27,10 @@ const validateEmployee = (employeeId) => {
   };
   
 const validateAdmin = (employeeId) => {
-    return axios.put(`http://localhost:8080/api/v1/admin/validateAdmin/${employeeId}`,{ headers: authHeader() , method: 'PUT',      
+  const data = {
+    userId: employeeId,
+  }
+    return axios.put(`http://localhost:8080/api/v1/admin/validateAdmin`, data, { headers: authHeader(),     
     'Content-Type' : 'application/json'})
     .then(response => {
         console.log("Administrador validado con éxito:", response.data);

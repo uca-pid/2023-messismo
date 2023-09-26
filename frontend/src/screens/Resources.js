@@ -168,6 +168,16 @@ function Resources(){
       });
   }, []);
 
+  const handleValidate = (id) => {
+    employeeService.validateEmployee(id);
+    //dispatch(validateUser(id))
+};
+
+const handleUpgrade = (id) => {
+    //dispatch(upgradeUser(id))
+    employeeService.validateAdmin(id)
+};
+
     const isAdminOrManager = currentUser && (currentUser.role === 'MANAGER' || currentUser.role === 'ADMIN');
     
     const dispatch = useDispatch()
@@ -179,15 +189,6 @@ function Resources(){
 
     const contentVisible = !clicked;
     
-    const handleValidate = (id) => {
-        employeeService.validateEmployee(id);
-        //dispatch(validateUser(id))
-    };
-
-    const handleUpgrade = (id) => {
-        //dispatch(upgradeUser(id))
-        employeeService.validateAdmin(id)
-    };
     
     // const handleReject = (id) => {
     //     dispatch(rejectUser(id))

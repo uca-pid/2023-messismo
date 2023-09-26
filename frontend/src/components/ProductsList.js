@@ -31,17 +31,17 @@ const ProductsList = () => {
   const [open, setOpen] = React.useState(false);
   const { user: currentUser } = useSelector((state) => state.auth);
   const token = currentUser.access_token
-  
+  const role = currentUser.role
 
   useEffect(() => {
+    console.log("CURRENT ROLE: ", role);
     productsService.getAllProducts()
       .then(response => {
-        console.log("Respuesta de la llamada a getAllProducts:", response.data);
         setProducts(response.data)
       })
       .catch(error => {
      
-        console.error("Error en la llamada a getAllProducts:", error);
+        console.error("Error al mostrar los productos", error);
       });
   }, [openFormModal, open]);
   
@@ -57,10 +57,12 @@ const ProductsList = () => {
 
   const handleOpenProductsModal = () => {
     setOpenFormModal(true);
+
   };
 
   const handleCloseProductsModal = () => {
     setOpenFormModal(false);
+    window.location.reload();
   };
 
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -127,7 +129,7 @@ const ProductsList = () => {
         <Button
           variant="contained"
           endIcon={<AddIcon />}
-          style={{ color: "white", borderColor: "#007bff", marginTop: '4%', fontSize: '1.3rem' }}
+          style={{ color: "white", borderColor: "#007bff", marginTop: '4%', fontSize: '1.3rem', height: '40px' }}
           onClick={handleOpenProductsModal}
         >
           Añadir Producto
@@ -165,7 +167,7 @@ const ProductsList = () => {
                 >
                   <EditIcon style={{ fontSize: '2rem' }}/>
                 </IconButton>
-                {userType === "admin" || userType === "manager" ? (
+                {role === "ADMIN" || role === "MANAGER" ? (
                   <IconButton
                     aria-label="delete"
                     size="large"

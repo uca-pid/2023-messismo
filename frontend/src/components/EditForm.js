@@ -7,12 +7,15 @@ import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { useSlotProps } from "@mui/base";
 import productsService from "../services/products.service";
+import { useSelector, useDispatch } from 'react-redux';
 const EditForm = (props) => {
   const [nombre, setNombre] = useState("");
   const [categoria, setCategoria] = useState("");
   const [descripcion, setDescripcion] = useState("");
   const [precio, setPrecio] = useState("");
-
+  const { user: currentUser } = useSelector((state) => state.auth);
+  const token = currentUser.access_token
+  const role = currentUser.role
   
   const handleNombreChange = (event) => {
     setNombre(event.target.value);
@@ -89,7 +92,7 @@ const EditForm = (props) => {
         defaultValue={props.product.description}
       />
       <p>Precio</p>
-      {props.userType === "admin" || props.userType === "manager" ? (
+      {role === "ADMIN" || role=== "MANAGER" ? (
         <div>
           <TextField
             required
