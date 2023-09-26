@@ -28,24 +28,10 @@ const ProductsList = () => {
   const [editingProduct, setEditingProduct] = useState(null);
   const [isEditFormOpen, setIsEditFormOpen] = useState(false);
   const [products, setProducts] = useState([]);
+  const [open, setOpen] = React.useState(false);
   const { user: currentUser } = useSelector((state) => state.auth);
   const token = currentUser.access_token
-  // useEffect(() => {
-
-    
-  //   employeeService.getAllProducts()
-  //    .then((response) => {
-  //        const employees = response.data;
-
-  //        console.log("Empleados:", employees);
-  //      })
-  //      .catch((error) => {
-      
-  //        console.error("Error al obtener empleados:", error);
-  //      });
-  // }, []); // Asegúrate de incluir las dependencias adecuadas si es necesario
-
-  // // Resto del componente...
+  
 
   useEffect(() => {
     productsService.getAllProducts()
@@ -57,14 +43,9 @@ const ProductsList = () => {
      
         console.error("Error en la llamada a getAllProducts:", error);
       });
-  }, [openFormModal]);
+  }, [openFormModal, open]);
   
 
-
-
-
-
-  const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -86,6 +67,7 @@ const ProductsList = () => {
 
 
   const handleDeleteClick = (producto) => {
+    console.log(producto)
     setSelectedProduct(producto);
     console.log(producto);
     setOpen(true);
@@ -93,12 +75,12 @@ const ProductsList = () => {
 
   const deleteProduct = () => {
     if (selectedProduct) {
-      const updatedProducts = products.filter(
-        (product) => product !== selectedProduct
-      );
-      setProducts(updatedProducts);
+      
+      console.log(selectedProduct.id)
+      productsService.deleteProduct(selectedProduct.productId)
       setSelectedProduct(null);
       setOpen(false);
+      window.location.reload(); 
     }
   };
 
@@ -239,7 +221,7 @@ const ProductsList = () => {
         >
           <DialogTitle id="alert-dialog-title">
             {selectedProduct &&
-              `¿Estás seguro que quieres eliminar el producto ${selectedProduct.nombre}?`}
+              `¿Estás seguro que quieres eliminar el producto ${selectedProduct.name}?`}
           </DialogTitle>
           <DialogContent>
             <DialogContentText id="alert-dialog-description">

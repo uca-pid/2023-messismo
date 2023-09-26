@@ -6,7 +6,7 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { useSlotProps } from "@mui/base";
-
+import productsService from "../services/products.service";
 const EditForm = (props) => {
   const [nombre, setNombre] = useState("");
   const [categoria, setCategoria] = useState("");
@@ -36,15 +36,12 @@ const EditForm = (props) => {
 
   const handleEditProduct = () => {
     // Gather the data entered in the form
-    const newProductData = {
-      nombre,
-      categoria,
-      descripcion,
-      precio,
-    };
+   
 
-    props.onSave(newProductData);
     props.onClose();
+
+    productsService.updateProductPrice(props.product.productId, precio)
+    window.location.reload(); 
 
     // Reset the form fields
     setNombre("");
@@ -60,20 +57,21 @@ const EditForm = (props) => {
       <h2 style={{ marginBottom: "7%", fontSize: '1.3rem'}}>Editar Producto</h2>
       <p>Nombre</p>
       <TextField
-        required
+        disabled
         id="nombre"
         onChange={handleNombreChange}
         variant="outlined"
         style={{ width: "80%", marginTop: '3%', marginBottom: '3%', fontSize: '1.3rem'}}
-        defaultValue={props.product.nombre}
+        defaultValue={props.product.name}
       />
       <p>Categoria</p>
       <Select
+        disabled
         labelId="demo-simple-select-label"
         id="demo-simple-select"
         onChange={handleCategoriaChange}
         style={{ width: "80%", marginTop: '3%', marginBottom: '3%', fontSize: '1.3rem'}}
-        defaultValue={props.product.categoria}
+        defaultValue={props.product.category}
       >
         <MenuItem value={"Entradas"}>Entradas</MenuItem>
         <MenuItem value={"Platos"}>Platos</MenuItem>
@@ -83,12 +81,12 @@ const EditForm = (props) => {
       </Select>
       <p>Descripción</p>
       <TextField
-        required
+        disabled
         id="descripcion"
         onChange={handleDescripcionChange}
         variant="outlined"
         style={{ width: "80%", marginTop: '3%', marginBottom: '3%' }}
-        defaultValue={props.product.descripcion}
+        defaultValue={props.product.description}
       />
       <p>Precio</p>
       {props.userType === "admin" || props.userType === "manager" ? (
@@ -99,7 +97,7 @@ const EditForm = (props) => {
             onChange={handlePrecioChange}
             variant="outlined"
             style={{ width: "80%", marginTop: '3%', marginBottom: '3%' }}
-            defaultValue={props.product.precio}
+            defaultValue={props.product.unitPrice}
           />
         </div>
       ) : (
@@ -107,7 +105,7 @@ const EditForm = (props) => {
           disabled
           id="outlined-disabled"
           style={{ width: "80%" }}
-          defaultValue={props.product.precio}
+          defaultValue={props.product.unitPrice}
         />
       )}
       <div className="buttons-add">
