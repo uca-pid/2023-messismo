@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
 import styled from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
 // import { acceptUser, rejectUser, deleteUser } from '../redux/userSlice';
@@ -6,6 +6,7 @@ import { validateUser, upgradeUser } from '../redux/userSlice';
 import Navbar from "../components/Navbar";
 import userService from "../services/user.service";
 import { Navigate } from 'react-router-dom';
+import employeeService from "../services/employees.service";
 
 const Container = styled.div`
     display: flex;
@@ -152,6 +153,31 @@ function Resources(){
     const users = useSelector(state => state.users)
     const clicked = useSelector((state) => state.navigation.clicked);
 
+    const [allEmployees, setAllEmployees] = useState([]);
+
+    useEffect(() => {
+   
+    employeeService.getAllEmployees() 
+      .then((response) => {
+        console.log(response.data)
+        const employees = response.data; 
+        setAllEmployees(employees);
+      })
+      .catch((error) => {
+        console.error("Error al obtener la lista de empleados:", error);
+      });
+  }, []);
+
+  const handleValidate = (id) => {
+    employeeService.validateEmployee(id);
+    //dispatch(validateUser(id))
+};
+
+const handleUpgrade = (id) => {
+    //dispatch(upgradeUser(id))
+    employeeService.validateAdmin(id)
+};
+
     const isAdminOrManager = currentUser && (currentUser.role === 'MANAGER' || currentUser.role === 'ADMIN');
     
     const dispatch = useDispatch()
@@ -163,13 +189,6 @@ function Resources(){
 
     const contentVisible = !clicked;
     
-    const handleValidate = (id) => {
-        dispatch(validateUser(id))
-    };
-
-    const handleUpgrade = (id) => {
-        dispatch(upgradeUser(id))
-    };
     
     // const handleReject = (id) => {
     //     dispatch(rejectUser(id))
@@ -224,28 +243,35 @@ function Resources(){
                     <UserItem>
                         <Subheader>Employees</Subheader>
                         <Resource>
-                            {employees.map(renderUser)}
+                        {allEmployees
+                        .filter((user) => user.role === "EMPLOYEE")
+                        .map(renderUser)}
                         </Resource>
                     </UserItem>
-
                     <UserItem>
                         <Subheader>Validated Employees</Subheader>
                         <Resource>
-                            {validated.map(renderUser)}
+                        {allEmployees
+                        .filter((user) => user.role === "VALIDATEDEMPLOYEE")
+                        .map(renderUser)}
                         </Resource>
                     </UserItem>
 
                     <UserItem>
                         <Subheader>Managers</Subheader>
                         <Resource>
-                            {managers.map(renderUser)}
+                        {allEmployees
+                        .filter((user) => user.role === "MANAGER")
+                        .map(renderUser)}
                         </Resource>
                     </UserItem>
 
                     <UserItem>
                         <Subheader>Admins</Subheader>
                         <Resource>
-                            {admins.map(renderUser)}
+                        {allEmployees
+                        .filter((user) => user.role === "ADMIN")
+                        .map(renderUser)}
                         </Resource>
                     </UserItem>
 

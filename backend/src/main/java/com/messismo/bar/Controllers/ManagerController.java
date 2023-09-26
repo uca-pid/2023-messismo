@@ -1,6 +1,7 @@
 package com.messismo.bar.Controllers;
 
 import com.messismo.bar.DTOs.ProductPriceDTO;
+import com.messismo.bar.DTOs.UserIdDTO;
 import com.messismo.bar.Services.ProductService;
 import com.messismo.bar.Services.UserService;
 import lombok.RequiredArgsConstructor;
@@ -34,10 +35,13 @@ public class ManagerController {
         return userService.getAllEmployees();
     }
 
-    @PutMapping("/validateEmployee/{userId}")
-    public ResponseEntity<?> validateEmployee(@PathVariable Long userId) {
-        return userService.validateEmployee(userId);
+//    @PutMapping("/validateEmployee/{userId}")
+//    public ResponseEntity<?> validateEmployee(@PathVariable Long userId) {
+//        return userService.validateEmployee(userId);
+//    }
+
+    @PutMapping("/validateEmployee")
+    public ResponseEntity<?> validateEmployee(@RequestBody UserIdDTO body) {
+        return userService.validateEmployee(body.getUserId());
     }
-
-
 }

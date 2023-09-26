@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { redirect } from "react-router-dom";
 import Navbar from "./Navbar";
 import "./Products.css";
@@ -17,6 +17,9 @@ import AddIcon from "@mui/icons-material/Add";
 import Form from "./Form";
 import EditForm from "./EditForm";
 import { makeStyles } from '@mui/styles';
+import productsService from "../services/products.service";
+import { useSelector, useDispatch } from 'react-redux';
+
 
 
 const ProductsList = () => {
@@ -24,87 +27,25 @@ const ProductsList = () => {
   const [openFormModal, setOpenFormModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [isEditFormOpen, setIsEditFormOpen] = useState(false);
-  const [products, setProducts] = useState([
-    {
-      id: 1,
-      nombre: "Papas con cheddar",
-      categoria: "Entradas",
-      descripcion: "Papas fritas con queso cheddar",
-      precio: "$3000",
-    },
-    {
-      id: 2,
-      nombre: "Papas bravas",
-      categoria: "Entradas",
-      descripcion: "Papas fritas con salsa brava, picante",
-      precio: "$3000",
-    },
-    {
-      id: 3,
-      nombre: "Bueñuelos de espinaca",
-      categoria: "Entradas",
-      descripcion: "Bueñuelos de espinaca hechos con mucho amor",
-      precio: "$2500",
-    },
-    {
-      id: 4,
-      nombre: "Bastones de muzzarella",
-      categoria: "Entradas",
-      descripcion: "Bastones de muzzarella con sal marina",
-      precio: "$50",
-    },
-    {
-      id: 5,
-      nombre: "Negroni",
-      categoria: "Tragos",
-      descripcion: "Este es el producto 1",
-      precio: "$100",
-    },
-    {
-      id: 6,
-      nombre: "Gin Tonic",
-      categoria: "Tragos",
-      descripcion: "Este es el producto 2",
-      precio: "$50",
-    },
-    {
-      id: 7,
-      nombre: "Fernet",
-      categoria: "Tragos",
-      descripcion: "Este es el producto 1",
-      precio: "$100",
-    },
-    {
-      id: 8,
-      nombre: "Hamburguesa Martin",
-      categoria: "Platos",
-      descripcion: "Este es el producto 2",
-      precio: "$50",
-    },
-    {
-      id: 9,
-      nombre: "Pancho Carla",
-      categoria: "Platos",
-      descripcion: "Este es el producto 1",
-      precio: "$100",
-    },
-    {
-      id: 10,
-      nombre: "Agua sin gas",
-      categoria: "Bebidas sin alcohol",
-      descripcion: "Agua sin gas 500ml ",
-      precio: "$50",
-    },
-    {
-      id: 11,
-      nombre: "Agua con gas",
-      categoria: "Bebidas sin alcohol",
-      descripcion: "Agua sin gas 500ml ",
-      precio: "$50",
-    },
-  ]);
-
+  const [products, setProducts] = useState([]);
   const [open, setOpen] = React.useState(false);
+  const { user: currentUser } = useSelector((state) => state.auth);
+  const token = currentUser.access_token
+  const role = currentUser.role
+
+  useEffect(() => {
+    console.log("CURRENT ROLE: ", role);
+    productsService.getAllProducts()
+      .then(response => {
+        setProducts(response.data)
+      })
+      .catch(error => {
+     
+        console.error("Error al mostrar los productos", error);
+      });
+  }, [openFormModal, open]);
+  
+
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -116,16 +57,19 @@ const ProductsList = () => {
 
   const handleOpenProductsModal = () => {
     setOpenFormModal(true);
+
   };
 
   const handleCloseProductsModal = () => {
     setOpenFormModal(false);
+    window.location.reload();
   };
 
   const [selectedProduct, setSelectedProduct] = useState(null);
 
 
   const handleDeleteClick = (producto) => {
+    console.log(producto)
     setSelectedProduct(producto);
     console.log(producto);
     setOpen(true);
@@ -133,12 +77,12 @@ const ProductsList = () => {
 
   const deleteProduct = () => {
     if (selectedProduct) {
-      const updatedProducts = products.filter(
-        (product) => product !== selectedProduct
-      );
-      setProducts(updatedProducts);
+      
+      console.log(selectedProduct.id)
+      productsService.deleteProduct(selectedProduct.productId)
       setSelectedProduct(null);
       setOpen(false);
+      window.location.reload(); 
     }
   };
 
@@ -185,7 +129,7 @@ const ProductsList = () => {
         <Button
           variant="contained"
           endIcon={<AddIcon />}
-          style={{ color: "white", borderColor: "#007bff", marginTop: '4%', fontSize: '1.3rem' }}
+          style={{ color: "white", borderColor: "#007bff", marginTop: '4%', fontSize: '1.3rem', height: '40px' }}
           onClick={handleOpenProductsModal}
         >
           Añadir Producto
@@ -210,9 +154,9 @@ const ProductsList = () => {
             <div className="firstLine">
               <div className="names">
                 <p className="text" style={{ fontWeight: "bold" }}>
-                  {producto.nombre}
+                  {producto.name}
                 </p>
-                <p className="text">{producto.precio}</p>
+                <p className="text">{producto.unitPrice}</p>
               </div>
               <div className="buttons-edit">
                 <IconButton
@@ -223,7 +167,7 @@ const ProductsList = () => {
                 >
                   <EditIcon style={{ fontSize: '2rem' }}/>
                 </IconButton>
-                {userType === "admin" || userType === "manager" ? (
+                {role === "ADMIN" || role === "MANAGER" ? (
                   <IconButton
                     aria-label="delete"
                     size="large"
@@ -238,8 +182,8 @@ const ProductsList = () => {
               </div>
             </div>
             <div className="final-line">
-              <p className="descripcion">{producto.descripcion}</p>
-              <p className="categoria">{producto.categoria}</p>
+              <p className="descripcion">{producto.description}</p>
+              <p className="categoria">{producto.category}</p>
             </div>
           </div>
         </div>
@@ -279,7 +223,7 @@ const ProductsList = () => {
         >
           <DialogTitle id="alert-dialog-title">
             {selectedProduct &&
-              `¿Estás seguro que quieres eliminar el producto ${selectedProduct.nombre}?`}
+              `¿Estás seguro que quieres eliminar el producto ${selectedProduct.name}?`}
           </DialogTitle>
           <DialogContent>
             <DialogContentText id="alert-dialog-description">

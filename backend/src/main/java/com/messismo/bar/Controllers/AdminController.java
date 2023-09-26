@@ -1,5 +1,6 @@
 package com.messismo.bar.Controllers;
 
+import com.messismo.bar.DTOs.UserIdDTO;
 import com.messismo.bar.Services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,8 +16,13 @@ public class AdminController {
 
     private final UserService userService;
 
-    @PutMapping("/validateAdmin/{employeeId}")
-    public ResponseEntity<?> validateEmployee(@PathVariable Long employeeId) {
-        return userService.validateAdmin(employeeId);
+//    @PutMapping("/validateAdmin/{employeeId}")
+//    public ResponseEntity<?> validateEmployee(@PathVariable Long employeeId) {
+//        return userService.validateAdmin(employeeId);
+//    }
+
+   @PutMapping("/validateAdmin")
+    public ResponseEntity<?> validateEmployee(@RequestBody UserIdDTO body) {
+        return userService.validateAdmin(body.getUserId());
     }
 }

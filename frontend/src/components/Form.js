@@ -6,27 +6,29 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { useSlotProps } from "@mui/base";
+import productsService from "../services/products.service";
+
 
 const Form = (props) => {
-  const [nombre, setNombre] = useState("");
-  const [categoria, setCategoria] = useState("");
-  const [descripcion, setDescripcion] = useState("");
-  const [precio, setPrecio] = useState("");
+  const [name, setName] = useState("");
+  const [category, setCategory] = useState("");
+  const [description, setDescription] = useState("");
+  const [unitPrice, setUnitPrice] = useState("");
 
   const handleNombreChange = (event) => {
-    setNombre(event.target.value);
+    setName(event.target.value);
   };
 
   const handleCategoriaChange = (event: SelectChangeEvent) => {
-    setCategoria(event.target.value);
+    setCategory(event.target.value);
   };
 
   const handleDescripcionChange = (event) => {
-    setDescripcion(event.target.value);
+    setDescription(event.target.value);
   };
 
   const handlePrecioChange = (event) => {
-    setPrecio(event.target.value);
+    setUnitPrice(event.target.value);
   };
 
 
@@ -37,20 +39,20 @@ const Form = (props) => {
   const handleAddProduct = () => {
 
     const newProductData = {
-      nombre,
-      categoria,
-      descripcion,
-      precio,
+      name,
+      category,
+      description,
+      unitPrice,
     };
 
-    props.onSave(newProductData);
+    productsService.addProducts(newProductData);
     props.onClose();
 
   
-    setNombre("");
-    setCategoria("");
-    setDescripcion("");
-    setPrecio("");
+    setName("");
+    setCategory("");
+    setDescription("");
+    setUnitPrice("");
 
 
   }
@@ -61,8 +63,8 @@ const Form = (props) => {
       <p>Nombre</p>
       <TextField
         required
-        id="nombre"
-        value={nombre}
+        id="name"
+        value={name}
         onChange={handleNombreChange}
         variant="outlined"
         style={{ width: '80%', marginTop: '3%', marginBottom: '3%', fontSize: '1.5rem'}}
@@ -71,7 +73,7 @@ const Form = (props) => {
       <Select
           labelId="demo-simple-select-label"
           id="demo-simple-select"
-          value={categoria}
+          value={category}
           onChange={handleCategoriaChange}
           style={{ width: '80%', marginTop: '3%', marginBottom: '3%', fontSize: '1.5rem'}}
         >
@@ -84,8 +86,8 @@ const Form = (props) => {
       <p>Descripción</p>
       <TextField
         required
-        id="descripcion"
-        value={descripcion}
+        id="description"
+        value={description}
         onChange={handleDescripcionChange}
         variant="outlined"
         style={{ width: '80%', marginTop: '3%', marginBottom: '3%', fontSize: '1.5rem'}}
@@ -93,8 +95,8 @@ const Form = (props) => {
       <p>Precio</p>
       <TextField
         required
-        id="precio"
-        value={precio}
+        id="unitPrice"
+        value={unitPrice}
         onChange={handlePrecioChange}
         variant="outlined"
         style={{ width: '80%', marginTop: '3%', marginBottom: '3%', fontSize: '1.3rem'}}

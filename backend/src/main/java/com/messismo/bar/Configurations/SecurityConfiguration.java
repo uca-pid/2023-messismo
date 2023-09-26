@@ -40,6 +40,7 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable);
+        http.cors();
         http.authorizeHttpRequests(auth -> {
             auth.requestMatchers(new AntPathRequestMatcher("/api/v1/auth/**")).permitAll();
             auth.requestMatchers(new AntPathRequestMatcher("/api/v1/admin/**")).hasRole(ADMIN.name());
