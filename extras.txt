@@ -1,2 +1,0 @@
-#    volumes:
-#      - C:\Users\Usuario\Documents\bar:/app
