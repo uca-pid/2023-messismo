@@ -8,7 +8,7 @@
     "@fontsource/roboto": "^5.0.8",
     "@mui/icons-material": "^5.14.9",
     "@mui/material": "^5.14.9",
-    "@mui/styles": "^5.14.10",
+    "@mui/styles": "^5.14.9",
     "@react-navigation/native": "^6.1.7",
     "@react-navigation/stack": "^6.3.17",
     "@reduxjs/toolkit": "^1.9.5",
