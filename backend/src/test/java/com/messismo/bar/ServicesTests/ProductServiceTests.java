@@ -124,12 +124,21 @@ public class ProductServiceTests {
     }
 
     @Test
-    public void testProductServiceAddProduct_WithNullCDescription() {
+    public void testProductServiceAddProduct_WithNullDescription() {
         ProductDTO productDTO1 = new ProductDTO("Pollito", 4.99, "Entrada", null);
 
         ResponseEntity<String> response = ResponseEntity.status(HttpStatus.CONFLICT).body("Missing information to create a  product");
         assertEquals(response, productService.addProduct(productDTO1));
         verify(productRepository, times(0)).findByName(productDTO1.getName());
+    }
+
+    @Test
+    public void testProductServiceCannotAddProduct() {
+        ProductDTO productDTO1 = new ProductDTO("Pizza", 4.99, "Plato principal", "Con queso Provolone");
+
+        ResponseEntity<String> response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Product NOT created");
+        when(productRepository.findByName(productDTO1.getName())).thenThrow(new RuntimeException("Simulated Exception"));
+        assertEquals(response, productService.addProduct(productDTO1));
     }
 
     @Test

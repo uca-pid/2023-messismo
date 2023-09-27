@@ -11,15 +11,9 @@ public class TokenTests {
 
     @Test
     public void testTokenCreation() {
-        Token testToken = Token.builder()
-                .id(1L)
-                .token("testToken")
-                .tokenType(TokenType.BEARER)
-                .revoked(false)
-                .expired(false)
-                .user(new User())
-                .build();
-
+        Token testToken = Token.builder().id(1L).token("testToken").tokenType(TokenType.BEARER).revoked(false).expired(false).user(new User()).build();
+        Long id = 1L;
+        assertEquals(id, testToken.getId());
         assertEquals("testToken", testToken.getToken());
         assertEquals(TokenType.BEARER, testToken.getTokenType());
         assertFalse(testToken.isRevoked());

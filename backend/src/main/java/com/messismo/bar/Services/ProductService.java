@@ -49,7 +49,6 @@ public class ProductService {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Missing information to create a  product");
         }
         try {
-
             Optional<Product> product = productRepository.findByName(productDTO.getName());
             if (product.isPresent()) {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body("The product already exists");

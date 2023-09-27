@@ -3,11 +3,13 @@ package com.messismo.bar.ServicesTests;
 import com.messismo.bar.DTOs.AuthenticationRequestDTO;
 import com.messismo.bar.DTOs.RegisterRequestDTO;
 import com.messismo.bar.Entities.Role;
+import com.messismo.bar.Entities.Token;
 import com.messismo.bar.Entities.User;
 import com.messismo.bar.Repositories.TokenRepository;
 import com.messismo.bar.Repositories.UserRepository;
 import com.messismo.bar.Services.AuthenticationService;
 import com.messismo.bar.Services.JwtService;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -21,8 +23,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -135,17 +140,20 @@ public class AuthenticationServiceTests {
         AuthenticationRequestDTO authenticationRequestDTO = new AuthenticationRequestDTO();
         authenticationRequestDTO.setEmail("invalidUser");
         authenticationRequestDTO.setPassword("invalidPassword");
-        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenThrow(new AuthenticationException("Invalid credentials") {});
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenThrow(new AuthenticationException("Invalid credentials") {
+        });
 
         ResponseEntity<String> response = ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid user credentials");
         assertEquals(response.getStatusCode(), authenticationService.authenticate(authenticationRequestDTO).getStatusCode());
     }
+
     @Test
     public void testAuthenticationServiceLoginUser_NullUsername() {
         AuthenticationRequestDTO authenticationRequestDTO = new AuthenticationRequestDTO();
         authenticationRequestDTO.setEmail(null);
         authenticationRequestDTO.setPassword("invalidPassword");
-        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenThrow(new AuthenticationException("Invalid credentials") {});
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenThrow(new AuthenticationException("Invalid credentials") {
+        });
 
         ResponseEntity<String> response = ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Missing data for user login");
         assertEquals(response.getStatusCode(), authenticationService.authenticate(authenticationRequestDTO).getStatusCode());
@@ -156,10 +164,24 @@ public class AuthenticationServiceTests {
         AuthenticationRequestDTO authenticationRequestDTO = new AuthenticationRequestDTO();
         authenticationRequestDTO.setEmail("validUsername");
         authenticationRequestDTO.setPassword(null);
-        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenThrow(new AuthenticationException("Invalid credentials") {});
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenThrow(new AuthenticationException("Invalid credentials") {
+        });
 
         ResponseEntity<String> response = ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Missing data for user login");
         assertEquals(response.getStatusCode(), authenticationService.authenticate(authenticationRequestDTO).getStatusCode());
+    }
+
+    @Test
+    public void testRevokeAllUserTokens() {
+        TokenRepository tokenRepository = mock(TokenRepository.class);
+        User user = new User();
+        List<Token> validTokens = new ArrayList<>();
+        when(tokenRepository.findAllValidTokenByUser(user.getId())).thenReturn(validTokens);
+        authenticationService.revokeAllUserTokens(user);
+        for (Token token : validTokens) {
+            Assertions.assertTrue(token.isRevoked());
+            Assertions.assertTrue(token.isExpired());
+        }
     }
 }
 

@@ -109,4 +109,13 @@ public class JwtServiceTests {
         return Jwts.builder().setSubject(username).setExpiration(expiration).signWith(signingKey, SignatureAlgorithm.HS256).compact();
     }
 
+        @Test
+        public void testGenerateRefreshToken() {
+            User user1 = new User(1L, "admin", "admin@mail.com", "password1", Role.ADMIN);
+            String refreshToken = jwtService.generateRefreshToken(user1);
+            Assertions.assertNotNull(refreshToken);
+            Assertions.assertFalse(refreshToken.isEmpty());
+
+    }
+
 }
