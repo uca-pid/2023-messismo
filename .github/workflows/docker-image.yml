@@ -44,9 +44,9 @@ jobs:
         run: |
           if [ -d "backend" ]; then
             cd backend && echo "Changed directory to backend"
-            echo "::set-output name=directory_changed::true"
+            echo "directory_changed=true" >> $GITHUB_OUTPUT
           else
-            echo "::set-output name=directory_changed::false"
+            echo "directory_changed=false" >> $GITHUB_OUTPUT
           fi
         shell: bash
 
