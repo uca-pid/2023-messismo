@@ -132,7 +132,7 @@
                         <exclude>**/Configurations/*.class</exclude>
 						<exclude>**/Controllers/*.class</exclude>
 						<exclude>**/Exceptions/*.class</exclude>
-						<exclude>**/BarApplication.java.class</exclude>
+						<exclude>**/BarApplication.java</exclude>
                     </excludes>
                 </configuration>
 				<executions>
