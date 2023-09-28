@@ -8,6 +8,8 @@ import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { useSlotProps } from "@mui/base";
 import productsService from "../services/products.service";
 import { useSelector, useDispatch } from 'react-redux';
+import FormValidation from "../FormValidation";
+
 const EditForm = (props) => {
   const [nombre, setNombre] = useState("");
   const [categoria, setCategoria] = useState("");
@@ -16,6 +18,7 @@ const EditForm = (props) => {
   const { user: currentUser } = useSelector((state) => state.auth);
   const token = currentUser.access_token
   const role = currentUser.role
+  const [errors, setErrors] = useState({});
   
   const handleNombreChange = (event) => {
     setNombre(event.target.value);
@@ -38,27 +41,35 @@ const EditForm = (props) => {
   };
 
   const handleEditProduct = () => {
-    // Gather the data entered in the form
-   
+    
+    const validationErrors = FormValidation({
+      price: precio,
+    });
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      console.log(validationErrors);
+    } else {
 
     props.onClose();
 
     productsService.updateProductPrice(props.product.productId, precio)
     window.location.reload(); 
 
-    // Reset the form fields
+
     setNombre("");
     setCategoria("");
     setDescripcion("");
     setPrecio("");
 
-
+    }
   }
 
   return (
     <div>
-      <h2 style={{ marginBottom: "7%", fontSize: '1.3rem'}}>Editar Producto</h2>
-      <p>Nombre</p>
+      <h1 style={{ marginBottom: "5%", fontSize: '2 rem'}}>Edit Product Price</h1>
+      
+      {/* <p>Name</p>
       <TextField
         disabled
         id="nombre"
@@ -66,14 +77,18 @@ const EditForm = (props) => {
         variant="outlined"
         style={{ width: "80%", marginTop: '3%', marginBottom: '3%', fontSize: '1.3rem'}}
         defaultValue={props.product.name}
+        InputProps={{
+          style: {
+            fontSize: '1.5rem', 
+          },}}
       />
-      <p>Categoria</p>
+      <p>Category</p>
       <Select
         disabled
         labelId="demo-simple-select-label"
         id="demo-simple-select"
         onChange={handleCategoriaChange}
-        style={{ width: "80%", marginTop: '3%', marginBottom: '3%', fontSize: '1.3rem'}}
+        style={{ width: "80%", marginTop: '3%', marginBottom: '3%', fontSize: '1.5rem'}}
         defaultValue={props.product.category}
       >
         <MenuItem value={"Entradas"}>Entradas</MenuItem>
@@ -82,7 +97,7 @@ const EditForm = (props) => {
         <MenuItem value={"Bebidas sin alcohol"}>Bebidas sin alcohol</MenuItem>
         <MenuItem value={"Postres"}>Postres</MenuItem>
       </Select>
-      <p>Descripción</p>
+      <p>Description</p>
       <TextField
         disabled
         id="descripcion"
@@ -90,8 +105,13 @@ const EditForm = (props) => {
         variant="outlined"
         style={{ width: "80%", marginTop: '3%', marginBottom: '3%' }}
         defaultValue={props.product.description}
-      />
-      <p>Precio</p>
+        InputProps={{
+          style: {
+            fontSize: '1.5rem', 
+          },}}
+      /> */}
+      
+      <p style={{ color: errors.price ? "red" : "black" }}>Price</p>
       {role === "ADMIN" || role=== "MANAGER" ? (
         <div>
           <TextField
@@ -99,8 +119,21 @@ const EditForm = (props) => {
             id="precio"
             onChange={handlePrecioChange}
             variant="outlined"
+            value={precio}
+            error={errors.price ? true : false}
+            helperText={errors.price || ''}
             style={{ width: "80%", marginTop: '3%', marginBottom: '3%' }}
             defaultValue={props.product.unitPrice}
+            InputProps={{
+              style: {
+                fontSize: '1.5rem', 
+                inputMode: 'numeric', pattern: '[0-9]*'
+              },}}
+              FormHelperTextProps={{
+                style: {
+                  fontSize: '1.1rem', 
+                },
+              }}
           />
         </div>
       ) : (
@@ -109,6 +142,10 @@ const EditForm = (props) => {
           id="outlined-disabled"
           style={{ width: "80%" }}
           defaultValue={props.product.unitPrice}
+          InputProps={{
+            style: {
+              fontSize: '1.5rem', 
+            },}}
         />
       )}
       <div className="buttons-add">
@@ -117,7 +154,7 @@ const EditForm = (props) => {
           style={{ color: "grey", borderColor: "grey", width: "40%", fontSize: '1.3rem' }}
           onClick={cancelarButton}
         >
-          Cancelar
+          Cancel
         </Button>
         <Button
           variant="contained"
@@ -130,7 +167,7 @@ const EditForm = (props) => {
           }}
           onClick={handleEditProduct}
         >
-          Guardar
+          Save
         </Button>
       </div>
     </div>
