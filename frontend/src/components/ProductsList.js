@@ -19,6 +19,7 @@ import EditForm from "./EditForm";
 import { makeStyles } from "@mui/styles";
 import productsService from "../services/products.service";
 import { useSelector, useDispatch } from "react-redux";
+import Tooltip from "@mui/material/Tooltip";
 
 const ProductsList = () => {
   const [userType, setUserType] = useState("admin");
@@ -151,25 +152,34 @@ const ProductsList = () => {
           <div className="product">
             <div className="firstLine">
               <div className="names">
+                <div className="name">
                 <p className="text" style={{ fontWeight: "bold" }}>
                   {producto.name}
                 </p>
+                </div>
+                <div className="category">
+                <p className="text" >{producto.category}</p>
+                </div>
                 <p className="text">{producto.unitPrice}</p>
               </div>
               <div className="buttons-edit">
               {role === "ADMIN" || role === "MANAGER" ? (
+                <Tooltip title="Edit Price" arrow style={{ fontSize: "2rem" }}>
                 <IconButton
                   aria-label="edit"
                   size="large"
                   color="red"
                   onClick={() => handleEditClick(producto)}
+                  title="Edit Price"
                 >
                   <EditIcon style={{ fontSize: "2rem" }} />
                 </IconButton>
+                </Tooltip>
               ) : (
                 console.log((""))
               )}
                 {role === "ADMIN" || role === "MANAGER" ? (
+                   <Tooltip title="Delete Product" arrow style={{ fontSize: "2rem" }}>
                   <IconButton
                     aria-label="delete"
                     size="large"
@@ -178,6 +188,8 @@ const ProductsList = () => {
                   >
                     <DeleteIcon style={{ fontSize: "2rem" }} />
                   </IconButton>
+                  </Tooltip>
+                  
                 ) : (
                   console.log("hola")
                 )}
@@ -185,7 +197,6 @@ const ProductsList = () => {
             </div>
             <div className="final-line">
               <p className="descripcion">{producto.description}</p>
-              <p className="categoria">{producto.category}</p>
             </div>
           </div>
         </div>
@@ -225,12 +236,12 @@ const ProductsList = () => {
             },
           }}
         >
-          <DialogTitle id="alert-dialog-title" style={{fontSize: '2 rem'}}>
+          <DialogTitle id="alert-dialog-title" style={{fontSize: '1.8rem'}}>
             {selectedProduct &&
-              <span className="texto-grande">{`Are you sure you want to delete the product ${selectedProduct.name}?`} </span> }
+              `Are you sure you want to delete the product ${selectedProduct.name}?` }
           </DialogTitle>
           <DialogContent>
-            <DialogContentText id="alert-dialog-description" className="texto-grande" style={{fontSize: '1.3rem'}}>
+            <DialogContentText id="alert-dialog-description" style={{fontSize: '1.3rem'}}>
               The product will be permanently deleted
             </DialogContentText>
           </DialogContent>
