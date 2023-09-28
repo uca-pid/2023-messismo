@@ -115,6 +115,7 @@ const Form = (props) => {
         InputProps={{
           style: {
             fontSize: '1.5rem', 
+            inputMode: 'numeric', pattern: '[0-9]*'
           },}}
       />
       <div className="buttons-add">

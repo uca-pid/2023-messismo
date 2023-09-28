@@ -136,6 +136,8 @@ function Navbar() {
     const dispatch = useDispatch();
     const [showManagerBoard, setShowManagerBoard] = useState(false);
     const [showAdminBoard, setShowAdminBoard] = useState(false);
+    const [showValidatedEmployeeBoard, setShowValidatedEmployeeBoard] = useState(false);
+    const [showEmployeeBoard, setShowEmployeeBoard] = useState(false);
 
     const { user: currentUser } = useSelector((state) => state.auth);
     
@@ -143,6 +145,8 @@ function Navbar() {
         if (currentUser) {
             setShowManagerBoard(currentUser.role === "MANAGER");
             setShowAdminBoard(currentUser.role === "ADMIN");
+            setShowEmployeeBoard(currentUser.role === "EMPLOYEE")
+            setShowValidatedEmployeeBoard(currentUser.role === "VALIDATEDEMPLOYEE")
         } else {
             setShowManagerBoard(false);
             setShowAdminBoard(false);
@@ -171,7 +175,7 @@ function Navbar() {
                     <span>Home</span>
                 </NavLink>
 
-                {(showManagerBoard || showAdminBoard) && (
+                {(showManagerBoard || showAdminBoard || showEmployeeBoard || showValidatedEmployeeBoard) && (
                     <NavLink to={'/products'} onClick={clicked ? handleClick : undefined}>
                         <PiCoffeeFill className='icon'/>
                         <span>Products</span>

@@ -114,6 +114,7 @@ const ProductsList = () => {
   return (
     <div className="container">
       <div className="add-product">
+      {role === "ADMIN" || role === "MANAGER" || role === "VALIDATEDEMPLOYEE"? (
         <Button
           variant="contained"
           endIcon={<AddIcon />}
@@ -128,6 +129,9 @@ const ProductsList = () => {
         >
           Add Product
         </Button>
+        ) : (
+           console.log("")
+        )}
       </div>
       <Dialog
         open={openFormModal}
@@ -153,6 +157,7 @@ const ProductsList = () => {
                 <p className="text">{producto.unitPrice}</p>
               </div>
               <div className="buttons-edit">
+              {role === "ADMIN" || role === "MANAGER" ? (
                 <IconButton
                   aria-label="edit"
                   size="large"
@@ -161,11 +166,14 @@ const ProductsList = () => {
                 >
                   <EditIcon style={{ fontSize: "2rem" }} />
                 </IconButton>
+              ) : (
+                console.log((""))
+              )}
                 {role === "ADMIN" || role === "MANAGER" ? (
                   <IconButton
                     aria-label="delete"
                     size="large"
-                    style={{ color: "red", fontSize: "1.5rem" }}
+                    style={{ color: "red", fontSize: "1.5 rem" }}
                     onClick={() => handleDeleteClick(producto)}
                   >
                     <DeleteIcon style={{ fontSize: "2rem" }} />
@@ -217,7 +225,7 @@ const ProductsList = () => {
             },
           }}
         >
-          <DialogTitle id="alert-dialog-title" style={{fontSize: '1.3rem'}}>
+          <DialogTitle id="alert-dialog-title" style={{fontSize: '2 rem'}}>
             {selectedProduct &&
               <span className="texto-grande">{`Are you sure you want to delete the product ${selectedProduct.name}?`} </span> }
           </DialogTitle>

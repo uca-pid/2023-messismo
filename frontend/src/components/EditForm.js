@@ -57,8 +57,9 @@ const EditForm = (props) => {
 
   return (
     <div>
-      <h1 style={{ marginBottom: "5%", fontSize: '2 rem'}}>Edit Product</h1>
-      <p>Name</p>
+      <h1 style={{ marginBottom: "5%", fontSize: '2 rem'}}>Edit Product Price</h1>
+      
+      {/* <p>Name</p>
       <TextField
         disabled
         id="nombre"
@@ -98,7 +99,8 @@ const EditForm = (props) => {
           style: {
             fontSize: '1.5rem', 
           },}}
-      />
+      /> */}
+      
       <p>Price</p>
       {role === "ADMIN" || role=== "MANAGER" ? (
         <div>
@@ -112,6 +114,7 @@ const EditForm = (props) => {
             InputProps={{
               style: {
                 fontSize: '1.5rem', 
+                inputMode: 'numeric', pattern: '[0-9]*'
               },}}
           />
         </div>
