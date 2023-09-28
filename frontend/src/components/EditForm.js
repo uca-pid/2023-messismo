@@ -8,6 +8,8 @@ import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { useSlotProps } from "@mui/base";
 import productsService from "../services/products.service";
 import { useSelector, useDispatch } from 'react-redux';
+import FormValidation from "../FormValidation";
+
 const EditForm = (props) => {
   const [nombre, setNombre] = useState("");
   const [categoria, setCategoria] = useState("");
@@ -16,6 +18,7 @@ const EditForm = (props) => {
   const { user: currentUser } = useSelector((state) => state.auth);
   const token = currentUser.access_token
   const role = currentUser.role
+  const [errors, setErrors] = useState({});
   
   const handleNombreChange = (event) => {
     setNombre(event.target.value);
@@ -38,21 +41,28 @@ const EditForm = (props) => {
   };
 
   const handleEditProduct = () => {
-    // Gather the data entered in the form
-   
+    
+    const validationErrors = FormValidation({
+      price: precio,
+    });
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      console.log(validationErrors);
+    } else {
 
     props.onClose();
 
     productsService.updateProductPrice(props.product.productId, precio)
     window.location.reload(); 
 
-    // Reset the form fields
+
     setNombre("");
     setCategoria("");
     setDescripcion("");
     setPrecio("");
 
-
+    }
   }
 
   return (
@@ -101,7 +111,7 @@ const EditForm = (props) => {
           },}}
       /> */}
       
-      <p>Price</p>
+      <p style={{ color: errors.price ? "red" : "black" }}>Price</p>
       {role === "ADMIN" || role=== "MANAGER" ? (
         <div>
           <TextField
@@ -109,6 +119,9 @@ const EditForm = (props) => {
             id="precio"
             onChange={handlePrecioChange}
             variant="outlined"
+            value={precio}
+            error={errors.price ? true : false}
+            helperText={errors.price || ''}
             style={{ width: "80%", marginTop: '3%', marginBottom: '3%' }}
             defaultValue={props.product.unitPrice}
             InputProps={{
@@ -116,6 +129,11 @@ const EditForm = (props) => {
                 fontSize: '1.5rem', 
                 inputMode: 'numeric', pattern: '[0-9]*'
               },}}
+              FormHelperTextProps={{
+                style: {
+                  fontSize: '1.1rem', 
+                },
+              }}
           />
         </div>
       ) : (

@@ -8,11 +8,15 @@ function FormValidation(values) {
     }
 
     else if (!priceRegex.test(values.price)) {
-        error.email = "Invalid price"
+        error.price = "Invalid price"
     }
     
-    if(values.name === "" || values.category === "" ) {
-        error.password = "Field is empty"
+    if(values.name === "" ) {
+        error.name = "Field is empty"
+    } 
+
+    if(values.category === "" ) {
+        error.category = "Field is empty"
     } 
     
 
