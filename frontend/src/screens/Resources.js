@@ -140,6 +140,8 @@ function Resources() {
   const clicked = useSelector((state) => state.navigation.clicked);
 
   const [allEmployees, setAllEmployees] = useState([]);
+  const actualUserRole = currentUser.role;
+
 
   useEffect(() => {
     employeeService
@@ -212,14 +214,16 @@ function Resources() {
       )}
       {user.role === "VALIDATEDEMPLOYEE" && (
         <div>
+          { actualUserRole === "ADMIN" && (
           <Button
             className="button-upgrade"
             onClick={() => handleUpgrade(user.id)}
           >
             Upgrade
           </Button>
-          {/* <Button className="button-delete" onClick={() => handleDelete(user.id)}>Delete</Button> */}
+          )}
         </div>
+        
       )}
     </div>
   );
