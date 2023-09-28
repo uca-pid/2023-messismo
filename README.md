@@ -26,7 +26,7 @@
 - En la primera pestaña, General, solo ingresar en Name: "postgres"
 - En la segunda pestaña, Connection, ingresar en Host name/address: "192.168.55.11", en Username: "postgres" y en Password: "postgres"
 
-De esta forma, se configura por unica vez el proyecto, en un futuro solo se requiere entrar a Docker Desktop y correr el paquete de contenedor denominado 2023_messismo. También se puede correr con el siguiente comando desde la terminal: `./mvnw clean package && docker build -t springboot --platform linux/amd64 . && docker-compose-up`
+De esta forma, se configura por unica vez el proyecto, en un futuro solo se requiere entrar a Docker Desktop y correr el paquete de contenedor denominado 2023_messismo. También se puede correr con el siguiente comando desde la terminal: `./mvnw clean package && docker-compose-up`
 Los archivos mvnw y mvnw.cmd deben estar en formato LF.
 ## INSTRUCCIONES PARA MAC OS
 1. Descargar e instalar Java SDK 17, se consigue en [Java SDK 17](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html)
@@ -45,7 +45,7 @@ Los archivos mvnw y mvnw.cmd deben estar en formato LF.
 - En la primera pestaña, General, solo ingresar en Name: "postgres"
 - En la segunda pestaña, Connection, ingresar en Host name/address: "192.168.55.11", en Username: "postgres" y en Password: "postgres"
 
-De esta forma, se configura por unica vez el proyecto, en un futuro solo se requiere entrar a Docker Desktop y correr el paquete de contenedor denominado 2023_messismo. También se puede correr con el siguiente comando desde la terminal: `./mvnw clean package && docker build -t springboot --platform linux/amd64 . && docker-compose-up`
+De esta forma, se configura por unica vez el proyecto, en un futuro solo se requiere entrar a Docker Desktop y correr el paquete de contenedor denominado 2023_messismo. También se puede correr con el siguiente comando desde la terminal: `./mvnw clean package && docker-compose-up`
 Los archivos mvnw y mvnw.cmd deben estar en formato LF.
 
 ## Otras consideraciones:
