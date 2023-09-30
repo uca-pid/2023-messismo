@@ -38,13 +38,17 @@ const BackgroundBox = styled.div`
     .signintext{
         z-index: ${props => props.clicked ? "-600": "500"};
         transform: ${props => props.clicked ? "none": "0%"};
-        transition: transform 0.5s ease-in-out;
+        transition: transform 0.5s ease-in-out;        
     }
 
     .signuptext{
         z-index: ${props => props.clicked ? "500": "-600"};
         transform: ${props => props.clicked ? "100%": "none"};
         transition: transform 0.5s ease-in-out;
+    }
+
+    @media(max-width: 768px){
+        width: 100%;
     }
 `;
 
@@ -171,7 +175,7 @@ const NavLink = styled(Link)`
 `;
 
 const Title = styled.h1`
-    font-size: 3.5rem;
+    font-size: 4em;
     margin-bottom: 2rem;
     font-family: 'Roboto',serif;
     color: #a7d0cd;
@@ -184,18 +188,17 @@ const ForgotLink = styled.a`
     margin-top: 1.5rem;
     font-size: 1.1rem;
     font-family: 'Roboto',serif;
+    text-align: center;
 `;
 
 const ButtonAnimate = styled.button`
-    position: absolute;
     z-index: 1000;
     border: none;
     cursor: pointer;
-    background-color: transparent;
     color: white;
     font-family: 'Roboto',serif;
-    background-color: rgba(167, 208, 205, 0.2);
-    padding: 10px;
+    background-color: rgba(167, 208, 205, 0);
+
     text-align: center;
     top: 60%;
     
@@ -206,7 +209,7 @@ const ButtonAnimate = styled.button`
 
     &::before{
         content: "Click Here";
-        font-size: 2rem;
+        font-size: 1.5em;
     }
 
     &:focus{
@@ -222,13 +225,13 @@ const Text = styled.div`
     flex-direction: column;
     align-items: center;
     text-align: center;
-    font-size: 1.5rem;
     letter-spacing: 0.1rem;
     color: white;
     font-family: 'Roboto',serif;
     background-color: rgba(167, 208, 205, 0.2);
     padding: 10px;
     display: ${props => (props.show ? 'block' : 'none')};
+    font-size: 2em;
 `;
 
 const ErrorMessage = styled.h4`
@@ -445,13 +448,15 @@ function SignInUpForm(){
 
             <Box2 clicked={click}>
                 <Text className='signintext' show={!click}>
-                    <h1>Welcome Back</h1>
+                    Welcome Back
+                    <br />
                     Don't have an account yet?
                     <br />
                     <ButtonAnimate clicked={click} onClick={handleClick}></ButtonAnimate>
                 </Text>
                 <Text className='signuptext' show={click}>
-                    <h1>Hi There</h1>
+                    Hi There
+                    <br />
                     Already have an account?
                     <br />
                     <ButtonAnimate clicked={click} onClick={handleClick}></ButtonAnimate>
