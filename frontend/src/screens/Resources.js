@@ -136,7 +136,6 @@ const Subheader = styled.h2`
 
 function Resources() {
   const { user: currentUser } = useSelector((state) => state.auth);
-  const users = useSelector((state) => state.users);
   const clicked = useSelector((state) => state.navigation.clicked);
 
   const [allEmployees, setAllEmployees] = useState([]);
@@ -171,13 +170,6 @@ function Resources() {
   const isAdminOrManager =
     currentUser &&
     (currentUser.role === "MANAGER" || currentUser.role === "ADMIN");
-
-  const dispatch = useDispatch();
-
-  const employees = users.filter((user) => user.role === "EMPLOYEE");
-  const validated = users.filter((user) => user.role === "VALIDATEDEMPLOYEE");
-  const managers = users.filter((user) => user.role === "MANAGER");
-  const admins = users.filter((user) => user.role === "ADMIN");
 
   const contentVisible = !clicked;
 
@@ -228,6 +220,17 @@ function Resources() {
     </div>
   );
 
+  const renderAdmin = (user) => (
+    <div key={user.id} className="user-data">
+      <h3 className="user-username">{user.username}</h3>
+      
+      {actualUserRole === "ADMIN" && <p className="user-email">{user.email}</p>}
+
+      <p className="user-role">{user.role}</p>
+
+    </div>
+  );
+
   return (
     <Container>
       <Navbar />
@@ -273,7 +276,7 @@ function Resources() {
               <Resource>
                 {allEmployees
                   .filter((user) => user.role === "ADMIN")
-                  .map(renderUser)}
+                  .map(renderAdmin)}
               </Resource>
             </UserItem>
           )}
