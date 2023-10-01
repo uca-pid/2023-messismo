@@ -75,7 +75,7 @@ const Resource = styled.div`
       text-align: center;
     }
 
-    @media(max-width: 768px){
+    @media(max-width: 600px){
       width: 100%;
       height: 8em;
     }
@@ -175,9 +175,7 @@ function Resources() {
     window.location.reload();
   };
 
-  const isAdminOrManager =
-    currentUser &&
-    (currentUser.role === "MANAGER" || currentUser.role === "ADMIN");
+  const isAdminOrManager = currentUser && (currentUser.role === "MANAGER" || currentUser.role === "ADMIN");
 
   const contentVisible = !clicked;
 
@@ -261,12 +259,11 @@ function Resources() {
     <Container>
       <Navbar />
       <MainContent visible={contentVisible}>
-        <Title>RESOURCES</Title>
         <UserContainer>
           {allEmployees.filter((user) => user.role === "EMPLOYEE").length >
             0 && (
             <UserItem>
-              <Subheader>Employees</Subheader>
+              <Subheader>Pending Approval</Subheader>
               <Resource> 
                 {allEmployees
                   .filter((user) => user.role === "EMPLOYEE")
@@ -277,7 +274,7 @@ function Resources() {
           {allEmployees.filter((user) => user.role === "VALIDATEDEMPLOYEE")
             .length > 0 && (
             <UserItem>
-              <Subheader>Validated Employees</Subheader>
+              <Subheader>Employees</Subheader>
               <Resource>
                 {allEmployees
                   .filter((user) => user.role === "VALIDATEDEMPLOYEE")

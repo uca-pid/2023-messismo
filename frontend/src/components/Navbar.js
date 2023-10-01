@@ -4,6 +4,7 @@ import { FaHome } from 'react-icons/fa'
 import { BsPersonCircle } from 'react-icons/bs'
 import { PiCoffeeFill } from 'react-icons/pi'
 import { ImExit } from 'react-icons/im'
+import { HiShoppingBag } from 'react-icons/hi2'
 import { styled } from 'styled-components'
 import { Link, useNavigate } from 'react-router-dom'
 import BurgerIcon from './BurgerIcon'
@@ -11,7 +12,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import { toggleClicked } from '../redux/navSlice';
 import { Navigate } from 'react-router-dom';
 import { logout } from "../redux/auth";
-
 
 const NavLink = styled(Link)`
 
@@ -41,12 +41,12 @@ const NavContainer = styled.nav`
     align-items: center;
     justify-content: space-between;
 
-    @media(min-width: 768px){
+    @media(min-width: 800px){
         justify-content: center;
     }
 
     .burger{
-        @media(min-width: 768px){
+        @media(min-width: 800px){
             display: none;
         }
     }
@@ -67,7 +67,7 @@ const NavContainer = styled.nav`
             display: block;
         }
 
-        @media(min-width: 768px){
+        @media(min-width: 800px){
             position: initial;
             margin: 0;
 
@@ -179,6 +179,13 @@ function Navbar() {
                     <NavLink to={'/products'} onClick={clicked ? handleClick : undefined}>
                         <PiCoffeeFill className='icon'/>
                         <span>Products</span>
+                    </NavLink>
+                )}
+
+                {(showManagerBoard || showAdminBoard || showEmployeeBoard || showValidatedEmployeeBoard) && (
+                    <NavLink to={'/orders'} onClick={clicked ? handleClick : undefined}>
+                        <HiShoppingBag className='icon'/>
+                        <span>Orders</span>
                     </NavLink>
                 )}
 

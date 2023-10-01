@@ -5,6 +5,7 @@ import Welcome from "./screens/Welcome";
 import SignInUpForm from "./screens/SignInUpForm";
 import Home from "./screens/Home";
 import Products from "./screens/Products";
+import Orders from "./screens/Orders";
 import Resources from "./screens/Resources";
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
           <Route path="/signinupform" element={<SignInUpForm />} />
           <Route path="/homepage" element={<Home />} />
           <Route path="/products" element={<Products />} />
+          <Route path="/orders" element={<Orders />} />
           <Route path="/resources" element={<Resources />} />
         </Routes>
       </BrowserRouter>
