@@ -13,13 +13,12 @@ public class ProductDTO {
 
     private String name;
 
-
     private Double unitPrice;
-
 
     private String category;
 
-
     private String description;
+
+    private Integer stock;
 
 }

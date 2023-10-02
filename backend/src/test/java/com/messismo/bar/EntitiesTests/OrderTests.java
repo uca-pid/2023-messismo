@@ -1,2 +1,4 @@
-package com.messismo.bar.EntitiesTests;public class OrderTests {
+package com.messismo.bar.EntitiesTests;
+
+public class OrderTests {
 }

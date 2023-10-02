@@ -16,10 +16,6 @@ public class AdminController {
 
     private final UserService userService;
 
-//    @PutMapping("/validateAdmin/{employeeId}")
-//    public ResponseEntity<?> validateEmployee(@PathVariable Long employeeId) {
-//        return userService.validateAdmin(employeeId);
-//    }
 
    @PutMapping("/validateAdmin")
     public ResponseEntity<?> validateEmployee(@RequestBody UserIdDTO body) {

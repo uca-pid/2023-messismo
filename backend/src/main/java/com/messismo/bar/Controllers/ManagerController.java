@@ -1,7 +1,7 @@
 package com.messismo.bar.Controllers;
 
-import com.messismo.bar.DTOs.ProductPriceDTO;
-import com.messismo.bar.DTOs.UserIdDTO;
+import com.messismo.bar.DTOs.*;
+import com.messismo.bar.Services.CategoryService;
 import com.messismo.bar.Services.ProductService;
 import com.messismo.bar.Services.UserService;
 import lombok.RequiredArgsConstructor;
@@ -20,9 +20,16 @@ public class ManagerController {
 
     private final UserService userService;
 
+    private final CategoryService categoryService;
+
     @PutMapping("/product/updatePrice")
     public ResponseEntity<?> updateProductPrice(@RequestBody ProductPriceDTO body) {
         return productService.modifyProductPrice(body);
+    }
+
+    @PutMapping("/product/addStock")
+    public ResponseEntity<?> addProductStock(@RequestBody ProductStockDTO body) {
+        return productService.addProductStock(body);
     }
 
     @DeleteMapping("/product/deleteProduct/{productId}")
@@ -35,13 +42,19 @@ public class ManagerController {
         return userService.getAllEmployees();
     }
 
-//    @PutMapping("/validateEmployee/{userId}")
-//    public ResponseEntity<?> validateEmployee(@PathVariable Long userId) {
-//        return userService.validateEmployee(userId);
-//    }
-
     @PutMapping("/validateEmployee")
     public ResponseEntity<?> validateEmployee(@RequestBody UserIdDTO body) {
         return userService.validateEmployee(body.getUserId());
     }
+
+    @PostMapping("/category/addCategory")
+    public ResponseEntity<?> addProduct(@RequestBody CategoryRequestDTO categoryRequestDTO) {
+        return categoryService.addCategory(categoryRequestDTO);
+    }
+    @DeleteMapping("/category/deleteCategory")
+    public ResponseEntity<?> deleteCategory(@RequestBody CategoryRequestDTO categoryRequestDTO) {
+        return categoryService.deleteCategory(categoryRequestDTO);
+    }
+
+
 }
