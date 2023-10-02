@@ -1,12 +1,9 @@
-import React, { useState } from "react";
+import React, { useState} from "react";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import './Form.css'
 import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
-import { useSlotProps } from "@mui/base";
-import productsService from "../services/products.service";
 import FormValidation from "../FormValidation";
 
 const Form = (props) => {
@@ -57,7 +54,8 @@ const Form = (props) => {
       unitPrice,
     };
 
-    productsService.addProducts(newProductData);
+    //productsService.addProducts(newProductData);
+    props.onSave(newProductData);
     props.onClose();
 
   
@@ -72,7 +70,7 @@ const Form = (props) => {
   return (
     <div>
       <h1 style={{marginBottom: '5%'}}>New Product</h1>
-      <p style={{ color: errors.name ? "red" : "black" }}>Name</p>
+      <p style={{ color: errors.name ? "red" : "black" }}>Name *</p>
       <TextField
         required
         id="name"
@@ -92,7 +90,7 @@ const Form = (props) => {
             },
           }}
       />
-      <p style={{ color: errors.category ? "red" : "black" }}>Category</p>
+      <p style={{ color: errors.category ? "red" : "black" }}>Category *</p>
       <Select
           labelId="demo-simple-select-label"
           id="demo-simple-select"
@@ -130,7 +128,7 @@ const Form = (props) => {
             fontSize: '1.5rem', 
           },}}
       />
-      <p style={{ color: errors.price ? "red" : "black" }}>Price</p>
+      <p style={{ color: errors.price ? "red" : "black" }}>Price *</p>
       <TextField
         required
         id="unitPrice"
@@ -163,7 +161,7 @@ const Form = (props) => {
           variant="contained"
           style={{
             backgroundColor: "green",
-            color: "white",
+            color: "black",
             borderColor: "green",
             width: "40%",
             fontSize: '1.5rem'
