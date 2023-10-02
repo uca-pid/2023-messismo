@@ -23,7 +23,7 @@ public class ProductOrder {
     @JoinColumn(name = "order_id", referencedColumnName = "order_id")
     private Order order;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "product", referencedColumnName = "product_id")
     private Product product;
 

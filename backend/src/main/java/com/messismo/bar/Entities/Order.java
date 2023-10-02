@@ -24,7 +24,7 @@ public class Order {
     @Column(name = "order_id")
     private Long id;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "users", referencedColumnName = "id")
     private User user;
 
@@ -33,7 +33,7 @@ public class Order {
     @Column(name = "date_created")
     private Date dateCreated;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.MERGE)
     private List<ProductOrder> productOrders;
 
     @Column(name = "total_price")

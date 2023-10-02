@@ -1,26 +1,31 @@
 package com.messismo.bar.Configurations;
 
-import com.messismo.bar.DTOs.CategoryRequestDTO;
-import com.messismo.bar.DTOs.ProductDTO;
-import com.messismo.bar.DTOs.RegisterRequestDTO;
+import com.messismo.bar.DTOs.*;
 import com.messismo.bar.Entities.Role;
 import com.messismo.bar.Entities.User;
+import com.messismo.bar.Repositories.ProductRepository;
 import com.messismo.bar.Repositories.UserRepository;
 import com.messismo.bar.Services.AuthenticationService;
 import com.messismo.bar.Services.CategoryService;
+import com.messismo.bar.Services.OrderService;
 import com.messismo.bar.Services.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
 public class InitialConfiguration {
 
     @Bean
-    public CommandLineRunner commandLineRunner(AuthenticationService authenticationService, UserRepository userRepository, ProductService productService, CategoryService categoryService) {
+    public CommandLineRunner commandLineRunner(AuthenticationService authenticationService, UserRepository userRepository, ProductService productService, CategoryService categoryService, OrderService orderService, ProductRepository productRepository) {
         return args -> {
             RegisterRequestDTO admin = new RegisterRequestDTO();
             admin.setUsername("admin");
@@ -33,7 +38,36 @@ public class InitialConfiguration {
             addSampleEmployees(authenticationService, userRepository);
             addSampleCategories(categoryService);
             addSampleProducts(productService);
+            addSampleOrders(orderService,productRepository);
         };
+    }
+
+    private void addSampleOrders(OrderService orderService, ProductRepository productRepository) throws ParseException {
+        String userEmail1 = "john.smith@example.com";
+        String userEmail2 = "martinguido@gmail.com";
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date1 = dateFormat.parse("2023-08-04 08:10:43");
+        Date date2 = dateFormat.parse("2023-09-25 05:02:23");
+        Double totalPrice1 = 17800.00;
+        Double totalPrice2 = 44300.00;
+        List<ProductOrderDTO> productOrderDTOList1= new ArrayList<>();
+        List<ProductOrderDTO> productOrderDTOList2= new ArrayList<>();
+        ProductOrderDTO productOrderDTO1 = ProductOrderDTO.builder().product(productRepository.findByName("Tomato Bruschetta").get()).quantity(2).build();// 11000
+        ProductOrderDTO productOrderDTO2 = ProductOrderDTO.builder().product(productRepository.findByName("Fried Calamari").get()).quantity(1).build(); // 6800
+        productOrderDTOList1.add(productOrderDTO1);
+        productOrderDTOList1.add(productOrderDTO2);
+        ProductOrderDTO productOrderDTO3 = ProductOrderDTO.builder().product(productRepository.findByName("Tomato Bruschetta").get()).quantity(1).build(); // 5500
+        ProductOrderDTO productOrderDTO4 = ProductOrderDTO.builder().product(productRepository.findByName("Caramel Flan").get()).quantity(2).build(); // 12600
+        ProductOrderDTO productOrderDTO5 = ProductOrderDTO.builder().product(productRepository.findByName("Green Tea").get()).quantity(3).build(); //12600
+        ProductOrderDTO productOrderDTO6 = ProductOrderDTO.builder().product(productRepository.findByName("Craft Beer").get()).quantity(2).build(); // 13600
+        productOrderDTOList2.add(productOrderDTO3);
+        productOrderDTOList2.add(productOrderDTO4);
+        productOrderDTOList2.add(productOrderDTO5);
+        productOrderDTOList2.add(productOrderDTO6);
+        OrderRequestDTO orderRequestDTO1 = OrderRequestDTO.builder().productOrders(productOrderDTOList1).dateCreated(date1).registeredEmployeeEmail(userEmail1).totalPrice(totalPrice1).build();
+        System.out.println(orderService.addNewOrder(orderRequestDTO1));
+        OrderRequestDTO orderRequestDTO2 = OrderRequestDTO.builder().productOrders(productOrderDTOList2).dateCreated(date2).registeredEmployeeEmail(userEmail2).totalPrice(totalPrice2).build();
+        orderService.addNewOrder(orderRequestDTO2);
     }
 
 

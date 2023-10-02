@@ -55,4 +55,8 @@ public class OrderService {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("CANNOT create an order at the moment. " + e);
         }
     }
+
+    public ResponseEntity<?> getAllOrders() {
+        return ResponseEntity.status(HttpStatus.OK).body(orderRepository.findAll());
+    }
 }
