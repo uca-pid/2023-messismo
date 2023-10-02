@@ -39,26 +39,29 @@ public class AuthenticationService {
     private final TokenRepository tokenRepository;
 
     public ResponseEntity<?> register(RegisterRequestDTO request) {
-        if (request.getEmail() == null || request.getPassword() == null || request.getUsername() == null) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Missing data for user registration");
-        }
-        Optional<User> employeeByUsername = userRepository.findByUsername(request.getUsername());
-        Optional<User> employeeByMail = userRepository.findByEmail(request.getEmail());
-        if (employeeByUsername.isPresent() || employeeByMail.isPresent()) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("The user already exists");
-        } else {
-            User newEmployee = new User();
-            newEmployee.setUsername(request.getUsername());
-            newEmployee.setPassword(passwordEncoder.encode(request.getPassword()));
-            newEmployee.setEmail(request.getEmail());
-            newEmployee.setRole(Role.EMPLOYEE);
-            userRepository.save(newEmployee);
-            String jwtToken = jwtService.generateToken(newEmployee);
-            String refreshToken = jwtService.generateRefreshToken(newEmployee);
-            saveUserToken(newEmployee, jwtToken);
-            AuthenticationResponseDTO authenticationResponseDTO = new AuthenticationResponseDTO(jwtToken, refreshToken,
-                    newEmployee.getEmail(), newEmployee.getRole());
-            return ResponseEntity.status(HttpStatus.CREATED).body(authenticationResponseDTO);
+        try {
+            if (request.getEmail() == null || request.getPassword() == null || request.getUsername() == null) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("Missing data for user registration");
+            }
+            Optional<User> employeeByUsername = userRepository.findByUsername(request.getUsername());
+            Optional<User> employeeByMail = userRepository.findByEmail(request.getEmail());
+            if (employeeByUsername.isPresent() || employeeByMail.isPresent()) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("The user already exists");
+            } else {
+                User newEmployee = new User();
+                newEmployee.setPassword(passwordEncoder.encode(request.getPassword()));
+                newEmployee.setEmail(request.getEmail());
+                newEmployee.setUsername(request.getUsername());
+                newEmployee.setRole(Role.EMPLOYEE);
+                userRepository.save(newEmployee);
+                String jwtToken = jwtService.generateToken(newEmployee);
+                String refreshToken = jwtService.generateRefreshToken(newEmployee);
+                saveUserToken(newEmployee, jwtToken);
+                AuthenticationResponseDTO authenticationResponseDTO = new AuthenticationResponseDTO(jwtToken, refreshToken, newEmployee.getEmail(), newEmployee.getRole());
+                return ResponseEntity.status(HttpStatus.CREATED).body(authenticationResponseDTO);
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User CANNOT be created" + e);
         }
     }
 
@@ -67,15 +70,13 @@ public class AuthenticationService {
             if (request.getEmail() == null || request.getPassword() == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Missing data for user login");
             }
-            authenticationManager
-                    .authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
             User user = userRepository.findByEmail(request.getEmail()).orElseThrow();
             String jwtToken = jwtService.generateToken(user);
             String refreshToken = jwtService.generateRefreshToken(user);
             revokeAllUserTokens(user);
             saveUserToken(user, jwtToken);
-            AuthenticationResponseDTO authenticationResponseDTO = new AuthenticationResponseDTO(jwtToken, refreshToken,
-                    user.getEmail(), user.getRole());
+            AuthenticationResponseDTO authenticationResponseDTO = new AuthenticationResponseDTO(jwtToken, refreshToken, user.getEmail(), user.getRole());
             return ResponseEntity.status(HttpStatus.OK).body(authenticationResponseDTO);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid user credentials");
@@ -94,8 +95,7 @@ public class AuthenticationService {
 
     public void revokeAllUserTokens(User user) {
         var validUserTokens = tokenRepository.findAllValidTokenByUser(user.getId());
-        if (validUserTokens.isEmpty())
-            return;
+        if (validUserTokens.isEmpty()) return;
         validUserTokens.forEach(token -> {
             token.setExpired(true);
             token.setRevoked(true);
@@ -103,25 +103,24 @@ public class AuthenticationService {
         tokenRepository.saveAll(validUserTokens);
     }
 
-    public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-        final String refreshToken;
-        final String userEmail;
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return;
-        }
-        refreshToken = authHeader.substring(7);
-        userEmail = jwtService.extractUsername(refreshToken);
-        if (userEmail != null) {
-            User user = this.userRepository.findByEmail(userEmail).orElseThrow();
-            if (jwtService.isTokenValid(refreshToken, user)) {
-                String accessToken = jwtService.generateToken(user);
-                revokeAllUserTokens(user);
-                saveUserToken(user, accessToken);
-                AuthenticationResponseDTO authenticationResponseDTO = new AuthenticationResponseDTO(accessToken,
-                        refreshToken, user.getEmail(), user.getRole());
-                new ObjectMapper().writeValue(response.getOutputStream(), authenticationResponseDTO);
-            }
-        }
-    }
+//    public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+//        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+//        final String refreshToken;
+//        final String userEmail;
+//        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+//            return;
+//        }
+//        refreshToken = authHeader.substring(7);
+//        userEmail = jwtService.extractUsername(refreshToken);
+//        if (userEmail != null) {
+//            User user = this.userRepository.findByEmail(userEmail).orElseThrow();
+//            if (jwtService.isTokenValid(refreshToken, user)) {
+//                String accessToken = jwtService.generateToken(user);
+//                revokeAllUserTokens(user);
+//                saveUserToken(user, accessToken);
+//                AuthenticationResponseDTO authenticationResponseDTO = new AuthenticationResponseDTO(accessToken, refreshToken, user.getEmail(), user.getRole());
+//                new ObjectMapper().writeValue(response.getOutputStream(), authenticationResponseDTO);
+//            }
+//        }
+//    }
 }
