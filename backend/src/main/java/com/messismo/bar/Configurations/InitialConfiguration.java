@@ -38,7 +38,7 @@ public class InitialConfiguration {
             addSampleEmployees(authenticationService, userRepository);
             addSampleCategories(categoryService);
             addSampleProducts(productService);
-            addSampleOrders(orderService,productRepository);
+            addSampleOrders(orderService, productRepository);
         };
     }
 
@@ -50,8 +50,8 @@ public class InitialConfiguration {
         Date date2 = dateFormat.parse("2023-09-25 05:02:23");
         Double totalPrice1 = 17800.00;
         Double totalPrice2 = 44300.00;
-        List<ProductOrderDTO> productOrderDTOList1= new ArrayList<>();
-        List<ProductOrderDTO> productOrderDTOList2= new ArrayList<>();
+        List<ProductOrderDTO> productOrderDTOList1 = new ArrayList<>();
+        List<ProductOrderDTO> productOrderDTOList2 = new ArrayList<>();
         ProductOrderDTO productOrderDTO1 = ProductOrderDTO.builder().product(productRepository.findByName("Tomato Bruschetta").get()).quantity(2).build();// 11000
         ProductOrderDTO productOrderDTO2 = ProductOrderDTO.builder().product(productRepository.findByName("Fried Calamari").get()).quantity(1).build(); // 6800
         productOrderDTOList1.add(productOrderDTO1);
@@ -65,7 +65,7 @@ public class InitialConfiguration {
         productOrderDTOList2.add(productOrderDTO5);
         productOrderDTOList2.add(productOrderDTO6);
         OrderRequestDTO orderRequestDTO1 = OrderRequestDTO.builder().productOrders(productOrderDTOList1).dateCreated(date1).registeredEmployeeEmail(userEmail1).totalPrice(totalPrice1).build();
-        System.out.println(orderService.addNewOrder(orderRequestDTO1));
+        orderService.addNewOrder(orderRequestDTO1);
         OrderRequestDTO orderRequestDTO2 = OrderRequestDTO.builder().productOrders(productOrderDTOList2).dateCreated(date2).registeredEmployeeEmail(userEmail2).totalPrice(totalPrice2).build();
         orderService.addNewOrder(orderRequestDTO2);
     }
