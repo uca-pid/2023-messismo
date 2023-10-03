@@ -63,7 +63,7 @@ const Resource = styled.div`
     background-color: rgb(164, 212, 204, 0.6);
     border-radius: 0.2rem;
     color: black;
-    min-width: 28rem;
+    width: 28rem;
     display: flex;
     font-size: 1.4rem;
     text-align: center;
@@ -83,15 +83,13 @@ const Resource = styled.div`
 
   .card-body{
     flex-grow: 1;
-    overflow: auto;
     margin: 1em;
   }
 
-  .card-username{
-  }
-
-  .card-email{
-
+  .card-username,
+  .card-email {
+  text-overflow: ellipsis;
+  white-space: nowrap;
   }
 `;
 

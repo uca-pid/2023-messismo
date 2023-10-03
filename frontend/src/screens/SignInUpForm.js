@@ -10,6 +10,7 @@ import signupvalidation from '../SignUpValidation';
 import signinvalidation from '../SignInValidation';
 import { login, register } from "../redux/auth";
 import { clearMessage } from "../redux/message";
+import { logout } from "../redux/auth";
 
 
 const BackgroundBox = styled.div`
@@ -242,6 +243,8 @@ const ErrorMessage = styled.h4`
 
 function SignInUpForm(){
 
+    const [isRegistered, setIsRegistered] = useState(false);
+
     const [isSignInValid, setIsSignInValid] = useState(false);
     const [signinvalues, setSignInValues] = useState({
         email: '',
@@ -261,6 +264,7 @@ function SignInUpForm(){
 
     const { isLoggedIn } = useSelector((state) => state.auth);
     const { message } = useSelector((state) => state.message);
+    const { user: currentUser } = useSelector((state) => state.auth);
 
     let navigate = useNavigate();
     const dispatch = useDispatch();
@@ -285,23 +289,45 @@ function SignInUpForm(){
     const [click, setClick] = useState(false);
     const handleClick = () => setClick(!click);
 
-    const handleLogin = (userData) => {
+    // const handleLogin = (userData) => {
 
+    //     const email = userData.email;
+    //     const password = userData.password;
+
+    //     dispatch(login({ email, password }))
+    //       .unwrap()
+    //       .then(() => {
+    //         navigate("/homepage");
+    //       })
+    //       .catch(() => {
+    //         setIsRegistered(false);
+    //         setSignInPopUp(true);
+    //       });
+    // };
+
+    const handleLogin = (userData) => {
         const email = userData.email;
         const password = userData.password;
-
+      
         dispatch(login({ email, password }))
           .unwrap()
-          .then(() => {
-            navigate("/homepage");
-            window.location.reload();
+          .then((response) => {
+            const userRole = response.user.role;
+            if (userRole === "ADMIN" || userRole === "MANAGER" || userRole === "VALIDATEDEMPLOYEE" ) {
+                navigate("/homepage");
+            } 
+            if (userRole === "EMPLOYEE") {
+                setIsRegistered(true);
+                setSignInPopUp(true);
+            }
           })
           .catch(() => {
+            setIsRegistered(false);
             setSignInPopUp(true);
           });
-    };
+      };
 
-    if (isLoggedIn) {
+    if ((isLoggedIn) && (currentUser.role === "ADMIN" || currentUser.role === "MANAGER" || currentUser.role === "VALIDATEDEMPLOYEE" )){
         return <Navigate to="/homepage" />;
     }
 
@@ -334,11 +360,12 @@ function SignInUpForm(){
         dispatch(register({ username, email, password }))
         .unwrap()
         .then(() => {
-            navigate("/homepage");
-            window.location.reload();
+            setIsRegistered(false);
+            setSignUpPopUp(true);
         })
         .catch(() => {
-          setSignUpPopUp(true);
+            setIsRegistered(true);
+            setSignUpPopUp(true);
         });
 
     };
@@ -464,8 +491,8 @@ function SignInUpForm(){
                 
             </Box2>
 
-            { SignInPopUp && <SInPopUp setSignInPopUp={setSignInPopUp} /> }
-            { SignUpPopUp && <SUpPopUp setSignUpPopUp={setSignUpPopUp} /> }
+            { SignInPopUp && <SInPopUp setSignInPopUp={setSignInPopUp} isRegistered={isRegistered} /> }
+            { SignUpPopUp && <SUpPopUp setSignUpPopUp={setSignUpPopUp} isRegistered={isRegistered} /> }
 
             {message && (
                 <div className="form-group">

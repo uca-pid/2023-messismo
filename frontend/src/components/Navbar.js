@@ -145,7 +145,6 @@ function Navbar() {
         if (currentUser) {
             setShowManagerBoard(currentUser.role === "MANAGER");
             setShowAdminBoard(currentUser.role === "ADMIN");
-            setShowEmployeeBoard(currentUser.role === "EMPLOYEE")
             setShowValidatedEmployeeBoard(currentUser.role === "VALIDATEDEMPLOYEE")
         } else {
             setShowManagerBoard(false);
@@ -175,14 +174,14 @@ function Navbar() {
                     <span>Home</span>
                 </NavLink>
 
-                {(showManagerBoard || showAdminBoard || showEmployeeBoard || showValidatedEmployeeBoard) && (
+                {(showManagerBoard || showAdminBoard || showValidatedEmployeeBoard) && (
                     <NavLink to={'/products'} onClick={clicked ? handleClick : undefined}>
                         <PiCoffeeFill className='icon'/>
                         <span>Products</span>
                     </NavLink>
                 )}
 
-                {(showManagerBoard || showAdminBoard || showEmployeeBoard || showValidatedEmployeeBoard) && (
+                {(showManagerBoard || showAdminBoard || showValidatedEmployeeBoard) && (
                     <NavLink to={'/orders'} onClick={clicked ? handleClick : undefined}>
                         <HiShoppingBag className='icon'/>
                         <span>Orders</span>

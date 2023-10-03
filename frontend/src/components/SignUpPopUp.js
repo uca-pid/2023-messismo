@@ -69,13 +69,14 @@ const AcceptLink = styled(Link)`
     }
 `;
 
-const SignUpPopUp = ({setSignUpPopUp}) => {
+const SignUpPopUp = ({isRegistered, setSignUpPopUp}) => {
 
     return (
         <PopUp>
 
             <Content>
-                <h1>{'An account is already registered with your email address'}</h1>
+                <h1>{isRegistered ? 'An account is already registered with your email address' : 'Pending confirmation'}</h1>
+                <h4>{isRegistered ? '' : 'An admin needs to approve this request'}</h4>
                 <AcceptLink onClick={ () => setSignUpPopUp(false) }> Accept </AcceptLink>
             </Content>
 
