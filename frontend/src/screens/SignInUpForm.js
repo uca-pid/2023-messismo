@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, forwardRef } from 'react'
 import '../App.css';
 import { styled } from 'styled-components';
 // import 'fontsource-roboto';
@@ -11,7 +11,10 @@ import signinvalidation from '../SignInValidation';
 import { login, register } from "../redux/auth";
 import { clearMessage } from "../redux/message";
 import { logout } from "../redux/auth";
-
+import Stack from '@mui/material/Stack';
+import Button from '@mui/material/Button';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 
 const BackgroundBox = styled.div`
     background-color: black;
@@ -240,8 +243,13 @@ const ErrorMessage = styled.h4`
     font-family: 'Roboto',serif;
 `;
 
+const Alert = forwardRef(function Alert(props, ref) {
+    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+  });
 
 function SignInUpForm(){
+
+    const [open, setOpen] = useState(false);
 
     const [isRegistered, setIsRegistered] = useState(false);
 
@@ -289,22 +297,6 @@ function SignInUpForm(){
     const [click, setClick] = useState(false);
     const handleClick = () => setClick(!click);
 
-    // const handleLogin = (userData) => {
-
-    //     const email = userData.email;
-    //     const password = userData.password;
-
-    //     dispatch(login({ email, password }))
-    //       .unwrap()
-    //       .then(() => {
-    //         navigate("/homepage");
-    //       })
-    //       .catch(() => {
-    //         setIsRegistered(false);
-    //         setSignInPopUp(true);
-    //       });
-    // };
-
     const handleLogin = (userData) => {
         const email = userData.email;
         const password = userData.password;
@@ -348,6 +340,7 @@ function SignInUpForm(){
         }
         else {
             setIsSignInValid(false);
+            handleSnackClick();
         }
     }
 
@@ -387,122 +380,144 @@ function SignInUpForm(){
         }
         else {
             setIsSignUpValid(false);
+            handleSnackClick();
         }
     }
 
+    const handleSnackClick = () => {
+        setOpen(true);
+      };
+    
+      const handleSnackClose = (event, reason) => {
+        if (reason === 'clickaway') {
+          return;
+        }
+    
+        setOpen(false);
+      };
+
     return(
 
-        <BackgroundBox clicked={click}>
+            <BackgroundBox clicked={click}>
 
-            <Box1 clicked={click}>
-                <Form className='signin' show={!click}>
-                    <Title>Sign In</Title>
-                    <Input type='email' name='email' id='emailSiId'
-                    placeholder='Email'
-                    onChange={handleSignInInput}
-                    />
-                    {signinerrors.email && <ErrorMessage>{signinerrors.email}</ErrorMessage>}
-                    <Input 
-                    type='password' name='password' id='passwordSiId'
-                    placeholder='Password'
-                    onChange={handleSignInInput}
-                    />
-                    {signinerrors.password && <ErrorMessage>{signinerrors.password}</ErrorMessage>}
-                    <ForgotLink href='#'>Forgot your Password?</ForgotLink>
+                <Box1 clicked={click}>
+                    <Form className='signin' show={!click}>
+                        <Title>Sign In</Title>
+                        <Input type='email' name='email' id='emailSiId'
+                        placeholder='Email'
+                        onChange={handleSignInInput}
+                        />
+                        {signinerrors.email && <ErrorMessage>{signinerrors.email}</ErrorMessage>}
+                        <Input 
+                        type='password' name='password' id='passwordSiId'
+                        placeholder='Password'
+                        onChange={handleSignInInput}
+                        />
+                        {signinerrors.password && <ErrorMessage>{signinerrors.password}</ErrorMessage>}
+                        <ForgotLink href='#'>Forgot your Password?</ForgotLink>
 
-                    <NavLink
-                    onClick={() => {
-                        handleSignInValidation();
-                        if(isSignInValid) {
-                            const userData = {
-                                email: signinvalues.email,
-                                password: signinvalues.password,
+                        <NavLink
+                        onClick={() => {
+                            handleSignInValidation();
+                            if(isSignInValid) {
+                                const userData = {
+                                    email: signinvalues.email,
+                                    password: signinvalues.password,
+                                }
+                                handleLogin(userData);
+                            } 
+                        }}
+                        style={{ textDecoration: 'none' }}
+                        disabled = {Object.keys(signinerrors).length > 0 || !isSignInValid}
+                        >
+                            Sign In
+                        </NavLink>
+
+                    </Form>
+
+                    <Form className='signup' show={click}>
+
+                        <Title>Sign Up</Title>
+                        <Input type='text' name='username' id='usernameId'
+                        placeholder='Username'
+                        onChange={handleSignUpInput}
+                        />
+                        {signuperrors.username && <ErrorMessage>{signuperrors.username}</ErrorMessage>}
+                        
+                        <Input type='email' name='email' id='emailSuId'
+                        placeholder='Email'
+                        onChange={handleSignUpInput}
+                        />
+                        {signuperrors.email && <ErrorMessage>{signuperrors.email}</ErrorMessage>}
+                        
+                        <Input 
+                        type='password' name='password' id='passwordSuId'
+                        placeholder='Password'
+                        onChange={handleSignUpInput}
+                        />
+                        {signuperrors.password && <ErrorMessage>{signuperrors.password}</ErrorMessage>}
+
+                        <NavLink
+                        onClick={() => {
+                            handleSignUpValidation();
+                            if(isSignUpValid) {
+                                const userData = {
+                                    username: signupvalues.username,
+                                    email: signupvalues.email,
+                                    password: signupvalues.password,
+                                }
+                                handleRegister(userData);
                             }
-                            handleLogin(userData);
-                        }
-                    }}
-                    style={{ textDecoration: 'none' }}
-                    disabled = {Object.keys(signinerrors).length > 0 || !isSignInValid}
-                    >
-                        Sign In
-                    </NavLink>
+                        }}
+                        style={{ textDecoration: 'none' }}
+                        disabled = {Object.keys(signuperrors).length > 0 || !isSignUpValid}
+                        >
+                            Sign Up
+                        </NavLink>
 
-                </Form>
+                    </Form>
 
-                <Form className='signup' show={click}>
+                </Box1>
 
-                    <Title>Sign Up</Title>
-                    <Input type='text' name='username' id='usernameId'
-                    placeholder='Username'
-                    onChange={handleSignUpInput}
-                    />
-                    {signuperrors.username && <ErrorMessage>{signuperrors.username}</ErrorMessage>}
+                <Box2 clicked={click}>
+                    <Text className='signintext' show={!click}>
+                        Welcome Back
+                        <br />
+                        Don't have an account yet?
+                        <br />
+                        <ButtonAnimate clicked={click} onClick={handleClick}></ButtonAnimate>
+                    </Text>
+                    <Text className='signuptext' show={click}>
+                        Hi There
+                        <br />
+                        Already have an account?
+                        <br />
+                        <ButtonAnimate clicked={click} onClick={handleClick}></ButtonAnimate>
+                    </Text>
                     
-                    <Input type='email' name='email' id='emailSuId'
-                    placeholder='Email'
-                    onChange={handleSignUpInput}
-                    />
-                    {signuperrors.email && <ErrorMessage>{signuperrors.email}</ErrorMessage>}
-                    
-                    <Input 
-                    type='password' name='password' id='passwordSuId'
-                    placeholder='Password'
-                    onChange={handleSignUpInput}
-                    />
-                    {signuperrors.password && <ErrorMessage>{signuperrors.password}</ErrorMessage>}
+                </Box2>
 
-                    <NavLink
-                    onClick={() => {
-                        handleSignUpValidation();
-                        if(isSignUpValid) {
-                            const userData = {
-                                username: signupvalues.username,
-                                email: signupvalues.email,
-                                password: signupvalues.password,
-                            }
-                            handleRegister(userData);
-                        }
-                    }}
-                    style={{ textDecoration: 'none' }}
-                    disabled = {Object.keys(signuperrors).length > 0 || !isSignUpValid}
-                    >
-                        Sign Up
-                    </NavLink>
+                { SignInPopUp && <SInPopUp setSignInPopUp={setSignInPopUp} isRegistered={isRegistered} /> }
+                { SignUpPopUp && <SUpPopUp setSignUpPopUp={setSignUpPopUp} isRegistered={isRegistered} /> }
 
-                </Form>
-
-            </Box1>
-
-            <Box2 clicked={click}>
-                <Text className='signintext' show={!click}>
-                    Welcome Back
-                    <br />
-                    Don't have an account yet?
-                    <br />
-                    <ButtonAnimate clicked={click} onClick={handleClick}></ButtonAnimate>
-                </Text>
-                <Text className='signuptext' show={click}>
-                    Hi There
-                    <br />
-                    Already have an account?
-                    <br />
-                    <ButtonAnimate clicked={click} onClick={handleClick}></ButtonAnimate>
-                </Text>
-                
-            </Box2>
-
-            { SignInPopUp && <SInPopUp setSignInPopUp={setSignInPopUp} isRegistered={isRegistered} /> }
-            { SignUpPopUp && <SUpPopUp setSignUpPopUp={setSignUpPopUp} isRegistered={isRegistered} /> }
-
-            {message && (
-                <div className="form-group">
-                    <div className="alert alert-danger" role="alert">
-                        {message}
+                {message && (
+                    <div className="form-group">
+                        <div className="alert alert-danger" role="alert">
+                            {message}
+                        </div>
                     </div>
-                </div>
-            )}
+                )}
 
-        </BackgroundBox>
+                <Stack spacing={2} sx={{ width: '100%' }}>
+                    <Snackbar open={open} autoHideDuration={2500} onClose={handleSnackClose}>
+                        <Alert onClose={handleSnackClose} severity="error" sx={{ width: '100%' }}>
+                        <h2 style={{fontFamily: 'Roboto', fontSize: "1.5rem"}}>One or more fields are empty/incorrect</h2>
+                        </Alert>
+                    </Snackbar>
+                </Stack>
+
+            </BackgroundBox>
+            
     )
 }
 
