@@ -1,28 +1,51 @@
-import React, { useState} from "react";
+import React, { useState, useEffect} from "react";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import './Form.css'
 import MenuItem from '@mui/material/MenuItem';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import FormValidation from "../FormValidation";
+import categoryService from "../services/category.service";
 
 const Form = (props) => {
   const [name, setName] = useState("");
   const [category, setCategory] = useState("");
   const [description, setDescription] = useState("");
+  const [stock, setStock] = useState("");
   const [unitPrice, setUnitPrice] = useState("");
   const [errors, setErrors] = useState({});
+  const [characterCount, setCharacterCount] = useState(0);
+  const maxCharacterLimit = 255;
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState('');
+
+  useEffect(() => {
+    categoryService.getAllCategories()
+      .then(response => {
+        console.log(response.data);
+        setCategories(response.data);
+      })
+      .catch(error => {
+        console.error("Error al obtener categorías:", error);
+      });
+  }, []);
 
   const handleNombreChange = (event) => {
     setName(event.target.value);
   };
 
-  const handleCategoriaChange = (event: SelectChangeEvent) => {
-    setCategory(event.target.value);
+  const handleStockChange = (event) => {
+    setStock(event.target.value);
+  };
+
+  const handleCategoriaChange = (event) => {
+    setSelectedCategory(event.target.value);
   };
 
   const handleDescripcionChange = (event) => {
-    setDescription(event.target.value);
+    const text = event.target.value;
+    setDescription(text);
+    setCharacterCount(text.length);
   };
 
   const handlePrecioChange = (event) => {
@@ -38,7 +61,6 @@ const Form = (props) => {
 
     const validationErrors = FormValidation({
       name,
-      category,
       description,
       price: unitPrice, 
     });
@@ -47,12 +69,20 @@ const Form = (props) => {
       setErrors(validationErrors);
       console.log(validationErrors);
     } else {
+      const selectedCategoryObj = categories.find(cat => cat.name === selectedCategory);
+      console.log(selectedCategory);
+      
+
+
     const newProductData = {
       name,
-      category,
+      category: selectedCategory, 
       description,
       unitPrice,
+      stock,
     };
+
+    console.log(newProductData);
 
     //productsService.addProducts(newProductData);
     props.onSave(newProductData);
@@ -92,29 +122,30 @@ const Form = (props) => {
       />
       <p style={{ color: errors.category ? "red" : "black" }}>Category *</p>
       <Select
-          labelId="demo-simple-select-label"
-          id="demo-simple-select"
-          value={category}
-          onChange={handleCategoriaChange}
-          error={errors.category ? true : false}
-          helperText={errors.category || ''}
-          style={{ width: '80%', marginTop: '3%', marginBottom: '3%', fontSize: '1.5rem'}}
-          InputProps={{
-            style: {
-              fontSize: '1.5rem', 
-            },}}
-            FormHelperTextProps={{
-              style: {
-                fontSize: '1.1rem', 
-              },
-            }}
-        >
-          <MenuItem value={"Entradas"}>Entradas</MenuItem>
-          <MenuItem value={"Platos"}>Platos</MenuItem>
-          <MenuItem value={"Tragos"}>Tragos</MenuItem>
-          <MenuItem value={"Bebidas sin alcohol"}>Bebidas sin alcohol</MenuItem>
-          <MenuItem value={"Postres"}>Postres</MenuItem>
-        </Select>
+        labelId="demo-simple-select-label"
+        id="demo-simple-select"
+        value={selectedCategory}
+        onChange={handleCategoriaChange}
+        error={errors.category ? true : false}
+        helperText={errors.category || ''}
+        style={{ width: '80%', marginTop: '3%', marginBottom: '3%', fontSize: '1.5rem'}}
+        InputProps={{
+          style: {
+            fontSize: '1.5rem',
+          },
+        }}
+        FormHelperTextProps={{
+          style: {
+            fontSize: '1.1rem',
+          },
+        }}
+      >
+        {categories.map(category => (
+          <MenuItem key={category.id} value={category.name}>
+            {category.name}
+          </MenuItem>
+        ))}
+      </Select>
       <p>Description</p>
       <TextField
         required
@@ -128,12 +159,35 @@ const Form = (props) => {
             fontSize: '1.5rem', 
           },}}
       />
+      <p style={{ fontSize: "1rem", color: characterCount > maxCharacterLimit ? "red" : "black" }}>
+        {characterCount}/{maxCharacterLimit}
+      </p>
       <p style={{ color: errors.price ? "red" : "black" }}>Price *</p>
       <TextField
         required
         id="unitPrice"
         value={unitPrice}
         onChange={handlePrecioChange}
+        variant="outlined"
+        style={{ width: '80%', marginTop: '3%', marginBottom: '3%', fontSize: '1.3rem'}}
+        error={errors.price ? true : false}
+        helperText={errors.price || ''}
+        InputProps={{
+          style: {
+            fontSize: '1.5rem', 
+            inputMode: 'numeric', pattern: '[0-9]*'
+          },}}
+          FormHelperTextProps={{
+            style: {
+              fontSize: '1.1rem', 
+            },
+          }}
+      />
+      <TextField
+        required
+        id="stock"
+        value={stock}
+        onChange={handleStockChange}
         variant="outlined"
         style={{ width: '80%', marginTop: '3%', marginBottom: '3%', fontSize: '1.3rem'}}
         error={errors.price ? true : false}

@@ -2,11 +2,11 @@ import axios from "axios";
 import authHeader from "./auth-header";
 import { useSelector } from "react-redux";
 
-const API_URL = "http://localhost:8080/api/v1/employee/getAllProducts";
+const API_URL = "http://localhost:8080//api/v1/validatedEmployee/getAllProducts";
 
 const getAllProducts = () => {
   
-  return axios.get(API_URL, { headers: authHeader() , method: 'GET',      
+  return axios.get("http://localhost:8080/api/v1/validatedEmployee/getAllProducts", { headers: authHeader() , method: 'GET',      
   'Content-Type' : 'application/json'});
 };
 
@@ -14,8 +14,10 @@ const addProducts = (product) => {
   const newProduct = {
     name: product.name,
     unitPrice: product.unitPrice,
-    category: product.category,
     description: product.description,
+    stock: product.stock,
+    category: product.category,
+   
   };
   
   return axios.post("http://localhost:8080/api/v1/validatedEmployee/product/addProduct", product, { headers: authHeader() , method: 'POST',      
@@ -24,6 +26,7 @@ const addProducts = (product) => {
     console.log("Producto agregado con éxito:", response.data);
   })
   .catch(error => {
+    console.log(product)
     console.error("Error al agregar el producto:", error);
   });
 };

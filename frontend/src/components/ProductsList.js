@@ -187,7 +187,7 @@ const ProductsList = () => {
                   </p>
                 </div>
                 <div className="category">
-                  <p className="text">{producto.category}</p>
+                  <p className="text">{producto.category.name}</p>
                 </div>
                 <p className="text">{producto.unitPrice}</p>
               </div>
