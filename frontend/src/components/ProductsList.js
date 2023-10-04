@@ -18,6 +18,12 @@ import { useSelector} from "react-redux";
 import Tooltip from "@mui/material/Tooltip";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
+import SearchIcon from '@mui/icons-material/Search';
+import TextField from '@mui/material/TextField';
+import InputAdornment from "@mui/material/InputAdornment";
+import InputBase from '@mui/material/InputBase';
+
+
 
 const ProductsList = () => {
   const [openFormModal, setOpenFormModal] = useState(false);
@@ -30,6 +36,7 @@ const ProductsList = () => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [alertText, setAlertText] = useState("");
   const [isOperationSuccessful, setIsOperationSuccessful] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
 
 
   useEffect(() => {
@@ -100,14 +107,14 @@ const ProductsList = () => {
 
   const handleSaveProduct = async (newProductData) => {
     try {
-      // Agrega el nuevo producto a la base de datos
+      
       const response = await addProductAsync(newProductData);
       setIsOperationSuccessful(true);
       setAlertText("Product added successfully!");
   
-      // Realiza una nueva solicitud para obtener la lista de productos actualizada
+    
       const updatedProductsResponse = await productsService.getAllProducts();
-      setProducts(updatedProductsResponse.data); // Actualiza el estado con los productos actualizados
+      setProducts(updatedProductsResponse.data); 
     } catch (error) {
       console.error("Error al agregar el producto", error);
       setIsOperationSuccessful(false);
@@ -139,8 +146,24 @@ const ProductsList = () => {
     handleCloseEditForm();
   };
 
+  const handleSearch = async () => {
+    console.log(searchValue);
+    try {
+      const response = await productsService.filterByName(searchValue)
+      .then((response) => {
+        // Maneja la respuesta aquí
+        console.log(response)
+        setProducts(response)
+      })
+      
+    } catch (error) {
+      console.error("Error al buscar productos", error);
+    }
+  };
+
   return (
     <div className="container">
+    <div className="firstRow">
       <div className="add-product">
         {role === "ADMIN" ||
         role === "MANAGER" ||
@@ -163,6 +186,42 @@ const ProductsList = () => {
           console.log("")
         )}
       </div>
+      <div className="filter">
+      
+      <TextField
+  size="small"
+  variant="standard"
+  label="Search..."
+  margin="normal"
+  style={{
+    marginTop: "4%",
+    fontSize: "1.3rem"
+  }}
+  value={searchValue}
+  onChange={(e) => {
+    setSearchValue(e.target.value);
+    handleSearch(e.target.value); 
+  }}
+  InputProps={{
+    endAdornment: (
+      <InputAdornment position="end">
+        <IconButton
+          aria-label="search"
+          size="Large"
+          onClick={handleSearch}
+        >
+          <SearchIcon style={{ fontSize: "2rem" }} />
+        </IconButton>
+      </InputAdornment>
+    )
+  }}
+  onKeyPress={(e) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  }}
+/>
+      </div>
       <Dialog
         open={openFormModal}
         dividers={true}
@@ -176,6 +235,24 @@ const ProductsList = () => {
           <Form onClose={handleCloseProductsModal} onSave={handleSaveProduct} />
         </DialogContent>
       </Dialog>
+      </div>
+      <div className="titles">
+        <div className="title">
+        <p>Product details</p>
+        </div>
+        <div className="title">
+        <p>Category</p>
+        </div>
+        <div className="title">
+        <p>Stock</p>
+        </div>
+        <div className="title">
+        <p>Price</p>
+        </div>
+        <div className="title">
+        <p>Actions</p>
+        </div>
+      </div>
       {products.map((producto, index) => (
         <div className="entradas" key={index}>
           <div className="product">
@@ -189,7 +266,12 @@ const ProductsList = () => {
                 <div className="category">
                   <p className="text">{producto.category.name}</p>
                 </div>
+                <div className="category">
+                <p className="text">{producto.stock}</p>
+                </div>
+                <div className="category">
                 <p className="text">{producto.unitPrice}</p>
+                </div>
               </div>
               <div className="buttons-edit">
                 {role === "ADMIN" || role === "MANAGER" ? (

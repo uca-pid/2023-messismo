@@ -109,20 +109,21 @@ public class ProductService {
                         () -> new CategoryNotFoundException("Provided category name DOES NOT match any category name"));
                 filteredProducts = filterByCategory(filteredProducts, category);
             }
-            if (Objects.equals(filterProductDTO.getMinUnitPrice(), 0.00)
-                    || Objects.equals(filterProductDTO.getMinUnitPrice(), null)) {
+            if (!(Objects.equals(filterProductDTO.getMinUnitPrice(), 0.00)
+                    || Objects.equals(filterProductDTO.getMinUnitPrice(), null)))
+            {
                 filteredProducts = filterByMinUnitPrice(filteredProducts, filterProductDTO.getMinUnitPrice());
             }
-            if (Objects.equals(filterProductDTO.getMaxUnitPrice(), 0.00)
-                    || Objects.equals(filterProductDTO.getMaxUnitPrice(), null)) {
+            if (!(Objects.equals(filterProductDTO.getMaxUnitPrice(), 0.00)
+                    || Objects.equals(filterProductDTO.getMaxUnitPrice(), null))) {
                 filteredProducts = filterByMaxUnitPrice(filteredProducts, filterProductDTO.getMaxUnitPrice());
             }
-            if (Objects.equals(filterProductDTO.getMinStock(), 0.00)
-                    || Objects.equals(filterProductDTO.getMinStock(), null)) {
+            if (!(Objects.equals(filterProductDTO.getMinStock(), 0.00)
+                    || Objects.equals(filterProductDTO.getMinStock(), null))) {
                 filteredProducts = filterByMinStock(filteredProducts, filterProductDTO.getMinStock());
             }
-            if (Objects.equals(filterProductDTO.getMaxStock(), 0.00)
-                    || Objects.equals(filterProductDTO.getMaxStock(), null)) {
+            if (!(Objects.equals(filterProductDTO.getMaxStock(), 0.00)
+                    || Objects.equals(filterProductDTO.getMaxStock(), null))) {
                 filteredProducts = filterByMaxStock(filteredProducts, filterProductDTO.getMaxStock());
             }
             return ResponseEntity.status(HttpStatus.OK).body(filteredProducts);
