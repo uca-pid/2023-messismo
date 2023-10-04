@@ -72,6 +72,8 @@ public class InitialConfiguration {
 
 
     private void addSampleEmployees(AuthenticationService authenticationService, UserRepository userRepository) {
+        RegisterRequestDTO user00 = RegisterRequestDTO.builder().username("martinguido0").email("guidomartin7@gmail.com").password("Password1").build();
+        authenticationService.register(user00);
         RegisterRequestDTO user0 = RegisterRequestDTO.builder().username("martinguido").email("martinguido@gmail.com").password("Password1").build();
         authenticationService.register(user0);
         User user0Created = userRepository.findByEmail(user0.getEmail()).get();

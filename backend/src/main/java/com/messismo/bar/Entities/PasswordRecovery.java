@@ -16,18 +16,18 @@ import java.util.Date;
 @Entity
 @Builder
 @Table(name = "pins")
-public class Pin {
+public class PasswordRecovery {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "pin_id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "pin_id")
     private Long id;
 
     @Column(name = "pin")
     private String pin;
 
     @ManyToOne
-    @JoinColumn(name = "user", referencedColumnName = "id")
+    @JoinColumn(name = "pin_user", referencedColumnName = "id")
     private User user;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")

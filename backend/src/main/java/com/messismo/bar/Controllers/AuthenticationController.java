@@ -1,15 +1,14 @@
 package com.messismo.bar.Controllers;
 
 import com.messismo.bar.DTOs.AuthenticationRequestDTO;
+import com.messismo.bar.DTOs.PasswordRecoveryDTO;
 import com.messismo.bar.DTOs.RegisterRequestDTO;
+import com.messismo.bar.Entities.PasswordRecovery;
 import com.messismo.bar.Services.AuthenticationService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import com.messismo.bar.Services.PasswordRecoveryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -18,6 +17,8 @@ import java.io.IOException;
 public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
+
+    private final PasswordRecoveryService passwordRecoveryService;
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequestDTO request) {
@@ -33,5 +34,15 @@ public class AuthenticationController {
 //    public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
 //        authenticationService.refreshToken(request, response);
 //    }
+
+    @PostMapping("/forgotPassword")
+    public ResponseEntity<String> forgotPassword(@RequestBody String email) {
+        return passwordRecoveryService.forgotPassword(email);
+    }
+
+    @PostMapping("/changeForgottenPassword")
+    public ResponseEntity<String> changeForgottenPassword(@RequestBody PasswordRecoveryDTO passwordRecoveryDTO) {
+        return passwordRecoveryService.changeForgottenPassword(passwordRecoveryDTO);
+    }
 
 }

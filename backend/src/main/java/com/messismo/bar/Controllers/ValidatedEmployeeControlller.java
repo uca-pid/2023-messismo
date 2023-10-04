@@ -19,8 +19,11 @@ import org.springframework.web.bind.annotation.*;
 public class ValidatedEmployeeControlller {
 
     private final ProductService productService;
+
     private final CategoryService categoryService;
+
     private final OrderService orderService;
+
 
     @PostMapping("/product/addProduct")
     public ResponseEntity<?> addProduct(@RequestBody ProductDTO productDTO) {
@@ -46,5 +49,6 @@ public class ValidatedEmployeeControlller {
     public ResponseEntity<?> addNewOrder(@RequestBody OrderRequestDTO orderRequestDTO) {
         return orderService.addNewOrder(orderRequestDTO);
     }
+
 
 }
