@@ -1,5 +1,6 @@
 package com.messismo.bar.Services;
 
+import com.messismo.bar.DTOs.UserDTO;
 import com.messismo.bar.Entities.Role;
 import com.messismo.bar.Entities.User;
 import com.messismo.bar.Repositories.UserRepository;
@@ -13,7 +14,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -30,7 +33,13 @@ public class UserService implements UserDetailsService {
 
 
     public ResponseEntity<?> getAllEmployees() {
-        return ResponseEntity.status(HttpStatus.OK).body(userRepository.findAll());
+        List<User> allEmployees = userRepository.findAll();
+        List<UserDTO> response = new ArrayList<>();
+        for (User user : allEmployees) {
+            UserDTO newUserDTO = UserDTO.builder().id(user.getId()).role(user.getRole()).username(user.getFunctionalUsername()).email(user.getEmail()).build();
+            response.add(newUserDTO);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     public ResponseEntity<?> validateEmployee(Long userId) {
@@ -39,7 +48,7 @@ public class UserService implements UserDetailsService {
             Collection<? extends GrantedAuthority> authorities = user.getAuthorities();
             boolean isEmployee = false;
             for (GrantedAuthority authority : authorities) {
-                if ("ROLE_VALIDATEDEMPLOYEE".equals(authority.getAuthority())||"ROLE_MANAGER".equals(authority.getAuthority())||"ROLE_ADMIN".equals(authority.getAuthority())) {
+                if ("ROLE_VALIDATEDEMPLOYEE".equals(authority.getAuthority()) || "ROLE_MANAGER".equals(authority.getAuthority()) || "ROLE_ADMIN".equals(authority.getAuthority())) {
                     isEmployee = true;
                     break;
                 }

@@ -36,8 +36,6 @@ public class User implements UserDetails {
     @Column(name = "role")
     private Role role;
 
-//    @OneToMany(mappedBy = "user")
-//    private List<Token> tokens;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -69,7 +67,8 @@ public class User implements UserDetails {
         return true;
     }
 
-    public String getNoFunctionalityUsername() {
+    public String getFunctionalUsername(){
         return this.username;
     }
+
 }

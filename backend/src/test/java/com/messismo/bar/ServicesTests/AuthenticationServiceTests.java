@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -67,7 +66,6 @@ public class AuthenticationServiceTests {
         when(jwtService.generateToken(newEmployee)).thenReturn("SomeJWT");
     }
 
-
     @Test
     public void testAuthenticationServiceRegisterEmployee() {
         RegisterRequestDTO newRegisterRequest = new RegisterRequestDTO("martincito", "ramon@gmail.com", "password");
@@ -80,7 +78,8 @@ public class AuthenticationServiceTests {
     public void testAuthenticationServiceRegisterEmployee_NullUsername() {
         RegisterRequestDTO newRegisterRequest = new RegisterRequestDTO(null, "ramon@gmail.com", "password");
 
-        ResponseEntity<String> response = ResponseEntity.status(HttpStatus.CONFLICT).body("Missing data for user registration");
+        ResponseEntity<String> response = ResponseEntity.status(HttpStatus.CONFLICT)
+                .body("Missing data for user registration");
         assertEquals(response.getStatusCode(), authenticationService.register(newRegisterRequest).getStatusCode());
     }
 
@@ -88,7 +87,8 @@ public class AuthenticationServiceTests {
     public void testAuthenticationServiceRegisterEmployee_NulEmail() {
         RegisterRequestDTO newRegisterRequest = new RegisterRequestDTO("martincito", null, "password");
 
-        ResponseEntity<String> response = ResponseEntity.status(HttpStatus.CONFLICT).body("Missing data for user registration");
+        ResponseEntity<String> response = ResponseEntity.status(HttpStatus.CONFLICT)
+                .body("Missing data for user registration");
         assertEquals(response.getStatusCode(), authenticationService.register(newRegisterRequest).getStatusCode());
     }
 
@@ -96,7 +96,8 @@ public class AuthenticationServiceTests {
     public void testAuthenticationServiceRegisterEmployee_NullPassword() {
         RegisterRequestDTO newRegisterRequest = new RegisterRequestDTO("martincito", "ramon@gmail.com", null);
 
-        ResponseEntity<String> response = ResponseEntity.status(HttpStatus.CONFLICT).body("Missing data for user registration");
+        ResponseEntity<String> response = ResponseEntity.status(HttpStatus.CONFLICT)
+                .body("Missing data for user registration");
         assertEquals(response.getStatusCode(), authenticationService.register(newRegisterRequest).getStatusCode());
     }
 
@@ -124,14 +125,14 @@ public class AuthenticationServiceTests {
         User user = new User();
         user.setEmail("exampleUser");
         user.setPassword("examplePassword");
-        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(mock(Authentication.class));
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenReturn(mock(Authentication.class));
         when(userRepository.findByEmail(authenticationRequestDTO.getEmail())).thenReturn(Optional.ofNullable(user));
         when(jwtService.generateToken(user)).thenReturn("exampleToken");
         when(jwtService.generateRefreshToken(user)).thenReturn("exampleToken");
 
         ResponseEntity<?> response = authenticationService.authenticate(authenticationRequestDTO);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-
 
     }
 
@@ -140,11 +141,14 @@ public class AuthenticationServiceTests {
         AuthenticationRequestDTO authenticationRequestDTO = new AuthenticationRequestDTO();
         authenticationRequestDTO.setEmail("invalidUser");
         authenticationRequestDTO.setPassword("invalidPassword");
-        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenThrow(new AuthenticationException("Invalid credentials") {
-        });
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenThrow(new AuthenticationException("Invalid credentials") {
+                });
 
-        ResponseEntity<String> response = ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid user credentials");
-        assertEquals(response.getStatusCode(), authenticationService.authenticate(authenticationRequestDTO).getStatusCode());
+        ResponseEntity<String> response = ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body("Invalid user credentials");
+        assertEquals(response.getStatusCode(),
+                authenticationService.authenticate(authenticationRequestDTO).getStatusCode());
     }
 
     @Test
@@ -152,11 +156,14 @@ public class AuthenticationServiceTests {
         AuthenticationRequestDTO authenticationRequestDTO = new AuthenticationRequestDTO();
         authenticationRequestDTO.setEmail(null);
         authenticationRequestDTO.setPassword("invalidPassword");
-        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenThrow(new AuthenticationException("Invalid credentials") {
-        });
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenThrow(new AuthenticationException("Invalid credentials") {
+                });
 
-        ResponseEntity<String> response = ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Missing data for user login");
-        assertEquals(response.getStatusCode(), authenticationService.authenticate(authenticationRequestDTO).getStatusCode());
+        ResponseEntity<String> response = ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body("Missing data for user login");
+        assertEquals(response.getStatusCode(),
+                authenticationService.authenticate(authenticationRequestDTO).getStatusCode());
     }
 
     @Test
@@ -164,11 +171,14 @@ public class AuthenticationServiceTests {
         AuthenticationRequestDTO authenticationRequestDTO = new AuthenticationRequestDTO();
         authenticationRequestDTO.setEmail("validUsername");
         authenticationRequestDTO.setPassword(null);
-        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenThrow(new AuthenticationException("Invalid credentials") {
-        });
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenThrow(new AuthenticationException("Invalid credentials") {
+                });
 
-        ResponseEntity<String> response = ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Missing data for user login");
-        assertEquals(response.getStatusCode(), authenticationService.authenticate(authenticationRequestDTO).getStatusCode());
+        ResponseEntity<String> response = ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body("Missing data for user login");
+        assertEquals(response.getStatusCode(),
+                authenticationService.authenticate(authenticationRequestDTO).getStatusCode());
     }
 
     @Test
@@ -184,4 +194,3 @@ public class AuthenticationServiceTests {
         }
     }
 }
-
