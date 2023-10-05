@@ -19,15 +19,24 @@ public class ProductOrder {
     @Column(name = "productOrderId")
     private Long productOrderId;
 
+//    @ManyToOne(fetch = FetchType.LAZY)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", referencedColumnName = "order_id")
     private Order order;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "product", referencedColumnName = "product_id")
     private Product product;
 
     @Column(name = "quantity")
     private Integer quantity;
 
+    @Override
+    public String toString() {
+        return "ProductOrder{" +
+                "productOrderId=" + productOrderId +
+                ", product=" + product +
+                ", quantity=" + quantity +
+                '}';
+    }
 }
