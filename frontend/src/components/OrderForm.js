@@ -3,6 +3,7 @@ import { useForm, Controller } from 'react-hook-form'
 import styled from "styled-components";
 import { GrAddCircle } from 'react-icons/gr'
 import { RiDeleteBinLine } from 'react-icons/ri'
+import productsService from "../services/products.service";
 
 const Form = styled.form`
     padding: 2rem;
@@ -12,8 +13,32 @@ const Form = styled.form`
         color: red;
     }
 
-    .form-paymentmethod{
+    .form-totalprice{
+        margin-top: 1.5rem;
+        text-align: center;
+        span{
+            font-size: 24px;
+        }
+    }
 
+    small{
+        font-size: 10px;
+
+        @media (max-width: 550px) {
+            font-size: 9px;
+        }
+
+        @media (max-width: 450px) {
+            font-size: 8px;
+        }
+
+        @media (max-width: 350px) {
+            font-size: 7px;
+        }
+    }
+
+    @media (max-width: 250px) {
+        min-width: 250px;
     }
 
 `;
@@ -26,12 +51,38 @@ const ProductContainer = styled.div`
 
     .form-product{
         margin-right: 1rem;
-        width: 84%;
+        width: 70%;
     }
 
     .form-amount{
-        width: 16%;
+        margin-right: 1rem;
+        width: 15%;
+        text-align: center;
     }
+
+    .form-price{
+        width: 15%;
+        overflow: hidden;
+        text-align: center;
+        margin-top: 3.5rem;
+
+        span{
+            font-size: 14px;
+        
+            @media (max-width: 550px) {
+                font-size: 12px;
+            }
+
+            @media (max-width: 450px) {
+                font-size: 10px;
+            }
+
+            @media (max-width: 350px) {
+                font-size: 8px;
+            }
+        }
+    }
+
 `;
 
 const Label = styled.label`
@@ -55,6 +106,10 @@ const Select = styled.select`
         outline: none;
         border-color: #A4D4CC;
     }
+
+    @media(max-width: 350px){
+      font-size: 12px;
+    }
 `;
 
 const Input = styled.input`
@@ -64,11 +119,16 @@ const Input = styled.input`
     font-family: inherit;
     font-size: 16px;
     padding: 1.1rem;
-    width: 100%;   
+    width: 100%;
+    text-align: center;   
 
     &:focus{
         outline: none;
         border-color: #A4D4CC;
+    }
+
+    @media(max-width: 350px){
+      font-size: 12px;
     }
 `;
 
@@ -111,6 +171,9 @@ const Button = styled.button`
     &:focus{
         outline: none;
     }
+
+
+
 `;
 
 const Buttons = styled.div`
@@ -121,23 +184,57 @@ const Buttons = styled.div`
     .placeorder{
         margin-right: 1rem;
     }
+
+    @media(max-width: 350px){
+      width: 100%;
+      flex-direction: column;
+      text-align: center;
+    }
 `;
-
-
-const options = {
-    products: ['chocolate', 'vanilla', 'strawberry'],
-    paymentMethods: ['cash', 'credit card', 'debit card'],
-};
 
 const OrderForm = ({onCancel}) => {
 
-    const { control, register, handleSubmit, formState: {errors} } = useForm()
-    const stock = 50
-
+    const { control, register, handleSubmit, formState: {errors}, watch } = useForm()
+    const [selectedProducts, setSelectedProducts] = useState({});
+    const [productStocks, setProductStocks] = useState({});
+    const [products, setProducts] = useState([]);
     const [formField, setFormField] = useState([
         { product: '', amount: '' }
     ]);
+    const [options, setOptions] = useState({
+        products: [],
+        // paymentMethods: ['cash', 'credit card', 'debit card'],
+      });
 
+    useEffect(() => {
+        productsService
+          .getAllProducts()
+          .then((response) => {
+            const formattedProducts = response.data.map(product => ({
+              name: product.name,
+              unitPrice: product.unitPrice,
+              stock: product.stock
+            }));
+            setProducts(formattedProducts);
+            const productNames = formattedProducts.map(product => product.name);
+            setOptions(prevOptions => ({
+              ...prevOptions,
+              products: productNames
+            }));
+          })
+          .catch((error) => {
+            console.error("Error al mostrar los productos", error);
+          });
+    }, []);
+
+    useEffect(() => {
+        const stockData = {};
+        products.forEach(product => {
+            stockData[product.name] = product.stock;
+        });
+        setProductStocks(stockData);
+    }, [products]);
+    
     const addField = () => {
         let object = {
             product: '', 
@@ -153,12 +250,39 @@ const OrderForm = ({onCancel}) => {
     // };
 
     const orderSubmit = (data) => {
-        console.log(data)
-    }
+      
+        //   if (Object.keys(validationErrors).length > 0) {
+        //     setErrors(validationErrors);
+        //     console.log(validationErrors);
+        //   } else {
+        //   const newProductData = {
+        //     name,
+        //     category,
+        //     description,
+        //     unitPrice,
+        //   };
+      
+        //   productsService.addProducts(newProductData);
+        //   props.onClose();
+      
+        
+        //   setName("");
+        //   setCategory("");
+        //   setDescription("");
+        //   setUnitPrice("");
+        // }
+    };
 
     const handleCancelClick = () => {
         onCancel();
     };
+
+    const totalPrice = formField.reduce((total, form, index) => {
+        const productName = watch(`product-${index}`);
+        const product = products.find(product => product.name === productName);
+        const amount = parseInt(watch(`amount-${index}`)) || 0;
+        return total + (product?.unitPrice || 0) * amount;
+    }, 0);
 
     return(
         <>
@@ -170,31 +294,58 @@ const OrderForm = ({onCancel}) => {
 
                             <div className="form-product">
                                 <Label>Product</Label>
+
                                 <Controller
-                                    name="product"
-                                    control={control}
-                                    defaultValue=""
-                                    {...register(`product-${index}`, { required: true })}
-                                    render={({ field }) => (
-                                        <Select {...field}>
-                                            <option value="" disabled></option>
-                                            {options.products.map(product => (
-                                                <option key={product} value={product}>
-                                                    {product}
-                                                </option>
-                                            ))}
-                                        </Select>
-                                    )}
+                                name={`product-${index}`}
+                                control={control}
+                                defaultValue=""
+                                {...register(`product-${index}`, { required: true })}
+                                render={({ field }) => (
+                                    <Select
+                                        {...field}
+                                        onChange={(e) => {
+                                            const selectedProduct = e.target.value;
+                                            setSelectedProducts(prevState => ({
+                                                ...prevState,
+                                                [field.name]: selectedProduct
+                                            }));
+                                            field.onChange(selectedProduct);
+                                        }}
+                                    >
+                                        <option value="" disabled></option>
+                                        {options.products.map(product => (
+                                            <option key={product} value={product}>
+                                                {product}
+                                            </option>
+                                        ))}
+                                    </Select>
+                                )}
                                 />
                                 {errors[`product-${index}`]?.type === 'required' && <small className="fail">Field is empty</small>}
                             </div>
 
                             <div className="form-amount">
-                                <Label>Amount</Label>
-                                <Input name="amount" type="number" {...register(`amount-${index}`, { required: true, min: 1, max: stock })} />
+                                <Label>Units</Label>
+                                <Input
+                                name={`amount-${index}`}
+                                type="number"
+                                {...register(`amount-${index}`, {
+                                    required: true,
+                                    min: 1,
+                                    max: productStocks[selectedProducts[`product-${index}`]] || 1
+                                })}
+                                />
                                 {errors[`amount-${index}`]?.type === 'required' && <small className="fail">Field is empty</small>}
-                                {errors[`amount-${index}`]?.type === 'min' && <small className="fail">The minimum amount is 1</small>}
-                                {errors[`amount-${index}`]?.type === 'max' && <small className="fail">The maximum amount is {stock}</small>}
+                                {errors[`amount-${index}`]?.type === 'min' && <small className="fail">Min: 1</small>}
+                                {errors[`amount-${index}`]?.type === 'max' && <small className="fail">Stock: {products.find(product => product.name === selectedProducts[`product-${index}`]).stock}</small>}
+                            </div>
+
+                            <div className="form-price">
+                                    {selectedProducts[`product-${index}`] && (
+                                        <span>
+                                            {`$${(products.find(product => product.name === selectedProducts[`product-${index}`]).unitPrice * watch(`amount-${index}`)).toFixed(2)}`}
+                                        </span>
+                                    )}
                             </div>
 
                             {/* <RemoveIcon onClick={() => removeField(index)}/> */}
@@ -205,7 +356,7 @@ const OrderForm = ({onCancel}) => {
 
                 <AddIcon onClick={addField} />
 
-                <div className="form-paymentmethod">
+                {/* <div className="form-paymentmethod">
                     <Label>Payment Method</Label>
                     <Controller
                         control={control}
@@ -223,6 +374,13 @@ const OrderForm = ({onCancel}) => {
                         )}
                     />
                     {errors.paymentmethod?.type === 'required' && <small className="fail">Field is empty</small>}
+                </div> */}
+
+                <div className="form-totalprice">
+                    <Label>Total</Label>
+                    <div>
+                        <span>{`$${totalPrice.toFixed(2)}`}</span>
+                    </div>
                 </div>
         
                 <Buttons>

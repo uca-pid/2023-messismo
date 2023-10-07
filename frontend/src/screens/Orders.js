@@ -1,11 +1,12 @@
 import '../App.css';
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import { Navigate } from 'react-router-dom';
 import Navbar from "../components/Navbar";
 import OrderForm from '../components/OrderForm';
 import Button from "@mui/material/Button";
+import ordersService from "../services/orders.service";
 
 const Container = styled.div`
 `;
@@ -56,8 +57,21 @@ function Orders() {
     const { user: currentUser } = useSelector((state) => state.auth);
     const clicked = useSelector((state) => state.navigation.clicked);
     const [isOrderFormVisible, setOrderFormVisible] = useState(false);
+    const [open, setOpen] = React.useState(false);
+    const [orders, setOrders] = useState([]);
     const isAdminOrManager = currentUser && (currentUser.role === "MANAGER" || currentUser.role === "ADMIN");
     
+    useEffect(() => {
+        ordersService
+          .getAllOrders()
+          .then((response) => {
+            setOrders(response.data);
+          })
+          .catch((error) => {
+            console.error("Error al mostrar las ordenes", error);
+          });
+      }, [isOrderFormVisible, open]);
+
     if (!currentUser) {
         return <Navigate to="/" />;
     }
@@ -66,11 +80,16 @@ function Orders() {
 
     const handleAddOrderClick = () => {
         setOrderFormVisible(true);
+        setOpen(true);
     };
 
     const handleCloseOrderForm = () => {
         setOrderFormVisible(false);
+        setOpen(false);
     };
+
+
+
 
     return (
 
@@ -98,8 +117,33 @@ function Orders() {
                     <ModalContent>
                         {isOrderFormVisible && <OrderForm onCancel={handleCloseOrderForm} />}
                     </ModalContent>
-                    
                 </Modal>
+
+                {!isOrderFormVisible && (
+                    <div>
+                        <h1>Orders</h1>
+                        <ul>
+                            {orders.map(order => (
+                            <div key={order.id}>
+                                <strong>User</strong> {order.user.username}<br />
+                                <strong>Date</strong> {order.dateCreated}<br />
+                                <ul>
+                                    {order.productOrders.map(productOrder => (
+                                        <div key={productOrder.productOrderId}>
+                                            <strong>Product</strong> {productOrder.product.name}<br />
+                                            <strong>Price</strong> {productOrder.product.unitPrice}<br />
+                                            <strong>Units</strong> {productOrder.quantity}<br />
+                                        </div>
+                                    ))}
+                                </ul>
+                                <strong>Total</strong> {order.totalPrice}<br /><br />
+                            </div>
+                            ))}
+                        </ul>
+                    </div>
+                )}
+
+
                 
             </MainContent>
 

@@ -1,8 +1,5 @@
 import React, { useEffect } from "react";
-import { redirect } from "react-router-dom";
-import Navbar from "./Navbar";
 import "./Products.css";
-import { Link } from "react-router-dom";
 import { useState } from "react";
 import { IconButton } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -16,24 +13,33 @@ import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
 import Form from "./Form";
 import EditForm from "./EditForm";
-import { makeStyles } from "@mui/styles";
 import productsService from "../services/products.service";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector} from "react-redux";
 import Tooltip from "@mui/material/Tooltip";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
+import SearchIcon from '@mui/icons-material/Search';
+import TextField from '@mui/material/TextField';
+import InputAdornment from "@mui/material/InputAdornment";
+import InputBase from '@mui/material/InputBase';
+
+
 
 const ProductsList = () => {
-  const [userType, setUserType] = useState("admin");
   const [openFormModal, setOpenFormModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [isEditFormOpen, setIsEditFormOpen] = useState(false);
   const [products, setProducts] = useState([]);
   const [open, setOpen] = React.useState(false);
   const { user: currentUser } = useSelector((state) => state.auth);
-  const token = currentUser.access_token;
   const role = currentUser.role;
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [alertText, setAlertText] = useState("");
+  const [isOperationSuccessful, setIsOperationSuccessful] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
+
 
   useEffect(() => {
-    console.log("CURRENT ROLE: ", role);
     productsService
       .getAllProducts()
       .then((response) => {
@@ -44,9 +50,7 @@ const ProductsList = () => {
       });
   }, [openFormModal, open]);
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
+
 
   const handleClose = () => {
     setOpen(false);
@@ -58,7 +62,6 @@ const ProductsList = () => {
 
   const handleCloseProductsModal = () => {
     setOpenFormModal(false);
-    window.location.reload();
   };
 
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -70,14 +73,27 @@ const ProductsList = () => {
     setOpen(true);
   };
 
-  const deleteProduct = () => {
+  const deleteProduct = async () => {
     if (selectedProduct) {
-      console.log(selectedProduct.id);
-      productsService.deleteProduct(selectedProduct.productId);
-      setSelectedProduct(null);
+      try {
+        console.log(selectedProduct.id);
+        await deleteProductAsync(selectedProduct.productId);
+        setSelectedProduct(null);
+        setIsOperationSuccessful(true);
+        setAlertText("Product deleted successfully");
+        setOpenSnackbar(true);
+      } catch (error) {
+        console.error("Error al eliminar el producto", error);
+        setIsOperationSuccessful(false);
+        setAlertText("Failed to delete product");
+        setOpenSnackbar(true);
+      }
       setOpen(false);
-      window.location.reload();
     }
+  };
+
+  const deleteProductAsync = async (productId) => {
+    return productsService.deleteProduct(productId);
   };
 
   const handleEditClick = (producto) => {
@@ -89,9 +105,27 @@ const ProductsList = () => {
     setIsEditFormOpen(false);
   };
 
-  const handleSaveProduct = (newProductData) => {
-    setProducts([...products, newProductData]);
-    console.log(products);
+  const handleSaveProduct = async (newProductData) => {
+    try {
+      
+      const response = await addProductAsync(newProductData);
+      setIsOperationSuccessful(true);
+      setAlertText("Product added successfully!");
+  
+    
+      const updatedProductsResponse = await productsService.getAllProducts();
+      setProducts(updatedProductsResponse.data); 
+    } catch (error) {
+      console.error("Error al agregar el producto", error);
+      setIsOperationSuccessful(false);
+      setAlertText("Failed to add product");
+    } finally {
+      setOpenSnackbar(true);
+    }
+  };
+
+  const addProductAsync = async (newProductData) => {
+    return productsService.addProducts(newProductData);
   };
 
   const handleEditProduct = (newProductData) => {
@@ -112,27 +146,81 @@ const ProductsList = () => {
     handleCloseEditForm();
   };
 
+  const handleSearch = async () => {
+    console.log(searchValue);
+    try {
+      const response = await productsService.filterByName(searchValue)
+      .then((response) => {
+        // Maneja la respuesta aquí
+        console.log(response)
+        setProducts(response)
+      })
+      
+    } catch (error) {
+      console.error("Error al buscar productos", error);
+    }
+  };
+
   return (
     <div className="container">
+    <div className="firstRow">
       <div className="add-product">
-      {role === "ADMIN" || role === "MANAGER" || role === "VALIDATEDEMPLOYEE"? (
-        <Button
-          variant="contained"
-          endIcon={<AddIcon />}
-          style={{
-            color: "white",
-            borderColor: "#007bff",
-            marginTop: "4%",
-            fontSize: "1.3rem",
-            height: "40px",
-          }}
-          onClick={handleOpenProductsModal}
-        >
-          Add Product
-        </Button>
+        {role === "ADMIN" ||
+        role === "MANAGER" ||
+        role === "VALIDATEDEMPLOYEE" ? (
+          <Button
+            variant="contained"
+            endIcon={<AddIcon />}
+            style={{
+              color: "white",
+              borderColor: "#007bff",
+              marginTop: "4%",
+              fontSize: "1.3rem",
+              height: "40px",
+            }}
+            onClick={handleOpenProductsModal}
+          >
+            Add Product
+          </Button>
         ) : (
-           console.log("")
+          console.log("")
         )}
+      </div>
+      <div className="filter">
+      
+      <TextField
+  size="small"
+  variant="standard"
+  label="Search..."
+  margin="normal"
+  style={{
+    marginTop: "4%",
+    fontSize: "1.3rem"
+  }}
+  value={searchValue}
+  onChange={(e) => {
+    setSearchValue(e.target.value);
+    handleSearch(e.target.value); 
+  }}
+  InputProps={{
+    endAdornment: (
+      <InputAdornment position="end">
+        <IconButton
+          aria-label="search"
+          size="Large"
+          onClick={handleSearch}
+        >
+          <SearchIcon style={{ fontSize: "2rem" }} />
+        </IconButton>
+      </InputAdornment>
+    )
+  }}
+  onKeyPress={(e) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  }}
+/>
       </div>
       <Dialog
         open={openFormModal}
@@ -147,49 +235,74 @@ const ProductsList = () => {
           <Form onClose={handleCloseProductsModal} onSave={handleSaveProduct} />
         </DialogContent>
       </Dialog>
+      </div>
+      <div className="titles">
+        <div className="title">
+        <p>Product details</p>
+        </div>
+        <div className="title">
+        <p>Category</p>
+        </div>
+        <div className="title">
+        <p>Stock</p>
+        </div>
+        <div className="title">
+        <p>Price</p>
+        </div>
+        <div className="title">
+        <p>Actions</p>
+        </div>
+      </div>
       {products.map((producto, index) => (
         <div className="entradas" key={index}>
           <div className="product">
             <div className="firstLine">
               <div className="names">
                 <div className="name">
-                <p className="text" style={{ fontWeight: "bold" }}>
-                  {producto.name}
-                </p>
+                  <p className="text" style={{ fontWeight: "bold" }}>
+                    {producto.name}
+                  </p>
                 </div>
                 <div className="category">
-                <p className="text" >{producto.category}</p>
+                  <p className="text">{producto.category.name}</p>
                 </div>
+                <div className="category">
+                <p className="text">{producto.stock}</p>
+                </div>
+                <div className="category">
                 <p className="text">{producto.unitPrice}</p>
+                </div>
               </div>
               <div className="buttons-edit">
-              {role === "ADMIN" || role === "MANAGER" ? (
-                <Tooltip title="Edit Price" arrow style={{ fontSize: "2rem" }}>
-                <IconButton
-                  aria-label="edit"
-                  size="large"
-                  color="red"
-                  onClick={() => handleEditClick(producto)}
-                  title="Edit Price"
-                >
-                  <EditIcon style={{ fontSize: "2rem" }} />
-                </IconButton>
-                </Tooltip>
-              ) : (
-                console.log((""))
-              )}
                 {role === "ADMIN" || role === "MANAGER" ? (
-                   <Tooltip title="Delete Product" arrow style={{ fontSize: "2rem" }}>
-                  <IconButton
-                    aria-label="delete"
-                    size="large"
-                    style={{ color: "red", fontSize: "1.5 rem" }}
-                    onClick={() => handleDeleteClick(producto)}
-                  >
-                    <DeleteIcon style={{ fontSize: "2rem" }} />
-                  </IconButton>
+                  <Tooltip arrow style={{ fontSize: "2rem" }}>
+                    <IconButton
+                      aria-label="edit"
+                      size="large"
+                      color="red"
+                      onClick={() => handleEditClick(producto)}
+                    >
+                      <EditIcon style={{ fontSize: "2rem" }} />
+                    </IconButton>
                   </Tooltip>
-                  
+                ) : (
+                  console.log("")
+                )}
+                {role === "ADMIN" || role === "MANAGER" ? (
+                  <Tooltip
+                    title="Delete Product"
+                    arrow
+                    style={{ fontSize: "2rem" }}
+                  >
+                    <IconButton
+                      aria-label="delete"
+                      size="large"
+                      style={{ color: "red", fontSize: "1.5 rem" }}
+                      onClick={() => handleDeleteClick(producto)}
+                    >
+                      <DeleteIcon style={{ fontSize: "2rem" }} />
+                    </IconButton>
+                  </Tooltip>
                 ) : (
                   console.log("hola")
                 )}
@@ -213,7 +326,6 @@ const ProductsList = () => {
           <DialogContent>
             <EditForm
               product={editingProduct}
-              userType={userType}
               onSave={handleEditProduct}
               onClose={handleCloseEditForm}
             />
@@ -231,28 +343,46 @@ const ProductsList = () => {
               backgroundColor: "white",
               boxShadow: "none",
               zIndex: 1000,
-              fontSize: '24px',
-        
+              fontSize: "24px",
             },
           }}
         >
-          <DialogTitle id="alert-dialog-title" style={{fontSize: '1.8rem'}}>
+          <DialogTitle id="alert-dialog-title" style={{ fontSize: "1.8rem" }}>
             {selectedProduct &&
-              `Are you sure you want to delete the product ${selectedProduct.name}?` }
+              `Are you sure you want to delete the product ${selectedProduct.name}?`}
           </DialogTitle>
           <DialogContent>
-            <DialogContentText id="alert-dialog-description" style={{fontSize: '1.3rem'}}>
+            <DialogContentText
+              id="alert-dialog-description"
+              style={{ fontSize: "1.3rem" }}
+            >
               The product will be permanently deleted
             </DialogContentText>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleClose} style={{fontSize: '1.3rem'}} >Cancel</Button>
-            <Button onClick={deleteProduct} style={{ color: "red", fontSize: '1.3rem' }} autoFocus>
+            <Button onClick={handleClose} style={{ fontSize: "1.3rem" }}>
+              Cancel
+            </Button>
+            <Button
+              onClick={deleteProduct}
+              style={{ color: "red", fontSize: "1.3rem" }}
+              autoFocus
+            >
               Delete
             </Button>
           </DialogActions>
         </Dialog>
       )}
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={10000} 
+        onClose={() => setOpenSnackbar(false)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+      >
+        <Alert onClose={() => setOpenSnackbar(false)} severity={isOperationSuccessful ? "success" : "error"} sx={{fontSize: '75%'}}>
+          {alertText}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };
