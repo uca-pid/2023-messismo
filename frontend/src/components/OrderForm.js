@@ -5,6 +5,7 @@ import { GrAddCircle } from 'react-icons/gr'
 import { RiDeleteBinLine } from 'react-icons/ri'
 import productsService from "../services/products.service";
 import ordersService from "../services/orders.service";
+import { useSelector } from 'react-redux';
 
 const Form = styled.form`
     padding: 2rem;
@@ -196,6 +197,7 @@ const Buttons = styled.div`
 const OrderForm = ({onCancel}) => {
 
     const { control, register, handleSubmit, formState: {errors}, watch } = useForm()
+    const { user: currentUser } = useSelector((state) => state.auth);
     const [selectedProducts, setSelectedProducts] = useState({});
     const [productStocks, setProductStocks] = useState({});
     const [products, setProducts] = useState([]);
@@ -212,9 +214,12 @@ const OrderForm = ({onCancel}) => {
           .getAllProducts()
           .then((response) => {
             const formattedProducts = response.data.map(product => ({
-              name: product.name,
-              unitPrice: product.unitPrice,
-              stock: product.stock
+                id: product.productId,
+                name: product.name,
+                unitPrice: product.unitPrice,
+                description: product.description,
+                stock: product.stock,
+                category: product.category
             }));
             setProducts(formattedProducts);
             const productNames = formattedProducts.map(product => product.name);
@@ -244,14 +249,58 @@ const OrderForm = ({onCancel}) => {
         setFormField([...formField, object])
     }
 
-    // const removeField = (index) => {
-    //     let data = [...formField];
-    //     data.splice(index, 1);
-    //     setFormField(data);
-    // };
-
     const orderSubmit = (data) => {
-        console.log(data)
+        const orderedProducts = formField.map((form, index) => {
+            const productName = data[`product-${index}`];
+            const product = products.find(product => product.name === productName);
+            const amount = parseInt(data[`amount-${index}`]) || 0;
+
+            if (product && !isNaN(product.unitPrice) && !isNaN(amount)) {
+                return {
+                    id: product.id,
+                    name: product.name,
+                    unitPrice: parseFloat(product.unitPrice),
+                    description: product.description,
+                    stock: product.stock,
+                    category: product.category,
+                    amount: amount
+                };
+            } else {
+                return null;
+            }
+        }).filter(product => product !== null);
+
+        const totalPrice = orderedProducts.reduce((total, product) => {
+            return total + product.unitPrice * product.amount;
+        }, 0);
+
+        const orderData = {
+            registeredEmployeeEmail: currentUser.email,
+            dateCreated: new Date().toISOString(),
+            productOrders: orderedProducts.map(product => ({
+              product: {
+                productId: product.id,
+                name: product.name,
+                unitPrice: product.unitPrice,
+                description: product.description,
+                stock: product.stock,
+                category: product.category
+              },
+              quantity: product.amount
+            })),
+            totalPrice: totalPrice.toFixed(2),
+        };
+
+        ordersService.addOrders(orderData)
+        .then(response => {
+          console.log("Orden enviada con éxito:", response.data);
+          onCancel();
+        })
+        .catch(error => {
+          console.error("Error al enviar la orden:", error);
+        });
+
+        console.log(orderData);
     };
 
     const handleCancelClick = () => {

@@ -8,11 +8,9 @@ const getAllOrders = () => {
   return axios.get(API_URL_get, { headers: authHeader() });
 };
 
-const addOrders = () => {
-
+const addOrders = (orderData) => {
+  return axios.post(API_URL_add, orderData, { headers: authHeader() });
 };
-
-
 
 const ordersService = {
     getAllOrders,
