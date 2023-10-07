@@ -52,13 +52,60 @@ const ModalContent = styled.div`
     overflow-y: auto;
 `;
 
+const OrderList = styled.tr`
+
+`;
+
+const DetailsButton = styled.button`
+    display: block;
+    width: 100%;
+    font-size: 1.5rem;
+    border-radius: 3px;
+    padding: 1rem 3.5rem;
+    margin-top: 2rem;
+    border: 1px solid black;
+    background-color: #a4d4cc;
+    color: black;
+    text-transform: uppercase;
+    cursor: pointer;
+    letter-spacing: 1px;
+    box-shadow: 0 3px #999;
+    font-family: 'Roboto',serif;
+    text-align: center;
+
+    &:hover{
+        background-color: #a7d0cd;
+    }
+    &:active{
+        background-color: #a4d4cc;
+        box-shadow: 0 3px #666;
+        transform: translateY(4px);
+    }
+    &:focus{
+        outline: none;
+    }
+`;
+
+const Details = styled.div`
+    background-color: black;
+`;
+
+const Order = styled.div`
+    background-color: blue;
+    margin-bottom: 1rem;
+`;
+
+
+
 function Orders() {
 
     const { user: currentUser } = useSelector((state) => state.auth);
     const clicked = useSelector((state) => state.navigation.clicked);
     const [isOrderFormVisible, setOrderFormVisible] = useState(false);
+    const [isDetailsVisible, setDetailsVisible] = useState(false);
     const [open, setOpen] = React.useState(false);
     const [orders, setOrders] = useState([]);
+    const [selectedOrderDetails, setSelectedOrderDetails] = useState(null);
     const isAdminOrManager = currentUser && (currentUser.role === "MANAGER" || currentUser.role === "ADMIN");
     
     useEffect(() => {
@@ -88,8 +135,15 @@ function Orders() {
         setOpen(false);
     };
 
+    const handleViewDetails = (orderId) => {
+        const selectedOrder = orders.find(order => order.id === orderId);
+        setSelectedOrderDetails(selectedOrder.productOrders);
+        setDetailsVisible(true);
+    };
 
-
+    const handleCloseDetails = () => {
+        setDetailsVisible(false);
+    };
 
     return (
 
@@ -120,26 +174,45 @@ function Orders() {
                 </Modal>
 
                 {!isOrderFormVisible && (
-                    <div>
+                    <div className='order-list'>
                         <h1>Orders</h1>
-                        <ul>
+                        <OrderList>
                             {orders.map(order => (
-                            <div key={order.id}>
-                                <strong>User</strong> {order.user.username}<br />
-                                <strong>Date</strong> {order.dateCreated}<br />
-                                <ul>
-                                    {order.productOrders.map(productOrder => (
+
+                            <Order key={order.id}>
+                                <td> {order.id}</td>
+                                <td> {order.user.username}</td>
+                                <td> {order.dateCreated}</td>
+                                <td> {order.totalPrice}</td>
+                                <td>
+                                    <DetailsButton onClick={() => handleViewDetails(order.id)}>
+                                        Details
+                                    </DetailsButton>
+                                </td>
+                            </Order>
+
+                            ))}
+                        </OrderList>
+
+                        {isDetailsVisible && (
+
+                            <Details>
+                                {selectedOrderDetails.map(productOrder => (
                                         <div key={productOrder.productOrderId}>
                                             <strong>Product</strong> {productOrder.product.name}<br />
                                             <strong>Price</strong> {productOrder.product.unitPrice}<br />
                                             <strong>Units</strong> {productOrder.quantity}<br />
                                         </div>
                                     ))}
-                                </ul>
-                                <strong>Total</strong> {order.totalPrice}<br /><br />
-                            </div>
-                            ))}
-                        </ul>
+
+                                <DetailsButton onClick={() => handleCloseDetails()}>
+                                    Close
+                                </DetailsButton>
+                            </Details>
+
+                        )}
+
+                        
                     </div>
                 )}
 

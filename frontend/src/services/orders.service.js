@@ -8,22 +8,8 @@ const getAllOrders = () => {
   return axios.get(API_URL_get, { headers: authHeader() });
 };
 
-const addOrders = (order) => {
-  const newOrder = {
-    products: order.name,
-    email: order.unitPrice,
-    date: order.category,
-    payment_method: order.payment_method,
-  };
-  
-  return axios.post(API_URL_add, order, { headers: authHeader() , method: 'POST',      
-  'Content-Type' : 'application/json'})
-  .then(response => {
-    console.log("Orden agregada con éxito:", response.data);
-  })
-  .catch(error => {
-    console.error("Error al agregar la orden:", error);
-  });
+const addOrders = () => {
+
 };
 
 

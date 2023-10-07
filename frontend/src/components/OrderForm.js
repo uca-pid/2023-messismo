@@ -4,6 +4,7 @@ import styled from "styled-components";
 import { GrAddCircle } from 'react-icons/gr'
 import { RiDeleteBinLine } from 'react-icons/ri'
 import productsService from "../services/products.service";
+import ordersService from "../services/orders.service";
 
 const Form = styled.form`
     padding: 2rem;
@@ -250,27 +251,7 @@ const OrderForm = ({onCancel}) => {
     // };
 
     const orderSubmit = (data) => {
-      
-        //   if (Object.keys(validationErrors).length > 0) {
-        //     setErrors(validationErrors);
-        //     console.log(validationErrors);
-        //   } else {
-        //   const newProductData = {
-        //     name,
-        //     category,
-        //     description,
-        //     unitPrice,
-        //   };
-      
-        //   productsService.addProducts(newProductData);
-        //   props.onClose();
-      
-        
-        //   setName("");
-        //   setCategory("");
-        //   setDescription("");
-        //   setUnitPrice("");
-        // }
+        console.log(data)
     };
 
     const handleCancelClick = () => {
