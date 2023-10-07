@@ -33,10 +33,22 @@ public class Order {
     @Column(name = "date_created")
     private Date dateCreated;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.MERGE)
+//    @OneToMany(mappedBy = "order", fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @OneToMany( fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     private List<ProductOrder> productOrders;
 
     @Column(name = "total_price")
     private Double totalPrice;
+
+    @Override
+    public String toString() {
+        return "Order{" +
+                "id=" + id +
+                ", user=" + user.getEmail() +
+                ", dateCreated=" + dateCreated +
+                ", productorder=" + productOrders +
+                ", totalPrice=" + totalPrice +
+                '}';
+    }
 
 }

@@ -44,18 +44,20 @@ public class InitialConfiguration {
 
     private void addSampleOrders(OrderService orderService, ProductRepository productRepository) throws ParseException {
         String userEmail1 = "john.smith@example.com";
-        String userEmail2 = "martinguido@gmail.com";
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date1 = dateFormat.parse("2023-08-04 08:10:43");
-        Date date2 = dateFormat.parse("2023-09-25 05:02:23");
         Double totalPrice1 = 17800.00;
-        Double totalPrice2 = 44300.00;
         List<ProductOrderDTO> productOrderDTOList1 = new ArrayList<>();
-        List<ProductOrderDTO> productOrderDTOList2 = new ArrayList<>();
         ProductOrderDTO productOrderDTO1 = ProductOrderDTO.builder().product(productRepository.findByName("Tomato Bruschetta").get()).quantity(2).build();// 11000
         ProductOrderDTO productOrderDTO2 = ProductOrderDTO.builder().product(productRepository.findByName("Fried Calamari").get()).quantity(1).build(); // 6800
         productOrderDTOList1.add(productOrderDTO1);
         productOrderDTOList1.add(productOrderDTO2);
+        OrderRequestDTO orderRequestDTO1 = OrderRequestDTO.builder().productOrders(productOrderDTOList1).dateCreated(date1).registeredEmployeeEmail(userEmail1).totalPrice(totalPrice1).build();
+        orderService.addNewOrder(orderRequestDTO1);
+        String userEmail2 = "martinguido@gmail.com";
+        Date date2 = dateFormat.parse("2023-09-25 05:02:23");
+        Double totalPrice2 = 44300.00;
+        List<ProductOrderDTO> productOrderDTOList2 = new ArrayList<>();
         ProductOrderDTO productOrderDTO3 = ProductOrderDTO.builder().product(productRepository.findByName("Tomato Bruschetta").get()).quantity(1).build(); // 5500
         ProductOrderDTO productOrderDTO4 = ProductOrderDTO.builder().product(productRepository.findByName("Caramel Flan").get()).quantity(2).build(); // 12600
         ProductOrderDTO productOrderDTO5 = ProductOrderDTO.builder().product(productRepository.findByName("Green Tea").get()).quantity(3).build(); //12600
@@ -64,10 +66,9 @@ public class InitialConfiguration {
         productOrderDTOList2.add(productOrderDTO4);
         productOrderDTOList2.add(productOrderDTO5);
         productOrderDTOList2.add(productOrderDTO6);
-        OrderRequestDTO orderRequestDTO1 = OrderRequestDTO.builder().productOrders(productOrderDTOList1).dateCreated(date1).registeredEmployeeEmail(userEmail1).totalPrice(totalPrice1).build();
-        orderService.addNewOrder(orderRequestDTO1);
         OrderRequestDTO orderRequestDTO2 = OrderRequestDTO.builder().productOrders(productOrderDTOList2).dateCreated(date2).registeredEmployeeEmail(userEmail2).totalPrice(totalPrice2).build();
         orderService.addNewOrder(orderRequestDTO2);
+        orderService.getAllOrders();
     }
 
 

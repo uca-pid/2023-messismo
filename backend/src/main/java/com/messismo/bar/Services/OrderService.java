@@ -33,8 +33,7 @@ public class OrderService {
     public ResponseEntity<?> addNewOrder(OrderRequestDTO orderRequestDTO) {
         try {
             User employee = userRepository.findByEmail(orderRequestDTO.getRegisteredEmployeeEmail()).orElseThrow(() -> new Exception("Employee not found"));
-            Order newOrder = Order.builder().user(employee).dateCreated(orderRequestDTO.getDateCreated()).totalPrice(orderRequestDTO.getTotalPrice()).build();
-            orderRepository.save(newOrder);
+
             List<ProductOrder> productOrderList = new ArrayList<>();
             for (ProductOrderDTO productOrderDTO : orderRequestDTO.getProductOrders()) {
                 if (productOrderDTO.getProduct().getStock() < productOrderDTO.getQuantity()) {
@@ -43,12 +42,13 @@ public class OrderService {
                     Product product = productOrderDTO.getProduct();
                     product.setStock(product.getStock() - productOrderDTO.getQuantity());
                     productRepository.save(product);
-                    ProductOrder productOrder = ProductOrder.builder().product(product).order(newOrder).quantity(productOrderDTO.getQuantity()).build();
+//                    ProductOrder productOrder = ProductOrder.builder().product(product).order(newOrder).quantity(productOrderDTO.getQuantity()).build();
+                    ProductOrder productOrder = ProductOrder.builder().product(product).quantity(productOrderDTO.getQuantity()).build();
                     productOrderRepository.save(productOrder);
                     productOrderList.add(productOrder);
                 }
             }
-            newOrder.setProductOrders(productOrderList);
+            Order newOrder = Order.builder().productOrders(productOrderList).user(employee).dateCreated(orderRequestDTO.getDateCreated()).totalPrice(orderRequestDTO.getTotalPrice()).build();
             orderRepository.save(newOrder);
             return ResponseEntity.status(HttpStatus.CREATED).body("Order created successfully");
         } catch (Exception e) {
