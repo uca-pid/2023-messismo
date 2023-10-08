@@ -1,59 +1,148 @@
 package com.messismo.bar.ServicesTests;
 
+import com.messismo.bar.DTOs.PasswordRecoveryDTO;
+import com.messismo.bar.Entities.PasswordRecovery;
 import com.messismo.bar.Entities.Role;
 import com.messismo.bar.Entities.User;
+import com.messismo.bar.Repositories.PasswordRecoveryRepository;
 import com.messismo.bar.Repositories.UserRepository;
+import com.messismo.bar.Services.PasswordRecoveryService;
 import com.messismo.bar.Services.UserService;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-public class PasswordRecoveryService {
+public class PasswordRecoveryServiceTests {
+
     @InjectMocks
-    private UserService userService;
+    private PasswordRecoveryService passwordRecoveryService;
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private PasswordRecoveryRepository passwordRecoveryRepository;
+
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
+    @Mock
+    private JavaMailSender javaMailSender;
 
     @BeforeEach
     public void setUp() {
 
         MockitoAnnotations.openMocks(this);
-
-        User user1 = new User(1L, "admin", "admin@mail.com", "password1", Role.ADMIN);
-        User user2 = new User(2L, "messi2", "messi2@gmail.com", "password123", Role.EMPLOYEE);
-        User user3 = new User(3L, "messi3", "messi3@gmail.com", "password123", Role.EMPLOYEE);
-        User user4 = new User(4L, "messi4", "messi4@gmail.com", "password123", Role.VALIDATEDEMPLOYEE);
-        User user5 = new User(5L, "messi4", "messi4@gmail.com", "password123", Role.EMPLOYEE);
-        List<User> users = new ArrayList<>();
-        users.add(user1);
-        users.add(user2);
-        users.add(user3);
-        when(userRepository.findByEmail("admin@mail.com")).thenReturn(Optional.ofNullable(user1));
-        when(userRepository.findByUsername("noExistente")).thenReturn(Optional.empty());
-        when(userRepository.findById(2L)).thenReturn(Optional.ofNullable(user2));
-        when(userRepository.findById(4L)).thenReturn(Optional.ofNullable(user4));
-        when(userRepository.findById(5L)).thenReturn(Optional.ofNullable(user5));
-        when(userRepository.findById(100L)).thenReturn(Optional.empty());
-        when(userRepository.findAll()).thenReturn(users);
     }
 
     @Test
-    public void testUserServiceLoadUserByUsername_UserFound() {
+    public void testPasswordRecoveryServiceGenerateRandomPin() {
 
-        UserDetails result = userService.loadUserByUsername("admin@mail.com");
+        String pin =PasswordRecoveryService.generateRandomPin();
 
-        assertEquals("password1", result.getPassword());
-        verify(userRepository, times(1)).findByEmail("admin@mail.com");
+        Assertions.assertEquals(6, pin.length());
+        Assertions.assertFalse(pin.isEmpty());
+        Assertions.assertTrue(pin.matches("\\d+"));
     }
+    @Test
+    public void testPasswordRecoveryServiceForgotPassword() {
+
+        String email = "user@example.com";
+        User user = User.builder().id(1L).username("user").email("user@example.com").password("Password1").role(Role.EMPLOYEE).build();
+        when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
+        when(passwordRecoveryRepository.findByUser(user)).thenReturn(Optional.empty());
+        ResponseEntity<String> response = passwordRecoveryService.forgotPassword(email);
+
+        verify(userRepository, times(1)).findByEmail(email);
+        verify(passwordRecoveryRepository, times(1)).findByUser(user);
+        verify(javaMailSender, times(1)).send(any(SimpleMailMessage.class));
+        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
+        Assertions.assertEquals("Email sent!", response.getBody());
+    }
+
+    @Test
+    public void testPasswordRecoveryServiceForgotPassword_WithNoExistentEmail() {
+
+        String email = "user@example.com";
+        when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
+        ResponseEntity<String> response = passwordRecoveryService.forgotPassword(email);
+
+        verify(userRepository, times(1)).findByEmail(email);
+        verify(javaMailSender, times(0)).send(any(SimpleMailMessage.class));
+        Assertions.assertEquals(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("CANNOT recover the password at the moment"), response);
+    }
+    @Test
+    public void testChangeForgottenPassword_Success() {
+
+        PasswordRecoveryDTO passwordRecoveryDTO = new PasswordRecoveryDTO();
+        passwordRecoveryDTO.setEmail("user@example.com");
+        passwordRecoveryDTO.setPin("123456");
+        passwordRecoveryDTO.setNewPassword("newPassword");
+        User user = new User();
+        PasswordRecovery passwordRecovery = new PasswordRecovery();
+        passwordRecovery.setDateCreated(new Date());
+        passwordRecovery.setPin("123456");
+
+        when(userRepository.findByEmail(passwordRecoveryDTO.getEmail())).thenReturn(Optional.of(user));
+        when(passwordRecoveryRepository.findByUser(user)).thenReturn(Optional.of(passwordRecovery));
+        when(passwordEncoder.encode(passwordRecoveryDTO.getNewPassword())).thenReturn("encodedPassword");
+        ResponseEntity<String> response = passwordRecoveryService.changeForgottenPassword(passwordRecoveryDTO);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Password changed successfully", response.getBody());
+    }
+
+    @Test
+    public void testChangeForgottenPassword_PinExpired() {
+
+        PasswordRecoveryDTO passwordRecoveryDTO = new PasswordRecoveryDTO();
+        passwordRecoveryDTO.setEmail("user@example.com");
+        passwordRecoveryDTO.setPin("123456");
+        passwordRecoveryDTO.setNewPassword("newPassword");
+        User user = new User();
+        PasswordRecovery passwordRecovery = new PasswordRecovery();
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.HOUR_OF_DAY, -2);
+        passwordRecovery.setDateCreated(calendar.getTime());
+        passwordRecovery.setPin("123456");
+
+        when(userRepository.findByEmail(passwordRecoveryDTO.getEmail())).thenReturn(Optional.of(user));
+        when(passwordRecoveryRepository.findByUser(user)).thenReturn(Optional.of(passwordRecovery));
+        ResponseEntity<String> response = passwordRecoveryService.changeForgottenPassword(passwordRecoveryDTO);
+        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+        assertEquals("PIN expired!", response.getBody());
+    }
+
+    @Test
+    public void testChangeForgottenPassword_WithWrongEmail() {
+
+        PasswordRecoveryDTO passwordRecoveryDTO = new PasswordRecoveryDTO();
+        passwordRecoveryDTO.setEmail("user@example.com");
+        passwordRecoveryDTO.setPin("123456");
+        passwordRecoveryDTO.setNewPassword("newPassword");
+        PasswordRecovery passwordRecovery = new PasswordRecovery();
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.HOUR_OF_DAY, -2);
+        passwordRecovery.setDateCreated(calendar.getTime());
+        passwordRecovery.setPin("123456");
+
+        when(userRepository.findByEmail(passwordRecoveryDTO.getEmail())).thenReturn(Optional.empty());
+        ResponseEntity<String> response = passwordRecoveryService.changeForgottenPassword(passwordRecoveryDTO);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals("CANNOT change the new password at the moment", response.getBody());
+    }
+
 }

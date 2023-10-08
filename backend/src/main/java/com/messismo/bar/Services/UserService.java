@@ -25,12 +25,10 @@ public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
-
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
-
 
     public ResponseEntity<?> getAllEmployees() {
         List<User> allEmployees = userRepository.findAll();
@@ -65,7 +63,7 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    public ResponseEntity<?> validateAdmin(Long userId) {
+    public ResponseEntity<?> validateManager(Long userId) {
         try {
             User user = userRepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("User DOES NOT exist"));
             Collection<? extends GrantedAuthority> authorities = user.getAuthorities();
@@ -87,5 +85,4 @@ public class UserService implements UserDetailsService {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User DOES NOT exist");
         }
     }
-
 }

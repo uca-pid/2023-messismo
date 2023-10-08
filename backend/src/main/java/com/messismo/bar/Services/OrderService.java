@@ -42,7 +42,6 @@ public class OrderService {
                     Product product = productOrderDTO.getProduct();
                     product.setStock(product.getStock() - productOrderDTO.getQuantity());
                     productRepository.save(product);
-//                    ProductOrder productOrder = ProductOrder.builder().product(product).order(newOrder).quantity(productOrderDTO.getQuantity()).build();
                     ProductOrder productOrder = ProductOrder.builder().product(product).quantity(productOrderDTO.getQuantity()).build();
                     productOrderRepository.save(productOrder);
                     productOrderList.add(productOrder);
@@ -52,7 +51,7 @@ public class OrderService {
             orderRepository.save(newOrder);
             return ResponseEntity.status(HttpStatus.CREATED).body("Order created successfully");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("CANNOT create an order at the moment. " + e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("CANNOT create an order at the moment." );
         }
     }
 

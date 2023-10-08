@@ -46,7 +46,7 @@ public class Order {
                 "id=" + id +
                 ", user=" + user.getEmail() +
                 ", dateCreated=" + dateCreated +
-                ", productorder=" + productOrders +
+                ", productOrder=" + productOrders +
                 ", totalPrice=" + totalPrice +
                 '}';
     }

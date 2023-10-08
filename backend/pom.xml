@@ -163,8 +163,10 @@
                     <excludes>
                         <exclude>**/Configurations/*.class</exclude>
                         <exclude>**/Controllers/*.class</exclude>
+                        <exclude>**/DTOs/*.class</exclude>
+                        <exclude>**/Entities/*.class</exclude>
                         <exclude>**/Exceptions/*.class</exclude>
-                        <exclude>**/BarApplication.java</exclude>
+                        <exclude>**/Repositories/*.class</exclude>
                     </excludes>
                 </configuration>
                 <executions>

@@ -13,7 +13,6 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
@@ -28,7 +27,7 @@ public class PasswordRecoveryService {
 
     private final PasswordEncoder passwordEncoder;
 
-    private static String generateRandomPin() {
+    public static String generateRandomPin() {
 
         String validChars = "0123456789";
         StringBuilder pinBuilder = new StringBuilder();
@@ -45,7 +44,7 @@ public class PasswordRecoveryService {
     public ResponseEntity<String> forgotPassword(String email) {
         try {
             User user = userRepository.findByEmail(email).orElseThrow(() -> new Exception("No user has that email."));
-            Optional<PasswordRecovery> passwordRecovery= passwordRecoveryRepository.findByUser(user);
+            Optional<PasswordRecovery> passwordRecovery = passwordRecoveryRepository.findByUser(user);
             passwordRecovery.ifPresent(passwordRecoveryRepository::delete);
             String pin = generateRandomPin();
             Date dateCreated = new Date();
@@ -59,7 +58,7 @@ public class PasswordRecoveryService {
             javaMailSender.send(simpleMailMessage);
             return ResponseEntity.status(HttpStatus.OK).body("Email sent!");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("CANNOT recover the password at the moment" + e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("CANNOT recover the password at the moment");
         }
     }
 
@@ -81,7 +80,7 @@ public class PasswordRecoveryService {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body("PIN expired!");
             }
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("CANNOT change the new password at the moment" + e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("CANNOT change the new password at the moment");
         }
     }
 }
