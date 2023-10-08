@@ -101,30 +101,61 @@ public class ProductService {
         try {
             List<Product> filteredProducts = new ArrayList<>();
             List<Product> allProducts = productRepository.findAll();
+            boolean filterApplied = false;
             if (!Objects.equals(filterProductDTO.getProductName(), "")) {
                 filteredProducts = filterByName(allProducts, filterProductDTO.getProductName());
+                filterApplied = true;
             }
             if (!Objects.equals(filterProductDTO.getCategoryName(), "")) {
                 Category category = categoryRepository.findByName(filterProductDTO.getCategoryName()).orElseThrow(
                         () -> new CategoryNotFoundException("Provided category name DOES NOT match any category name"));
-                filteredProducts = filterByCategory(filteredProducts, category);
+                if (filteredProducts.isEmpty() && !filterApplied) {
+                    filteredProducts = filterByCategory(allProducts, category);
+                    filterApplied = true;
+                } else {
+                    filteredProducts = filterByCategory(filteredProducts, category);
+                }
             }
             if (!(Objects.equals(filterProductDTO.getMinUnitPrice(), 0.00)
                     || Objects.equals(filterProductDTO.getMinUnitPrice(), null)))
             {
-                filteredProducts = filterByMinUnitPrice(filteredProducts, filterProductDTO.getMinUnitPrice());
+                if (filteredProducts.isEmpty() && !filterApplied) {
+                    filteredProducts = filterByMinUnitPrice(allProducts, filterProductDTO.getMinUnitPrice());
+                    filterApplied = true;
+                } else {
+                    filteredProducts = filterByMinUnitPrice(filteredProducts, filterProductDTO.getMinUnitPrice());
+                }
+
             }
             if (!(Objects.equals(filterProductDTO.getMaxUnitPrice(), 0.00)
                     || Objects.equals(filterProductDTO.getMaxUnitPrice(), null))) {
-                filteredProducts = filterByMaxUnitPrice(filteredProducts, filterProductDTO.getMaxUnitPrice());
+                if (filteredProducts.isEmpty() && !filterApplied) {
+                    filteredProducts = filterByMaxUnitPrice(allProducts, filterProductDTO.getMaxUnitPrice());
+                    filterApplied = true;
+                } else {
+                    filteredProducts = filterByMaxUnitPrice(filteredProducts, filterProductDTO.getMaxUnitPrice());
+                }
             }
             if (!(Objects.equals(filterProductDTO.getMinStock(), 0.00)
                     || Objects.equals(filterProductDTO.getMinStock(), null))) {
-                filteredProducts = filterByMinStock(filteredProducts, filterProductDTO.getMinStock());
+                if (filteredProducts.isEmpty() && !filterApplied) {
+                    filteredProducts = filterByMinStock(allProducts, filterProductDTO.getMinStock());
+                    filterApplied = true;
+                } else {
+                    filteredProducts = filterByMinStock(filteredProducts, filterProductDTO.getMinStock());
+                }
+
             }
             if (!(Objects.equals(filterProductDTO.getMaxStock(), 0.00)
                     || Objects.equals(filterProductDTO.getMaxStock(), null))) {
-                filteredProducts = filterByMaxStock(filteredProducts, filterProductDTO.getMaxStock());
+
+                if (filteredProducts.isEmpty() && !filterApplied) {
+                    filteredProducts = filterByMaxStock(allProducts, filterProductDTO.getMaxStock());
+                    filterApplied = true;
+                } else {
+                    filteredProducts = filterByMaxStock(filteredProducts, filterProductDTO.getMaxStock());
+                }
+
             }
             return ResponseEntity.status(HttpStatus.OK).body(filteredProducts);
         } catch (Exception e) {
@@ -176,6 +207,7 @@ public class ProductService {
         List<Product> response = new ArrayList<>();
         for (Product product : allProducts) {
             if (product.getCategory().equals(category)) {
+                System.out.println(product);
                 response.add(product);
             }
         }

@@ -1,6 +1,7 @@
 function FormValidation(values) {
     let error = {}
     const priceRegex = /[-+]?\d*\.?\d+/g
+    const stockRegex = /[-+]?\d*\.?\d+/g 
 
 
     if (values.price === "") {
@@ -18,6 +19,14 @@ function FormValidation(values) {
     if(values.category === "" ) {
         error.category = "Field is empty"
     } 
+
+    if (values.stock === "") {
+        error.stock = "Field is empty"
+    }
+
+    else if (!stockRegex.test(values.stock)) {
+        error.stock = "Invalid stock"
+    }
     
 
     return error;

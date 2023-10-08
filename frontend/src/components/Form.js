@@ -61,8 +61,9 @@ const Form = (props) => {
 
     const validationErrors = FormValidation({
       name,
-      description,
+      category: selectedCategory,
       price: unitPrice, 
+      stock,
     });
 
     if (Object.keys(validationErrors).length > 0) {
@@ -183,6 +184,7 @@ const Form = (props) => {
             },
           }}
       />
+      <p style={{ color: errors.stock ? "red" : "black" }}>Stock *</p>
       <TextField
         required
         id="stock"
@@ -190,8 +192,8 @@ const Form = (props) => {
         onChange={handleStockChange}
         variant="outlined"
         style={{ width: '80%', marginTop: '3%', marginBottom: '3%', fontSize: '1.3rem'}}
-        error={errors.price ? true : false}
-        helperText={errors.price || ''}
+        error={errors.stock ? true : false}
+        helperText={errors.stock || ''}
         InputProps={{
           style: {
             fontSize: '1.5rem', 

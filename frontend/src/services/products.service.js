@@ -109,12 +109,37 @@ const filterByName = (name) => {
     });
 };
 
+
+const filter = (product) => {
+  console.log(product);
+  
+  return axios
+    .post(
+      "http://localhost:8080/api/v1/validatedEmployee/filterProducts",
+      product,
+      {
+        headers: authHeader(),
+        method: "POST",
+        "Content-Type": "application/json",
+      }
+    )
+    .then((response) => {
+      console.log("Productos encontrados:", response.data);
+      return response.data;
+    })
+    .catch((error) => {
+      console.error("Error al buscar el producto:", error);
+      throw error;
+    });
+};
+
 const productsService = {
   getAllProducts,
   addProducts,
   deleteProduct,
   updateProductPrice,
   filterByName,
+  filter
 };
 
 export default productsService;

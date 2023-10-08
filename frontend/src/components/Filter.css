@@ -1,0 +1,18 @@
+.range {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.slash {
+    font-size: '100%';
+}
+
+.range span {
+    margin: 0 10px; /* Añade espacio entre el guión y los TextField */
+    font-size: 20px; /* Aumenta el tamaño del guión */
+    display: flex; /* Permite centrar horizontalmente el guión */
+    align-items: center; /* Centra horizontalmente el guión */
+  }
+

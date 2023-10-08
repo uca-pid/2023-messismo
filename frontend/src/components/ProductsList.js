@@ -13,6 +13,7 @@ import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
 import Form from "./Form";
 import EditForm from "./EditForm";
+import Filter from "./Filter";
 import productsService from "../services/products.service";
 import { useSelector} from "react-redux";
 import Tooltip from "@mui/material/Tooltip";
@@ -27,6 +28,7 @@ import InputBase from '@mui/material/InputBase';
 
 const ProductsList = () => {
   const [openFormModal, setOpenFormModal] = useState(false);
+  const [openFilter, setOpenFilter] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [isEditFormOpen, setIsEditFormOpen] = useState(false);
   const [products, setProducts] = useState([]);
@@ -63,6 +65,28 @@ const ProductsList = () => {
   const handleCloseProductsModal = () => {
     setOpenFormModal(false);
   };
+
+  const handleOpenFilter = () => {
+    setOpenFilter(true);
+  };
+
+  const handleCloseFilter = () => {
+    setOpenFilter(false);
+  };
+
+  const handleApplyFilter = async (product) => {
+      try {
+        const response = await productsService.filter(product)
+        .then((response) => {
+          console.log(response)
+          setProducts(response)
+        })
+        
+      } catch (error) {
+        console.error("Error al buscar productos", error);
+      }
+    };
+  
 
   const [selectedProduct, setSelectedProduct] = useState(null);
 
@@ -187,7 +211,23 @@ const ProductsList = () => {
         )}
       </div>
       <div className="filter">
-      
+      <Button variant="contained"
+      onClick={handleOpenFilter}>
+        Filter by
+        </Button>
+      <Dialog
+        open={openFilter}
+        dividers={true}
+        onClose={handleCloseFilter}
+        aria-labelledby="form-dialog-title"
+        className="custom-dialog"
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogContent>
+          <Filter onClose={handleCloseFilter} onSave={handleApplyFilter} />
+        </DialogContent>
+      </Dialog>
       <TextField
   size="small"
   variant="standard"
