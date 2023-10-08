@@ -240,7 +240,7 @@ function Orders() {
         id: order.id,
         username: order.user.username,
         dateCreated: order.dateCreated,
-        totalPrice: order.totalPrice,
+        totalPrice: order.totalPrice.toLocaleString('en-US', { style: 'currency', currency: 'USD' }),
     }));
 
     const columns = [
@@ -376,7 +376,7 @@ function Orders() {
                                     <DetailsContent>
                                         {selectedOrderDetails.map(productOrder => (
                                                 <div key={productOrder.productOrderId}>
-                                                    <strong>x{productOrder.quantity} {productOrder.product.name}</strong><br />
+                                                    <strong>{productOrder.quantity}x {productOrder.product.name}</strong><br />
                                                     <strong>${productOrder.product.unitPrice} ea.</strong><br />
                                                     <strong></strong><br />
                                                 </div>

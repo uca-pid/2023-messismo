@@ -7,6 +7,8 @@ import Home from "./screens/Home";
 import Products from "./screens/Products";
 import Orders from "./screens/Orders";
 import Resources from "./screens/Resources";
+import Login from "./components/Login";
+import Register from "./components/Register";
 
 function App() {
   return (
@@ -14,7 +16,8 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Welcome />} />
-          <Route path="/signinupform" element={<SignInUpForm />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
           <Route path="/homepage" element={<Home />} />
           <Route path="/products" element={<Products />} />
           <Route path="/orders" element={<Orders />} />

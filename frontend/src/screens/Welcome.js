@@ -32,7 +32,7 @@ function WelcomePage() {
     }, 2000);
 
     const redirectTimer = setTimeout(() => {
-      navigate('/signinupform');
+      navigate('/login');
     }, 3500);
 
     return () => {
