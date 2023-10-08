@@ -293,6 +293,7 @@ function Orders() {
                                     </Typography>
                                     <DataGrid 
                                     initialState={{
+                                        pagination: { paginationModel: { pageSize: 5 } },
                                         sorting: {
                                         sortModel: [{ field: 'dateCreated', sort: 'desc' }],
                                         },
@@ -302,7 +303,9 @@ function Orders() {
                                     columnVisibilityModel={columnVisible}
                                     rows={rows}
                                     getRowId={(row) => row.id}
-                                    rowsPerPageOptions={[5,10,20]}
+                                    pageSizeOptions={[5, 10, 25]}
+                                    //rowsPerPageOptions={[5, 10, 25]}
+                                    pagination
                                     pageSize={pageSize}
                                     onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
                                     getRowSpacing={params => ({
@@ -312,6 +315,9 @@ function Orders() {
                                     sx={{
                                         border: 2,
                                         borderColor: '#a4d4cc',
+                                        "& .MuiButtonBase-root": {
+                                            color:'white',
+                                        },
                                         '& .MuiDataGrid-cell:hover': {
                                         color: '#a4d4cc',
                                         },
@@ -371,7 +377,7 @@ function Orders() {
                                         {selectedOrderDetails.map(productOrder => (
                                                 <div key={productOrder.productOrderId}>
                                                     <strong>x{productOrder.quantity} {productOrder.product.name}</strong><br />
-                                                    <strong>${productOrder.product.unitPrice}</strong><br />
+                                                    <strong>${productOrder.product.unitPrice} ea.</strong><br />
                                                     <strong></strong><br />
                                                 </div>
                                             ))}
