@@ -1,4 +1,4 @@
-package com.messismo.bar.Configurations;
+package com.messismo.bar.Services;
 
 import com.messismo.bar.Repositories.TokenRepository;
 import jakarta.servlet.http.HttpServletRequest;
