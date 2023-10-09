@@ -2,6 +2,7 @@ function FormValidation(values) {
     let error = {}
     const priceRegex = /[-+]?\d*\.?\d+/g
     const stockRegex = /[-+]?\d*\.?\d+/g 
+    const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i
 
 
     if (values.price === "") {

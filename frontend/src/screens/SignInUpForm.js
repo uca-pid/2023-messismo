@@ -16,6 +16,14 @@ import DialogContent from "@mui/material/DialogContent";
 import Button from "@mui/material/Button";
 import SendIcon from "@mui/icons-material/Send";
 import authService from "../services/auth.service";
+import TextField from "@mui/material/TextField";
+import FormValidation from "../FormValidation";
+import SignInValidation from "../SignInValidation";
+import RecoverPasswordValidation from "../RecoverPasswordValidation";
+import ChangePasswordValidation from "../ChangePasswordValidation";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
+
 
 const BackgroundBox = styled.div`
   background-color: black;
@@ -255,10 +263,16 @@ function SignInUpForm() {
   const { isLoggedIn } = useSelector((state) => state.auth);
   const { message } = useSelector((state) => state.message);
   const [openForm, setOpenForm] = useState(false);
-  const [email, setEmail] = useState("");
+  const [emailRecover, setEmailRecover] = useState("");
   const [openChangePasswordForm, setOpenChangePasswordForm] = useState(false);
   const [password, setPassword] = useState("");
   const [pin, setPin] = useState("");
+  const [errors, setErrors] = useState({});
+  const [email, setEmail] = useState("");
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [alertText, setAlertText] = useState("");
+  const [isOperationSuccessful, setIsOperationSuccessful] = useState(false);
+  
 
   let navigate = useNavigate();
   const dispatch = useDispatch();
@@ -364,42 +378,80 @@ function SignInUpForm() {
     setEmail(e.target.value);
   };
 
-   const handleSendEmail = () => {
+  const handleSendEmail = () => {
 
-       handleCloseForm();
-       setOpenChangePasswordForm(true);
-       console.log(email);
-       authService.forgotPassword(email);
-       console.log(email);
-   };
 
-   const handleOpenChangePasswordForm = () => {
-    setOpenChangePasswordForm(true);};
-
-    const handleCloseChangePasswordForm = () => {
-        setOpenChangePasswordForm(true);};
+    const validationErrors = RecoverPasswordValidation({
+        email,
+      });
   
+      if (Object.keys(validationErrors).length > 0) {
+        setErrors(validationErrors);
+        console.log(validationErrors);
+      } else {
+          
 
-   const handlePasswordChange = (e) => {
+    authService
+    .forgotPassword(email)
+    .then((response) => {
+      setAlertText("Email sent succesfully!");
+      setIsOperationSuccessful(true);
+      setOpenSnackbar(true);
+      handleCloseForm();
+      setOpenChangePasswordForm(true);
+    })
+    .catch((error) => {
+      setAlertText("Error sending password recovery email");
+      setIsOperationSuccessful(false);
+      setOpenSnackbar(true);
+    });
+    setEmail("");
+}
+  };
+
+  const handleOpenChangePasswordForm = () => {
+    setOpenChangePasswordForm(true);
+  };
+
+  const handleCloseChangePasswordForm = () => {
+    setOpenChangePasswordForm(false);
+  };
+
+  const handlePasswordChange = (e) => {
     setPassword(e.target.value);
-   }
+  };
 
-   const handlePinChange = (e) => {
+  const handlePinChange = (e) => {
     setPin(e.target.value);
-   }
+  };
 
-   const handleChangePassword = () => {
-       const form = {
-           email: email,
-           newPassword: password,
-           pin: pin
-       }
-       console.log(form);
-       setOpenChangePasswordForm(false);
-       authService.changePassword(form);
-   }
+  const handleChangePassword = () => {
+    const form = {
+      email: email,
+      newPassword: password,
+      pin: pin,
+    };
 
-   
+    const validationErrors = ChangePasswordValidation({
+        email,
+        password,
+        pin
+      });
+  
+      if (Object.keys(validationErrors).length > 0) {
+        setErrors(validationErrors);
+        console.log(validationErrors);
+      } else {
+          
+    
+        console.log(form);
+        setOpenChangePasswordForm(false);
+        authService.changePassword(form);
+        setEmail("");
+        setPassword("");
+        setPin("");
+      }
+  };
 
   return (
     <BackgroundBox clicked={click}>
@@ -446,23 +498,65 @@ function SignInUpForm() {
           >
             <DialogContent>
               <div>
-                <h1 style={{ marginBottom: "5%", fontSize: "2 rem" }}>
+                <h1 style={{ marginBottom: "3%", fontSize: "2 rem" }}>
                   Password Recovery
                 </h1>
+                <hr
+                  style={{
+                    borderTop: "1px solid lightgrey",
+                    marginBottom: "3%",
+                    width: "100%",
+                  }}
+                />
                 <p>
                   Please enter you email to receive a link to reset your
                   password
                 </p>
-                <input
-                  type="text"
-                  id="myInput"
-                  value={email}
-                  onChange={handleInputChange}
-                  style={{ marginTop: "5%", marginBottom: "5%", height: "40px !important", width: "90%", height: "40%", borderRadius: "5px", borderWidth: "1px" }}
-                />
-                <div className="buttons" style={{flex: 1, display: "flex", flexDirection: "row", justifyContent: "flex-end"}}>
-                  <Button variant="outlined" style={{color: "grey", borderColor: "grey"}}>Cancel</Button>
-                  <Button variant="contained" style={{ marginLeft: "3%" }} onClick={handleSendEmail}>
+                <TextField
+        required
+        id="name"
+        value={email}
+        onChange={handleInputChange}
+        variant="outlined"
+        error={errors.email ? true : false}
+        helperText={errors.email || ''}
+        style={{ width: '80%', marginTop: '3%', marginBottom: '3%', fontSize: '1.5rem'}}
+        InputProps={{
+          style: {
+            fontSize: '1.5rem', 
+          },}}
+          FormHelperTextProps={{
+            style: {
+              fontSize: '1.1rem', 
+            },
+          }}
+      />
+               
+                <div
+                  className="buttons"
+                  style={{
+                    flex: 1,
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "flex-end",
+                  }}
+                >
+                  <Button
+                    variant="outlined"
+                    style={{
+                      color: "grey",
+                      borderColor: "grey",
+                      fontSize: "1.2rem",
+                    }}
+                    onClick={handleCloseForm}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="contained"
+                    style={{ marginLeft: "3%", fontSize: "1.2rem" }}
+                    onClick={handleSendEmail}
+                  >
                     Send
                   </Button>
                 </div>
@@ -480,36 +574,119 @@ function SignInUpForm() {
           >
             <DialogContent>
               <div>
-                <h1 style={{ marginBottom: "5%", fontSize: "2 rem" }}>
+                <h1 style={{ marginBottom: "3%", fontSize: "2 rem" }}>
                   Change Password
                 </h1>
-                <p>Email</p>
-                <input
-                  type="text"
-                  id="myInput"
+                <hr
+                  style={{
+                    borderTop: "1px solid lightgrey",
+                    marginBottom: "3%",
+                    width: "100%",
+                  }}
+                />
+                <p style={{ color: errors.email ? "red" : "black" }}>Email *</p>
+                <TextField
+                  required
+                  id="name"
                   value={email}
                   onChange={handleInputChange}
-                  style={{ marginTop: "5%", marginBottom: "5%", height: "40px !important", width: "90%", height: "40%", borderRadius: "5px", borderWidth: "1px" }}
+                  variant="outlined"
+                  error={errors.email ? true : false}
+                  helperText={errors.email || ""}
+                  style={{
+                    width: "80%",
+                    marginTop: "3%",
+                    marginBottom: "3%",
+                    fontSize: "1.5rem",
+                  }}
+                  InputProps={{
+                    style: {
+                      fontSize: "1.5rem",
+                    },
+                  }}
+                  FormHelperTextProps={{
+                    style: {
+                      fontSize: "1.1rem",
+                    },
+                  }}
                 />
-                <p>Pin</p>
-                <input
-                  type="text"
-                  id="myInput"
+                <p style={{ color: errors.pin? "red" : "black" }}>Pin *</p>
+                <TextField
+                  required
+                  id="name"
                   value={pin}
                   onChange={handlePinChange}
-                  style={{ marginTop: "5%", marginBottom: "5%", height: "40px !important", width: "90%", height: "40%", borderRadius: "5px", borderWidth: "1px" }}
+                  variant="outlined"
+                  error={errors.pin ? true : false}
+                  helperText={errors.pin || ''}
+                  style={{
+                    width: "80%",
+                    marginTop: "3%",
+                    marginBottom: "3%",
+                    fontSize: "1.5rem",
+                  }}
+                  InputProps={{
+                    style: {
+                      fontSize: "1.5rem",
+                    },
+                  }}
+                  FormHelperTextProps={{
+                    style: {
+                      fontSize: "1.1rem",
+                    },
+                  }}
                 />
-                <p>New Password</p>
-                <input
-                  type="text"
-                  id="myInput"
+                <p style={{ color: errors.password ? "red" : "black" }}>New Password *</p>
+                <TextField
+                  required
+                  id="name"
                   value={password}
                   onChange={handlePasswordChange}
-                  style={{ marginTop: "5%", marginBottom: "5%", height: "40px !important", width: "90%", height: "40%", borderRadius: "5px", borderWidth: "1px" }}
+                  variant="outlined"
+                  error={errors.password ? true : false}
+                  helperText={errors.password || ''}
+                  style={{
+                    width: "80%",
+                    marginTop: "3%",
+                    marginBottom: "3%",
+                    fontSize: "1.5rem",
+                  }}
+                  InputProps={{
+                    style: {
+                      fontSize: "1.5rem",
+                    },
+                  }}
+                  FormHelperTextProps={{
+                    style: {
+                      fontSize: "1.1rem",
+                    },
+                  }}
                 />
-                <div className="buttons" style={{flex: 1, display: "flex", flexDirection: "row", justifyContent: "flex-end"}}>
-                  <Button variant="outlined" style={{color: "grey", borderColor: "grey"}}>Cancel</Button>
-                  <Button variant="contained" style={{ marginLeft: "3%" }} onClick={handleChangePassword}>
+                <div
+                  className="buttons"
+                  style={{
+                    flex: 1,
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "flex-end",
+                  }}
+                >
+                  <Button
+                    variant="outlined"
+                    style={{
+                      color: "grey",
+                      borderColor: "grey",
+                      fontSize: "1.2rem",
+                    }}
+                    onClick={handleCloseChangePasswordForm}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="contained"
+                    style={{ marginLeft: "3%", fontSize: "1.2rem" }}
+                    onClick={handleChangePassword}
+                  >
                     Change Password
                   </Button>
                 </div>
@@ -615,7 +792,21 @@ function SignInUpForm() {
           </div>
         </div>
       )}
+
+<Snackbar
+     open={openSnackbar}
+     autoHideDuration={10000} 
+     onClose={() => setOpenSnackbar(false)}
+     anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+   >
+     <Alert onClose={() => setOpenSnackbar(false)} severity={isOperationSuccessful ? "success" : "error"} sx={{fontSize: '100%'}}>
+       {alertText}
+     </Alert>
+   </Snackbar>
     </BackgroundBox>
+
+
+ 
   );
 }
 
