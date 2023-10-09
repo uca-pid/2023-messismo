@@ -22,7 +22,7 @@ const Button = styled.button`
     font-size: 1.5rem;
     border-radius: 3px;
     padding: 1rem 3.5rem;
-    margin-top: 5rem;
+    margin-top: 3rem;
     border: 1px solid black;
     background-color: #a4d4cc;
     color: black;
@@ -43,6 +43,12 @@ const Button = styled.button`
     }
     &:focus{
         outline: none;
+    }
+
+    @media (max-width: 477px) {
+        margin-top: 1rem;
+        font-size: 1rem;
+        padding: 1rem 2.5rem;
     }
 
 `;

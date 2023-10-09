@@ -187,7 +187,7 @@ const Buttons = styled.div`
         margin-right: 1rem;
     }
 
-    @media(max-width: 350px){
+    @media(max-width: 477px){
       width: 100%;
       flex-direction: column;
       text-align: center;

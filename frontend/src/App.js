@@ -7,8 +7,8 @@ import Home from "./screens/Home";
 import Products from "./screens/Products";
 import Orders from "./screens/Orders";
 import Resources from "./screens/Resources";
-import Login from "./components/Login";
-import Register from "./components/Register";
+import Login from "./screens/Login";
+import Register from "./screens/Register";
 
 function App() {
   return (
