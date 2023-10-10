@@ -6,6 +6,7 @@ import SignInUpForm from "./screens/SignInUpForm";
 import Home from "./screens/Home";
 import Products from "./screens/Products";
 import Resources from "./screens/Resources";
+import Categories from "./screens/Categories";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
           <Route path="/homepage" element={<Home />} />
           <Route path="/products" element={<Products />} />
           <Route path="/resources" element={<Resources />} />
+          <Route path="/categories" element={<Categories />} />
         </Routes>
       </BrowserRouter>
     </div>

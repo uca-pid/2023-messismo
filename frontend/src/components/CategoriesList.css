@@ -1,0 +1,11 @@
+.category-data {
+    width: 20%;
+  }
+  
+  /* Estilos para pantallas pequeñas (hasta 768px) */
+@media (max-width: 768px) {
+    .category-data {
+      width: 90% !important; /* Cambia el ancho a 100% para pantallas pequeñas */
+      background-color: aqua;
+    }
+  }

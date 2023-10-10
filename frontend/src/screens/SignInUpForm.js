@@ -443,10 +443,19 @@ function SignInUpForm() {
         console.log(validationErrors);
       } else {
           
-    
-        console.log(form);
-        setOpenChangePasswordForm(false);
-        authService.changePassword(form);
+        authService
+        .changePassword(form)
+        .then((response) => {
+          setAlertText("Password changed succesfully!");
+          setIsOperationSuccessful(true);
+          setOpenSnackbar(true);
+          setOpenChangePasswordForm(false);
+        })
+        .catch((error) => {
+          setAlertText("Error sending password recovery email");
+          setIsOperationSuccessful(false);
+          setOpenSnackbar(true);
+        });
         setEmail("");
         setPassword("");
         setPin("");
@@ -639,7 +648,8 @@ function SignInUpForm() {
                 <p style={{ color: errors.password ? "red" : "black" }}>New Password *</p>
                 <TextField
                   required
-                  id="name"
+                  id="password"
+                  type="password"
                   value={password}
                   onChange={handlePasswordChange}
                   variant="outlined"

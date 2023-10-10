@@ -188,6 +188,12 @@ function Navbar() {
                         <span>Resources</span>
                     </NavLink>
                 )}
+                   {(showManagerBoard || showAdminBoard) && (
+                    <NavLink to={'/categories'} onClick={clicked ? handleClick : undefined}>
+                        <BsPersonCircle className='icon'/>
+                        <span>Categories</span>
+                    </NavLink>
+                )}
 
                 <NavLink to={'/'} onClick={() => {handleSignOut()}}>
                     <ImExit className='icon'/>

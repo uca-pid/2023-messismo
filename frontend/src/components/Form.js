@@ -22,7 +22,6 @@ const Form = (props) => {
   useEffect(() => {
     categoryService.getAllCategories()
       .then(response => {
-        console.log(response.data);
         setCategories(response.data);
       })
       .catch(error => {

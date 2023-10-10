@@ -167,3 +167,25 @@
     justify-content: flex-end;
     
 } 
+
+
+@media (max-width: 768px) {
+    .entradas{
+      width: 100% !important; /* Cambia el ancho a 100% para pantallas pequeñas */
+        padding: 1px;
+        font-size: 1.5rem;
+    }
+    .titles {
+        width: 100%;
+        justify-content: flex-start !important;
+        font-size: 1rem !important;
+    }
+    .descripcion {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .title {
+          font-size: 0.5rem !important;
+      }
+  }
