@@ -183,7 +183,6 @@ const ALL_COLUMNS = {
     details: true,
 };
 
-
 function Orders() {
 
     const { user: currentUser } = useSelector((state) => state.auth);

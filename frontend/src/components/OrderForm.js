@@ -208,6 +208,8 @@ const OrderForm = ({onCancel}) => {
         products: [],
         // paymentMethods: ['cash', 'credit card', 'debit card'],
       });
+    const [selectedProductNames, setSelectedProductNames] = useState([]);
+
 
     useEffect(() => {
         productsService
@@ -335,6 +337,11 @@ const OrderForm = ({onCancel}) => {
                                         {...field}
                                         onChange={(e) => {
                                             const selectedProduct = e.target.value;
+                                            setSelectedProductNames(prevSelectedProductNames => (
+                                                prevSelectedProductNames.includes(selectedProduct)
+                                                    ? prevSelectedProductNames
+                                                    : [...prevSelectedProductNames, selectedProduct]
+                                            ));
                                             setSelectedProducts(prevState => ({
                                                 ...prevState,
                                                 [field.name]: selectedProduct
@@ -344,7 +351,11 @@ const OrderForm = ({onCancel}) => {
                                     >
                                         <option value="" disabled></option>
                                         {options.products.map(product => (
-                                            <option key={product} value={product}>
+                                            <option
+                                                key={product}
+                                                value={product}
+                                                disabled={selectedProductNames.includes(product)}
+                                            >
                                                 {product}
                                             </option>
                                         ))}
@@ -366,8 +377,25 @@ const OrderForm = ({onCancel}) => {
                                 })}
                                 />
                                 {errors[`amount-${index}`]?.type === 'required' && <small className="fail">Field is empty</small>}
-                                {errors[`amount-${index}`]?.type === 'min' && <small className="fail">Min: 1</small>}
-                                {errors[`amount-${index}`]?.type === 'max' && <small className="fail">Stock: {products.find(product => product.name === selectedProducts[`product-${index}`]).stock}</small>}
+
+                                {errors[`amount-${index}`]?.type === 'min' && (
+                                    <small className="fail">
+                                        {products.find(product => product.name === selectedProducts[`product-${index}`]).stock === 0
+                                            ? "Out of Stock"
+                                            : "Min: 1"
+                                        }
+                                    </small>
+                                )}
+
+                                {errors[`amount-${index}`]?.type === 'max' && (
+                                    <small className="fail">
+                                        {products.find(product => product.name === selectedProducts[`product-${index}`]).stock === 0
+                                            ? "Out of Stock"
+                                            : `Stock: ${products.find(product => product.name === selectedProducts[`product-${index}`]).stock}`
+                                        }
+                                    </small>
+                                )}
+
                             </div>
 
                             <div className="form-price">
