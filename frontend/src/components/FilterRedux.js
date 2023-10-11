@@ -1,18 +1,12 @@
 import * as React from "react";
-import ListSubheader from "@mui/material/ListSubheader";
 import List from "@mui/material/List";
 import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import Collapse from "@mui/material/Collapse";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
-import DraftsIcon from "@mui/icons-material/Drafts";
 import SendIcon from "@mui/icons-material/Send";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
-import StarBorder from "@mui/icons-material/StarBorder";
 import Box from "@mui/material/Box";
-import Slider from "@mui/material/Slider";
 import { useEffect, useState } from "react";
 import categoryService from "../services/category.service";
 import { Button } from "@mui/material";
@@ -22,33 +16,41 @@ import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import Fab from "@mui/material/Fab";
 import ClearIcon from "@mui/icons-material/Clear";
 import IconButton from "@mui/material/IconButton";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import {
+  setMinValue,
+  setMaxValue,
+  setMaxStock,
+  setMinStock,
+  setSelectedCategory,
+} from "../redux/filtersSlice";
 
-const Filter = (props) => {
+const FilterRedux = (props) => {
   const [openCategories, setOpenCategories] = React.useState(false);
   const [openMinPrice, setOpenMinPrice] = React.useState(false);
   const [openMaxPrice, setOpenMaxPrice] = React.useState(false);
   const [openMinStock, setOpenMinStock] = React.useState(false);
   const [openMaxStock, setOpenMaxStock] = React.useState(false);
   const [categories, setCategories] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [selectedMinPrice, setSelectedMinPrice] = useState("");
-  const [selectedMaxPrice, setSelectedMaxPrice] = useState("");
-  const [selectedMinStock, setSelectedMinStock] = useState("");
-  const [selectedMaxStock, setSelectedMaxStock] = useState("");
-  const [minValue, setMinValue] = useState("");
-  const [maxValue, setMaxValue] = useState("");
+  //const [selectedCategory, setSelectedCategory] = useState("");
+  //const [minValue, setMinValue] = useState("");
+  //const [maxValue, setMaxValue] = useState("");
   const [minValueTemp, setMinValueTemp] = useState("");
   const [maxValueTemp, setMaxValueTemp] = useState("");
-  const [minStock, setMinStock] = useState("");
-  const [maxStock, setMaxStock] = useState("");
+  //const [minStock, setMinStock] = useState("");
+  //const [maxStock, setMaxStock] = useState("");
   const [minStockTemp, setMinStockTemp] = useState("");
   const [maxStockTemp, setMaxStockTemp] = useState("");
-  const [loadingCategory, setLoadingCategory] = useState(true);
-  const [loadingPrice, setLoadingPrice] = useState(true);
-  const [loadingStock, setLoadingStock] = useState(true);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-
-  const handleChange = () => {};
+  const selectedCategory = useSelector(
+    (state) => state.filters.selectedCategory
+  );
+  const minValue = useSelector((state) => state.filters.minValue);
+  const maxValue = useSelector((state) => state.filters.maxValue);
+  const minStock = useSelector((state) => state.filters.minStock);
+  const maxStock = useSelector((state) => state.filters.maxStock);
+  const dispatch = useDispatch();
 
   const handleOpenCategories = () => {
     setOpenCategories(!openCategories);
@@ -66,62 +68,48 @@ const Filter = (props) => {
     setOpenMaxStock(!openMaxStock);
   };
 
-  const handleSelectedCategory = async (value) => {
-    setLoadingCategory(true);
+  const handleSelectedCategory = (value) => {
+    dispatch(setSelectedCategory(value));
+    /*setLoadingCategory(true);
     const response = await setSelectedCategoryAsync(value);
-    setLoadingCategory(false);
+    setLoadingCategory(false);*/
   };
 
-  const setSelectedCategoryAsync = async (value) => {
+  /*const setSelectedCategoryAsync = async (value) => {
     setSelectedCategory(value);
-  };
+  };*/
 
-  const handleSelectedMinPrice = (value) => {
-    setSelectedCategory(value);
+  const handlePriceRange = (value) => {
+    dispatch(setMinValue(minValueTemp));
+    dispatch(setMaxValue(maxValueTemp));
   };
-
-  const handleSelectedMaxPrice = (value) => {
-    setSelectedCategory(value);
-    console.log(selectedCategory);
-  };
-
-  const handleSelectedMinStock = (value) => {
-    setSelectedCategory(value);
-  };
-
-  const handleSelectedMaxStock = (value) => {
-    setSelectedCategory(value);
-  };
-
-  const valueLabelFormat = (value) => {
-    return value.toLocaleString();
-  };
-
-  const handlePriceRange = async () => {
-    setLoadingPrice(true);
+  /*setLoadingPrice(true);
     if (minValueTemp != "" || maxValueTemp != "") {
       const response = await setPriceRange();
       setLoadingPrice(false);
-    }
-  };
+    }*/
 
   const setPriceRange = async () => {
     setMinValue(minValueTemp);
     setMaxValue(maxValueTemp);
   };
 
-  const handleStockRange =  async () => {
-    setLoadingStock(true);
+  const handleStockRange = (value) => {
+    dispatch(setMinStock(minStockTemp));
+    dispatch(setMaxStock(maxStockTemp));
+    console.log(minStock);
+    console.log(maxStock);
+    /*setLoadingStock(true);
     if (minStockTemp != "" || maxStockTemp != "") {
       const response = await setStockRange();
       setLoadingStock(false);
-    }
+    }*/
   };
 
   const setStockRange = async () => {
     setMinStock(minStockTemp);
     setMaxStock(maxStockTemp);
-  }
+  };
 
   const filterProduct = () => {
     const product = {
@@ -139,9 +127,8 @@ const Filter = (props) => {
     props.onClose();
   };
 
-  useEffect( () => {
-    //handleFilters();
-    
+  useEffect(() => {
+    console.log(selectedCategory);
     categoryService
       .getAllCategories()
       .then((response) => {
@@ -152,45 +139,15 @@ const Filter = (props) => {
       });
   }, []);
 
-  useEffect(() => {
-    // Establece los valores de los filtros aplicados en las variables de estado cuando se monta el componente
-    if (props.appliedFilters) {
-      console.log("hola")
-      console.log(props.appliedFilters);
-      handleSelectedCategory(props.appliedFilters.category);
-      setMinValueTemp(props.appliedFilters.minUnitPrice);
-      setMaxValueTemp(props.appliedFilters.maxUnitPrice);
-      setMinStockTemp(props.appliedFilters.minStock);
-      setMaxStockTemp(props.appliedFilters.maxStock);
-      handlePriceRange();
-      handleStockRange();}
-  }, [props.appliedFilters]);
-
-  const handleFilters = async () => {
-    const response = await applyFilters();
-  }
-
-  const applyFilters = async () => {
-    if (props.appliedFilters) {
-      console.log("hola")
-      console.log(props.appliedFilters);
-      handleSelectedCategory(props.appliedFilters.category);
-      setMinValueTemp(props.appliedFilters.minUnitPrice);
-      setMaxValueTemp(props.appliedFilters.maxUnitPrice);
-      setMinStockTemp(props.appliedFilters.minStock);
-      setMaxStockTemp(props.appliedFilters.maxStock);
-      handlePriceRange();
-      handleStockRange();
-    }
-  }
   const selectedCategoryBadge = selectedCategory && (
     <Box
       display="flex"
       justifyContent="center"
       alignItems="center"
       backgroundColor="whitesmoke"
-      width={"20%"}
-      borderRadius="10px"
+      width={"100%"}
+      padding="5px"
+      borderRadius="5px"
     >
       <div
         className="badge"
@@ -200,7 +157,7 @@ const Filter = (props) => {
         aria-label="edit"
         size="large"
         color="red"
-        onClick={() => setSelectedCategory("")}
+        onClick={() => dispatch(setSelectedCategory(""))}
       >
         <ClearIcon style={{ justifyContent: "flex-end" }} />
       </IconButton>
@@ -211,17 +168,15 @@ const Filter = (props) => {
     if (minValue !== "" && maxValue !== "") {
       return <div className="badge">{`$${minValue} - $${maxValue}`}</div>;
     } else if (minValue !== "") {
-      return <div className="badge">{`More than ${minValue}`}</div>;
+      return <div className="badge">{`More than $${minValue}`}</div>;
     } else if (maxValue !== "") {
-      return <div className="badge">{`Less than ${maxValue}`}</div>;
+      return <div className="badge">{`Less than $${maxValue}`}</div>;
     }
   };
 
   const stockRangeBadge = () => {
     if (minStock !== "" && maxStock !== "") {
-      return (
-        <div className="badge">{`Stock Range: ${minStock} - ${maxStock}`}</div>
-      );
+      return <div className="badge">{`Stock: ${minStock} - ${maxStock}`}</div>;
     } else if (minStock !== "") {
       return <div className="badge">{`More than ${minStock}`}</div>;
     } else if (maxStock !== "") {
@@ -230,12 +185,11 @@ const Filter = (props) => {
   };
 
   const resetPriceValues = async () => {
-    setMinValue("");
+    dispatch(setMinValue(""));
     setMinValueTemp("");
     setMaxValueTemp("");
-    setMaxValue("");
-    setLoadingPrice(true);
-    console.log(loadingPrice);
+    dispatch(setMaxValue(""));
+    dispatch(setMinValue(""));
   };
 
   const handleClose = () => {
@@ -243,72 +197,107 @@ const Filter = (props) => {
   };
 
   const resetStockValues = async () => {
-    setMinStock("");
+    dispatch(setMinStock(""));
     setMinStockTemp("");
     setMaxStockTemp("");
-    setMaxStock("");
-    setLoadingStock(true);
-    
+    dispatch(setMaxStock(""));
   };
 
-  useEffect(() => {
-    setLoadingCategory(false);
-  }, [selectedCategory]);
+  const handleClearAll = () => {
+    dispatch(setSelectedCategory(""));
+    dispatch(setMinValue(""));
+    dispatch(setMaxValue(""));
+    dispatch(setMinStock(""));
+    dispatch(setMaxStock(""));
+    setMinStockTemp("");
+    setMaxStockTemp("");
+    setMinValueTemp("");
+    setMaxValueTemp("");
+  };
+
+  const hasFiltersApplied =
+    selectedCategory !== "" ||
+    minValue !== "" ||
+    maxValue !== "" ||
+    minStock !== "" ||
+    maxStock !== "";
+
+    const resetCategoryValue = () => {
+      dispatch(setSelectedCategory(""));
+    }
 
   return (
     <div>
       <h1 style={{ marginBottom: "5%", fontSize: "2 rem" }}>Filter Products</h1>
-      {!loadingCategory && (
-        <div className="badges" style={{ display: "flex", width: "100%" }}>{selectedCategoryBadge}</div>
-      )}
-      {!loadingPrice && (
-        <Box
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          backgroundColor="whitesmoke"
-          width={"25%"}
-          borderRadius="10px"
-        >
-          <div>
-            <div className="badges">{priceRangeBadge()}</div>
-          </div>
-          <IconButton
-            aria-label="edit"
-            size="large"
-            color="red"
-            onClick={() => {
-              resetPriceValues();
-            }}
-          >
-            <ClearIcon style={{ justifyContent: "flex-end" }} />
-          </IconButton>
-        </Box>
-      )}
-      {!loadingStock && (
-        <Box
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          backgroundColor="whitesmoke"
-          width={"25%"}
-          borderRadius="10px"
-        >
-          <div>
-            <div className="badges">{stockRangeBadge()}</div>
-          </div>
-          <IconButton
-            aria-label="edit"
-            size="large"
-            color="red"
-            onClick={() => {
-              resetStockValues();
-            }}
-          >
-            <ClearIcon style={{ justifyContent: "flex-end" }} />
-          </IconButton>
-        </Box>
-      )}
+      <div className="appliedFilters">
+        <div className="filterBoxes">
+          {selectedCategory != "" && (
+           
+              <Fab
+                variant="extended"
+                size="medium"
+                color="white"
+                style={{marginTop: "2%"}}
+                onClick={resetCategoryValue}
+            
+              >
+                <ClearIcon sx={{ mr: 1 }} />
+                {selectedCategory}
+              </Fab>
+           
+          )}
+          {(maxValue != "" || minValue != "") && (
+            
+              
+              <Fab
+              style={{marginTop: "2%"}}
+                variant="extended"
+                size="medium"
+                color="white"
+                onClick={resetPriceValues}
+            
+              >
+                <ClearIcon sx={{ mr: 1 }} />
+                {priceRangeBadge()}
+              </Fab>
+                
+              
+            
+          )}
+          {(minStock != "" || maxStock != "") && (
+             <Fab
+             style={{marginTop: "2%"}}
+                variant="extended"
+                size="medium"
+                color="white"
+                onClick={resetStockValues}
+            
+              >
+                <ClearIcon sx={{ mr: 1 }} />
+                {stockRangeBadge()}
+              </Fab>
+            
+          )}
+        </div>
+        <div>
+          {hasFiltersApplied && (
+            <Button
+              variant="outlined"
+              style={{
+                color: "black",
+                backgroundColor: "white",
+                borderColor: "grey",
+                width: "40% !important",
+                fontSize: "1.1rem",
+              }}
+              className="clearAllButton"
+              onClick={handleClearAll}
+            >
+              Clear All
+            </Button>
+          )}
+        </div>
+      </div>
       <List
         sx={{
           width: "100%",
@@ -432,8 +421,9 @@ const Filter = (props) => {
           Apply
         </Button>
       </div>
+      
     </div>
   );
 };
 
-export default Filter;
+export default FilterRedux;

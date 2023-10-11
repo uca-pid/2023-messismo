@@ -10,6 +10,7 @@ import Categories from "./screens/Categories";
 
 function App() {
   return (
+    
     <div className="App">
       <BrowserRouter>
         <Routes>

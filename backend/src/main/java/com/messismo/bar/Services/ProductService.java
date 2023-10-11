@@ -157,7 +157,12 @@ public class ProductService {
                 }
 
             }
-            return ResponseEntity.status(HttpStatus.OK).body(filteredProducts);
+            if (filteredProducts.isEmpty() && !filterApplied) {
+                return ResponseEntity.status(HttpStatus.OK).body(allProducts);
+            }
+            else {
+                return ResponseEntity.status(HttpStatus.OK).body(filteredProducts);
+            }
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("CANNOT filter at the moment. " + e);
         }

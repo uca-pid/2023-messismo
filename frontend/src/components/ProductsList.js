@@ -15,16 +15,18 @@ import Form from "./Form";
 import EditForm from "./EditForm";
 import Filter from "./Filter";
 import productsService from "../services/products.service";
-import { useSelector} from "react-redux";
+import { useSelector } from "react-redux";
 import Tooltip from "@mui/material/Tooltip";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
-import SearchIcon from '@mui/icons-material/Search';
-import TextField from '@mui/material/TextField';
+import SearchIcon from "@mui/icons-material/Search";
+import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
-import InputBase from '@mui/material/InputBase';
-
-
+import InputBase from "@mui/material/InputBase";
+import Fab from "@mui/material/Fab";
+import Box from "@mui/material/Box";
+import FilterListIcon from '@mui/icons-material/FilterList';
+import FilterRedux from "./FilterRedux";
 
 const ProductsList = () => {
   const [openFormModal, setOpenFormModal] = useState(false);
@@ -39,7 +41,8 @@ const ProductsList = () => {
   const [alertText, setAlertText] = useState("");
   const [isOperationSuccessful, setIsOperationSuccessful] = useState(false);
   const [searchValue, setSearchValue] = useState("");
-
+  const [appliedFilters, setAppliedFilters] = useState({}) 
+  
 
   useEffect(() => {
     productsService
@@ -51,8 +54,6 @@ const ProductsList = () => {
         console.error("Error al mostrar los productos", error);
       });
   }, [openFormModal, open]);
-
-
 
   const handleClose = () => {
     setOpen(false);
@@ -75,18 +76,18 @@ const ProductsList = () => {
   };
 
   const handleApplyFilter = async (product) => {
-      try {
-        const response = await productsService.filter(product)
+    try {
+      setAppliedFilters(product)
+      const response = await productsService
+        .filter(product)
         .then((response) => {
-          console.log(response)
-          setProducts(response)
-        })
-        
-      } catch (error) {
-        console.error("Error al buscar productos", error);
-      }
-    };
-  
+          console.log(response);
+          setProducts(response);
+        });
+    } catch (error) {
+      console.error("Error al buscar productos", error);
+    }
+  };
 
   const [selectedProduct, setSelectedProduct] = useState(null);
 
@@ -131,14 +132,12 @@ const ProductsList = () => {
 
   const handleSaveProduct = async (newProductData) => {
     try {
-      
       const response = await addProductAsync(newProductData);
       setIsOperationSuccessful(true);
       setAlertText("Product added successfully!");
-  
-    
+
       const updatedProductsResponse = await productsService.getAllProducts();
-      setProducts(updatedProductsResponse.data); 
+      setProducts(updatedProductsResponse.data);
     } catch (error) {
       console.error("Error al agregar el producto", error);
       setIsOperationSuccessful(false);
@@ -172,14 +171,17 @@ const ProductsList = () => {
 
   const handleSearch = async () => {
     console.log(searchValue);
+    if (searchValue == "") {
+      console.log("hoa");
+    }
     try {
-      const response = await productsService.filterByName(searchValue)
-      .then((response) => {
-        // Maneja la respuesta aquí
-        console.log(response)
-        setProducts(response)
-      })
-      
+      const response = await productsService
+        .filterByName(searchValue)
+        .then((response) => {
+          // Maneja la respuesta aquí
+          console.log(response);
+          setProducts(response);
+        });
     } catch (error) {
       console.error("Error al buscar productos", error);
     }
@@ -187,110 +189,107 @@ const ProductsList = () => {
 
   return (
     <div className="container">
-    <div className="firstRow">
-      <div className="add-product">
-        {role === "ADMIN" ||
-        role === "MANAGER" ||
-        role === "VALIDATEDEMPLOYEE" ? (
-          <Button
-            variant="contained"
-            endIcon={<AddIcon />}
-            style={{
-              color: "white",
-              borderColor: "#007bff",
-              marginTop: "4%",
-              fontSize: "1.3rem",
-              height: "40px",
-            }}
-            onClick={handleOpenProductsModal}
+      <div className="firstRow">
+        <div className="add-product">
+          {role === "ADMIN" ||
+          role === "MANAGER" ||
+          role === "VALIDATEDEMPLOYEE" ? (
+            <Button
+              variant="contained"
+              endIcon={<AddIcon />}
+              style={{
+                color: "white",
+                borderColor: "#007bff",
+                marginTop: "4%",
+                fontSize: "1.3rem",
+                height: "40px",
+              }}
+              onClick={handleOpenProductsModal}
+            >
+              Add Product
+            </Button>
+          ) : (
+            console.log("")
+          )}
+        </div>
+        <div className="filter">
+          <div className="input-container">
+            <input
+              type="text"
+              className="custom-input"
+              placeholder="Search..."
+              value={searchValue}
+              onChange={(e) => {
+                setSearchValue(e.target.value);
+                //handleSearch(e.target.value);
+              }}
+            />
+             <Fab
+            color="primary"
+            aria-label="edit"
+            size="small"
+            onClick={handleSearch}
+            style={{ backgroundColor: "grey" }}
           >
-            Add Product
+            <SearchIcon style={{ fontSize: "2rem" }} />
+          </Fab>
+          </div>
+          <div className="filterBy">
+          <Button variant="contained" onClick={handleOpenFilter} endIcon={<FilterListIcon />} style={{
+                color: "white",
+                borderColor: "#007bff",
+                marginTop: "4%",
+                fontSize: "1rem",
+              }}>
+            Filter by
           </Button>
-        ) : (
-          console.log("")
-        )}
-      </div>
-      <div className="filter">
-      <Button variant="contained"
-      onClick={handleOpenFilter}>
-        Filter by
-        </Button>
-      <Dialog
-        open={openFilter}
-        dividers={true}
-        onClose={handleCloseFilter}
-        aria-labelledby="form-dialog-title"
-        className="custom-dialog"
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogContent>
-          <Filter onClose={handleCloseFilter} onSave={handleApplyFilter} />
-        </DialogContent>
-      </Dialog>
-      <TextField
-  size="small"
-  variant="standard"
-  label="Search..."
-  margin="normal"
-  style={{
-    marginTop: "4%",
-    fontSize: "1.3rem"
-  }}
-  value={searchValue}
-  onChange={(e) => {
-    setSearchValue(e.target.value);
-    handleSearch(e.target.value); 
-  }}
-  InputProps={{
-    endAdornment: (
-      <InputAdornment position="end">
-        <IconButton
-          aria-label="search"
-          size="Large"
-          onClick={handleSearch}
+          <Dialog
+            open={openFilter}
+            dividers={true}
+            onClose={handleCloseFilter}
+            aria-labelledby="form-dialog-title"
+            className="custom-dialog"
+            maxWidth="sm"
+            fullWidth
+          >
+            <DialogContent>
+              <FilterRedux onClose={handleCloseFilter} onSave={handleApplyFilter} appliedFilters={appliedFilters}/>
+            </DialogContent>
+          </Dialog>
+          </div>
+        </div>
+        <Dialog
+          open={openFormModal}
+          dividers={true}
+          onClose={handleCloseProductsModal}
+          aria-labelledby="form-dialog-title"
+          className="custom-dialog"
+          maxWidth="sm"
+          fullWidth
         >
-          <SearchIcon style={{ fontSize: "2rem" }} />
-        </IconButton>
-      </InputAdornment>
-    )
-  }}
-  onKeyPress={(e) => {
-    if (e.key === "Enter") {
-      handleSearch();
-    }
-  }}
-/>
-      </div>
-      <Dialog
-        open={openFormModal}
-        dividers={true}
-        onClose={handleCloseProductsModal}
-        aria-labelledby="form-dialog-title"
-        className="custom-dialog"
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogContent>
-          <Form onClose={handleCloseProductsModal} onSave={handleSaveProduct} />
-        </DialogContent>
-      </Dialog>
+          <DialogContent>
+            <Form
+              onClose={handleCloseProductsModal}
+              onSave={handleSaveProduct}
+            />
+          </DialogContent>
+        </Dialog>
       </div>
       <div className="titles">
         <div className="title">
-        <p>Product details</p>
+          <p>Product details</p>
         </div>
         <div className="title">
-        <p>Category</p>
+          <p>Category</p>
         </div>
         <div className="title">
-        <p>Stock</p>
+          <p>Stock</p>
         </div>
         <div className="title">
-        <p>Price</p>
+          <p>Price</p>
         </div>
         <div className="title">
-        <p>Actions</p>
+          <p>Actions</p>
         </div>
       </div>
       {products.map((producto, index) => (
@@ -307,10 +306,10 @@ const ProductsList = () => {
                   <p className="text">{producto.category.name}</p>
                 </div>
                 <div className="category">
-                <p className="text">{producto.stock}</p>
+                  <p className="text">{producto.stock}</p>
                 </div>
                 <div className="category">
-                <p className="text">{producto.unitPrice}</p>
+                  <p className="text">{producto.unitPrice}</p>
                 </div>
               </div>
               <div className="buttons-edit">
@@ -415,11 +414,15 @@ const ProductsList = () => {
       )}
       <Snackbar
         open={openSnackbar}
-        autoHideDuration={10000} 
+        autoHideDuration={10000}
         onClose={() => setOpenSnackbar(false)}
         anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
       >
-        <Alert onClose={() => setOpenSnackbar(false)} severity={isOperationSuccessful ? "success" : "error"} sx={{fontSize: '75%'}}>
+        <Alert
+          onClose={() => setOpenSnackbar(false)}
+          severity={isOperationSuccessful ? "success" : "error"}
+          sx={{ fontSize: "75%" }}
+        >
           {alertText}
         </Alert>
       </Snackbar>

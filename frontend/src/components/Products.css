@@ -165,8 +165,51 @@
     display: flex;
     align-items: center;
     justify-content: flex-end;
+    flex-direction: column;
     
 } 
+
+.input-container {
+    display: flex;
+    align-items: center;
+    border-radius: 10px;
+    width: 100%;
+    margin-top: 4%;
+    
+  }
+  
+  .custom-input {
+    /*border: none;*/
+    outline: none;
+    width: 100%;
+    font-size: 16px;
+    padding: 8px;
+    border-radius: 12px;
+    background-color: lightgray;
+    border-color: #999;
+    border-width: 2px;
+    width: 80%;
+    
+  }
+  
+  .custom-input::placeholder {
+    color: #999;
+    color: grey;
+  }
+  
+  /* Estilo al enfocar el input */
+  .custom-input:focus {
+    border: 2px solid #007bff; /* Cambia el color del borde al enfocar */
+  }
+
+  .filterBy {
+    width: 100%;
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+    margin-right: 5%;
+    margin-top: 3%;
+  }
 
 
 @media (max-width: 768px) {
@@ -187,5 +230,8 @@
       }
       .title {
           font-size: 0.5rem !important;
+      }
+      .custom-input{
+        width: 30%;
       }
   }
