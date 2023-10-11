@@ -25,6 +25,8 @@ import {
   setMinStock,
   setSelectedCategory,
 } from "../redux/filtersSlice";
+import PriceValidation from "../PriceValidation";
+import StockValidation from "../StockValidation";
 
 const FilterRedux = (props) => {
   const [openCategories, setOpenCategories] = React.useState(false);
@@ -51,6 +53,7 @@ const FilterRedux = (props) => {
   const minStock = useSelector((state) => state.filters.minStock);
   const maxStock = useSelector((state) => state.filters.maxStock);
   const dispatch = useDispatch();
+  const [errors, setErrors] = useState({});
 
   const handleOpenCategories = () => {
     setOpenCategories(!openCategories);
@@ -80,8 +83,19 @@ const FilterRedux = (props) => {
   };*/
 
   const handlePriceRange = (value) => {
+    const validationErrors = PriceValidation({
+      minPrice: minValueTemp,
+      maxPrice: maxValueTemp,
+    });
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      console.log(validationErrors);
+    } else {
+    setErrors({});
     dispatch(setMinValue(minValueTemp));
     dispatch(setMaxValue(maxValueTemp));
+    }
   };
   /*setLoadingPrice(true);
     if (minValueTemp != "" || maxValueTemp != "") {
@@ -90,15 +104,15 @@ const FilterRedux = (props) => {
     }*/
 
   const setPriceRange = async () => {
+    
     setMinValue(minValueTemp);
     setMaxValue(maxValueTemp);
   };
 
-  const handleStockRange = (value) => {
+  const old = (value) => {
     dispatch(setMinStock(minStockTemp));
     dispatch(setMaxStock(maxStockTemp));
-    console.log(minStock);
-    console.log(maxStock);
+    
     /*setLoadingStock(true);
     if (minStockTemp != "" || maxStockTemp != "") {
       const response = await setStockRange();
@@ -106,9 +120,20 @@ const FilterRedux = (props) => {
     }*/
   };
 
-  const setStockRange = async () => {
-    setMinStock(minStockTemp);
-    setMaxStock(maxStockTemp);
+  const handleStockRange = (value) => {
+    const validationErrors = StockValidation({
+      minStock: minStockTemp,
+      maxStock: maxStockTemp,
+    });
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      console.log(validationErrors);
+    } else {
+    setErrors({});
+    dispatch(setMinStock(minStockTemp));
+    dispatch(setMaxStock(maxStockTemp));
+    }
   };
 
   const filterProduct = () => {
@@ -341,6 +366,8 @@ const FilterRedux = (props) => {
               id="outlined-required"
               label="Min"
               value={minValueTemp}
+              error={errors.minPrice ? true : false}
+              helperText={errors.minPrice || ''}
               onChange={(e) => setMinValueTemp(e.target.value)}
             />
             <span className="slash">-</span>
@@ -348,6 +375,8 @@ const FilterRedux = (props) => {
               id="outlined-required"
               label="Max"
               value={maxValueTemp}
+              error={errors.maxPrice ? true : false}
+              helperText={errors.maxPrice || ''}
               onChange={(e) => setMaxValueTemp(e.target.value)}
             />
             <Box sx={{ "& > :not(style)": { m: 1 } }}>
@@ -372,6 +401,8 @@ const FilterRedux = (props) => {
               id="outlined-required"
               label="Min"
               value={minStockTemp}
+              error={errors.minStock ? true : false}
+              helperText={errors.minStock || ''}
               onChange={(e) => setMinStockTemp(e.target.value)}
             />
             <span className="slash">-</span>
@@ -379,6 +410,8 @@ const FilterRedux = (props) => {
               id="outlined-required"
               label="Max"
               value={maxStockTemp}
+              error={errors.maxStock ? true : false}
+              helperText={errors.maxStock || ''}
               onChange={(e) => setMaxStockTemp(e.target.value)}
             />
             <Box sx={{ "& > :not(style)": { m: 1 } }}>

@@ -197,9 +197,9 @@
     color: grey;
   }
   
-  /* Estilo al enfocar el input */
+  
   .custom-input:focus {
-    border: 2px solid #007bff; /* Cambia el color del borde al enfocar */
+    border: 2px solid #007bff; 
   }
 
   .filterBy {
@@ -214,7 +214,7 @@
 
 @media (max-width: 768px) {
     .entradas{
-      width: 100% !important; /* Cambia el ancho a 100% para pantallas pequeñas */
+      width: 100% !important; 
         padding: 1px;
         font-size: 1.5rem;
     }
@@ -232,6 +232,7 @@
           font-size: 0.5rem !important;
       }
       .custom-input{
-        width: 30%;
+        width: 80%;
+        margin-left: 2%;
       }
   }
