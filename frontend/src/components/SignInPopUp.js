@@ -4,10 +4,10 @@ import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 
 const PopUp = styled.div`
-    width: 60%;
-    height: 60%;
+    width: 25%;
+    height: 25%;
+    right: 37.4%;
     position: absolute;
-    top: 20%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -21,10 +21,14 @@ const PopUp = styled.div`
     max-height: 80vh;
     overflow-y: auto;
 
+    @media (max-width: 730px) {
+        width: 50%;
+        right: 25%;
+    }
 
-    @media (max-width: 768px) {
-        max-width: 90%;
-        max-height: 90vh;
+    @media (max-width: 405px) {
+        width: 100%;
+        right: 10%;
     }
 `;
 
@@ -35,10 +39,16 @@ const Content = styled.div`
     flex-direction: column;
     align-items: center;
     text-align: center;
-    font-size: 1.5rem;
+    font-size: 1rem;
     letter-spacing: 0.1rem;
     color: white;
     font-family: 'Roboto',serif;
+
+    @media (max-width: 1000px) {
+        max-width: 90%;
+        max-height: 90vh;
+        font-size: 0.8rem;
+    }
 `;
 
 const AcceptLink = styled(Link)`
@@ -69,14 +79,14 @@ const AcceptLink = styled(Link)`
     }
 `;
 
-const SignInPopUp = ({setSignInPopUp}) => {
+const SignInPopUp = ({isRegistered, setSignInPopUp}) => {
 
     return (
         <PopUp>
 
             <Content>
-                <h1>{"This account doesn't exist"}</h1>
-                <h4>{'Enter a different account or get a new one'}</h4>
+                <h1>{isRegistered ? 'Pending confirmation' : "This account doesn't exist"}</h1>
+                <h4>{isRegistered ? 'An admin needs to approve this request' : 'Enter a different account or get a new one'}</h4>
                 <AcceptLink onClick={ () => setSignInPopUp(false) }> Accept </AcceptLink>
             </Content>
 

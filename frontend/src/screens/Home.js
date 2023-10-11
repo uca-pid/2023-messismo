@@ -20,7 +20,9 @@ const MainContent = styled.div`
 `;
 
 const WelcomeImage = styled.img`
-
+    @media(max-width: 600px){
+      width: 70%;
+    }
 `;
 
 const Resource = styled.div`
@@ -34,8 +36,7 @@ const Resource = styled.div`
     margin-top: 5rem;
 
     h3{
-        font-size: 40px;
-
+        font-size: 100%;
     }
     p{
         padding: 1rem;

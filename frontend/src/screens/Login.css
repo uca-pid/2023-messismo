@@ -1,0 +1,327 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;300&display=swap');
+
+*
+{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Roboto', sans-serif;
+}
+
+:root{
+    --primaryColor: hsl(94, 55%, 56%);
+    --hoverColor: hsl(93, 75%, 76%);
+    --paleGreen: hsl(96, 75%, 89%);
+    --whiteColor: hsl(0, 0%, 100%);
+    --blackColor: hsl(0, 0%, 18%);
+    --greyText: hsl(0, 0%, 75%);
+    --bgColor: hsl(113, 11%, 85%);
+    --inputColor: hsl(330, 12%, 97%);
+  
+    --biggestFontSize: 2.5rem;
+    --h1FontSize: 1.5rem;
+    --h2FontSize: 1.25rem;
+    --h3FontSize: 1rem;
+    --normalFontSize: .938rem;
+    --smallFontSize: .813rem;
+    --smallestFontSize: .75rem;
+}
+  
+.flx{
+    display: flex;
+    align-items: center;
+}
+  
+.grd{
+    display: grid;
+    align-items: center;
+    gap: 1.5rem;
+}
+  
+html{
+    font-size: 90%;
+}
+
+a{
+    text-decoration: none;
+}
+
+li{
+    list-style: none;
+}
+
+.icn{
+    font-size: var(--h2FontSize);
+    cursor: pointer;
+}
+
+.imag, .logoimg{
+height: auto;
+width: 100%;
+}
+
+.message{
+    display: none;
+}
+
+.showMessage{
+    display: block;
+    color: var(--whiteColor);
+    background: rgb(255,0,0);
+    border-radius: 3px;
+    text-align: center;
+}
+  
+.btn{
+    border: none;
+    outline: none;
+    cursor: pointer;
+    border-radius: 8px;
+    padding: .8rem 1rem;
+    color: var(--greyText);
+}
+
+.btn .icn{
+    margin-left: .5rem;
+}
+  
+  .btn:hover{
+      color: var(--primaryColor);
+      background-color: var(--paleGreen);
+  }
+
+  .loginPage{
+    height: 100vh;
+    width: 100%;
+    margin: auto;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 7px 50px rgb(214, 223, 213);
+
+    .cntainr{
+        height: 70vh;
+        width: 50%;
+        margin: auto;
+        justify-content: space-between;
+        border-radius: 10px;
+        background: rgb(0, 0, 0, 0.3);
+
+        .imageDiv{
+            position: relative;
+            display: flex;
+            flex-basis: 50%;
+            width: 70%;
+            height: 100%;
+            padding: 0 1.5rem;
+            text-align: center;
+            justify-content: center;
+            flex-direction: column;
+            margin: auto;
+            border-radius: 10px;
+            overflow: hidden;
+    
+            .imag, .footerDiv{
+                position: absolute;
+            }
+
+            .imag{
+                height: 100%;
+                width: 100%;
+                object-fit: cover;
+                top:0;
+                right:0;
+                bottom:0;
+                left:0;
+            }
+
+            .textDiv{
+                position: relative;
+
+                .title{
+                    color: var(--whiteColor);
+                    font-size: 35px;
+                    font-weight: 800;
+                    text-transform: uppercase;
+                    letter-spacing: 1px;
+                }
+
+                .subtitle{
+                    color: var(--whiteColor);
+                    font-size: 25px;
+                    font-weight: 800;
+                    margin-top: 1rem;
+                }
+
+                p{
+                    color: var(--whiteColor);
+                    padding: 1rem;
+                    font-weight: 400;
+                }
+            }
+
+            .footerDiv{
+                bottom: 10px;
+                padding: 0 1rem;
+                height: 60px;
+                background: rgba(255, 255, 255, 0.1);
+                left: 10px;
+                right: 10px;
+                justify-content: space-between;
+                backdrop-filter: blur(1px);
+                border-radius: 10px;
+
+                .text{
+                    color: var(--whiteColor);
+                    font-size: 1.2rem;
+                }
+
+                .btn{
+                    background: #a4d4cc;
+                    color: black;
+                    padding: .8rem 1.5rem;
+                    border-radius: 10px;
+                    font-weight: 400;
+                    transition: .3s ease;
+                    opacity: 0.7;
+                    font-size: 1rem;
+
+                    &:hover{
+                        background: #97d4ca;
+                        color: var(--blackColor);
+                    }
+                }
+            }
+        }
+
+        .formDiv{
+            flex-basis: 50%;
+            margin: auto;
+            flex-direction: column;
+            gap: 1.5rem;
+            transform: translateY(-1rem);
+
+            .headerDiv{
+                text-align: center;
+                padding: 1.5rem 0;
+
+                .logoimg{
+                    width: 150px;
+                }
+
+                h3{
+                    font-size: 25x;
+                    color: var(--blackColor);
+                    font-weight: 600;
+                }
+            }
+
+            .form{
+                gap: 1rem;
+
+                .inputDiv{
+                    .icn{
+                        color: var(--greyText);
+                        margin-left: 1rem;
+                    }
+
+                    .inpt{
+                        outline: none;
+                        border: none;
+                        width: 100%;      
+                        height: 3rem;
+                        gap: .5rem;
+                        background: var(--inputColor);
+                        border-radius: 3px;
+                    }
+
+                    .labl{
+                        color: var(--whiteColor);
+                        font-weight: 400;
+                        font-size: 20px;
+                        padding: .4rem 0;
+                        display: block;
+                    }
+                }
+
+                .btn{
+                    padding: .8rem;
+                    background: #a4d4cc;
+                    border-radius: 5px;
+                    color: var(--blackColor);
+                    align-items: center;
+                    margin: auto;
+                    justify-content: center;
+                    font-size: 20px;
+                    width: 100%;
+                    gap: .5rem;
+                    transition: .3s ease;
+                    letter-spacing: 1px;
+                    margin-top: 1.5rem;
+
+                    &:hover{
+                        color: var(--blackColor);
+                        background: #97d4ca;
+                    }
+                }
+
+                .forgotPassword{
+                    margin-top: 1rem;
+                    font-size: .85rem;
+                    font-family: 'Roboto',serif;
+                    text-align: center;
+                }
+
+
+            }
+        }
+    }
+  }
+
+@media screen and (max-width: 1200px){
+    .loginPage{
+        .cntainr{
+            height: 100%;
+            width: 100%;
+            flex-direction: column;
+            padding: 1.5rem;
+
+            .imageDiv{
+                position: absolute;
+                width: 300px;
+                margin-bottom: 3rem;
+
+                .textDiv{
+                    display: none;
+                }
+
+                .footerDiv{
+                    margin-bottom: 5rem;
+                    .text{
+                        font-size: 12px;
+                    }
+
+                    .btn{
+                        padding: .4rem 1.5rem;
+                    }
+                }
+
+                .imag{
+                    display: none;
+                }
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 300px){
+    .loginPage{
+        .cntainr{
+
+            .imageDiv{
+                position: absolute;
+                width: 200px;
+                margin-bottom: 3rem;
+            }
+        }
+    }
+}

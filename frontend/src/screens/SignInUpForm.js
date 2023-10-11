@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, forwardRef } from 'react'
 import '../App.css';
 import { styled } from 'styled-components';
 // import 'fontsource-roboto';
@@ -10,7 +10,9 @@ import signupvalidation from '../SignUpValidation';
 import signinvalidation from '../SignInValidation';
 import { login, register } from "../redux/auth";
 import { clearMessage } from "../redux/message";
-
+import Stack from '@mui/material/Stack';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 
 const BackgroundBox = styled.div`
     background-color: black;
@@ -38,13 +40,17 @@ const BackgroundBox = styled.div`
     .signintext{
         z-index: ${props => props.clicked ? "-600": "500"};
         transform: ${props => props.clicked ? "none": "0%"};
-        transition: transform 0.5s ease-in-out;
+        transition: transform 0.5s ease-in-out;        
     }
 
     .signuptext{
         z-index: ${props => props.clicked ? "500": "-600"};
         transform: ${props => props.clicked ? "100%": "none"};
         transition: transform 0.5s ease-in-out;
+    }
+
+    @media(max-width: 768px){
+        width: 100%;
     }
 `;
 
@@ -171,7 +177,7 @@ const NavLink = styled(Link)`
 `;
 
 const Title = styled.h1`
-    font-size: 3.5rem;
+    font-size: 4em;
     margin-bottom: 2rem;
     font-family: 'Roboto',serif;
     color: #a7d0cd;
@@ -184,18 +190,17 @@ const ForgotLink = styled.a`
     margin-top: 1.5rem;
     font-size: 1.1rem;
     font-family: 'Roboto',serif;
+    text-align: center;
 `;
 
 const ButtonAnimate = styled.button`
-    position: absolute;
     z-index: 1000;
     border: none;
     cursor: pointer;
-    background-color: transparent;
     color: white;
     font-family: 'Roboto',serif;
-    background-color: rgba(167, 208, 205, 0.2);
-    padding: 10px;
+    background-color: rgba(167, 208, 205, 0);
+
     text-align: center;
     top: 60%;
     
@@ -206,7 +211,7 @@ const ButtonAnimate = styled.button`
 
     &::before{
         content: "Click Here";
-        font-size: 2rem;
+        font-size: 1.5em;
     }
 
     &:focus{
@@ -222,13 +227,13 @@ const Text = styled.div`
     flex-direction: column;
     align-items: center;
     text-align: center;
-    font-size: 1.5rem;
     letter-spacing: 0.1rem;
     color: white;
     font-family: 'Roboto',serif;
     background-color: rgba(167, 208, 205, 0.2);
     padding: 10px;
     display: ${props => (props.show ? 'block' : 'none')};
+    font-size: 2em;
 `;
 
 const ErrorMessage = styled.h4`
@@ -236,8 +241,15 @@ const ErrorMessage = styled.h4`
     font-family: 'Roboto',serif;
 `;
 
+const Alert = forwardRef(function Alert(props, ref) {
+    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+  });
 
 function SignInUpForm(){
+
+    const [open, setOpen] = useState(false);
+
+    const [isRegistered, setIsRegistered] = useState(false);
 
     const [isSignInValid, setIsSignInValid] = useState(false);
     const [signinvalues, setSignInValues] = useState({
@@ -258,6 +270,7 @@ function SignInUpForm(){
 
     const { isLoggedIn } = useSelector((state) => state.auth);
     const { message } = useSelector((state) => state.message);
+    const { user: currentUser } = useSelector((state) => state.auth);
 
     let navigate = useNavigate();
     const dispatch = useDispatch();
@@ -283,22 +296,28 @@ function SignInUpForm(){
     const handleClick = () => setClick(!click);
 
     const handleLogin = (userData) => {
-
         const email = userData.email;
         const password = userData.password;
-
+      
         dispatch(login({ email, password }))
           .unwrap()
-          .then(() => {
-            navigate("/homepage");
-            window.location.reload();
+          .then((response) => {
+            const userRole = response.user.role;
+            if (userRole === "ADMIN" || userRole === "MANAGER" || userRole === "VALIDATEDEMPLOYEE" ) {
+                navigate("/homepage");
+            } 
+            if (userRole === "EMPLOYEE") {
+                setIsRegistered(true);
+                setSignInPopUp(true);
+            }
           })
           .catch(() => {
+            setIsRegistered(false);
             setSignInPopUp(true);
           });
-    };
+      };
 
-    if (isLoggedIn) {
+    if ((isLoggedIn) && (currentUser.role === "ADMIN" || currentUser.role === "MANAGER" || currentUser.role === "VALIDATEDEMPLOYEE" )){
         return <Navigate to="/homepage" />;
     }
 
@@ -319,6 +338,7 @@ function SignInUpForm(){
         }
         else {
             setIsSignInValid(false);
+            handleSnackClick();
         }
     }
 
@@ -331,11 +351,12 @@ function SignInUpForm(){
         dispatch(register({ username, email, password }))
         .unwrap()
         .then(() => {
-            navigate("/homepage");
-            window.location.reload();
+            setIsRegistered(false);
+            setSignUpPopUp(true);
         })
         .catch(() => {
-          setSignUpPopUp(true);
+            setIsRegistered(true);
+            setSignUpPopUp(true);
         });
 
     };
@@ -357,120 +378,144 @@ function SignInUpForm(){
         }
         else {
             setIsSignUpValid(false);
+            handleSnackClick();
         }
     }
 
+    const handleSnackClick = () => {
+        setOpen(true);
+      };
+    
+      const handleSnackClose = (event, reason) => {
+        if (reason === 'clickaway') {
+          return;
+        }
+    
+        setOpen(false);
+      };
+
     return(
 
-        <BackgroundBox clicked={click}>
+            <BackgroundBox clicked={click}>
 
-            <Box1 clicked={click}>
-                <Form className='signin' show={!click}>
-                    <Title>Sign In</Title>
-                    <Input type='email' name='email' id='emailSiId'
-                    placeholder='Email'
-                    onChange={handleSignInInput}
-                    />
-                    {signinerrors.email && <ErrorMessage>{signinerrors.email}</ErrorMessage>}
-                    <Input 
-                    type='password' name='password' id='passwordSiId'
-                    placeholder='Password'
-                    onChange={handleSignInInput}
-                    />
-                    {signinerrors.password && <ErrorMessage>{signinerrors.password}</ErrorMessage>}
-                    <ForgotLink href='#'>Forgot your Password?</ForgotLink>
+                <Box1 clicked={click}>
+                    <Form className='signin' show={!click}>
+                        <Title>Sign In</Title>
+                        <Input type='email' name='email' id='emailSiId'
+                        placeholder='Email'
+                        onChange={handleSignInInput}
+                        />
+                        {signinerrors.email && <ErrorMessage>{signinerrors.email}</ErrorMessage>}
+                        <Input 
+                        type='password' name='password' id='passwordSiId'
+                        placeholder='Password'
+                        onChange={handleSignInInput}
+                        />
+                        {signinerrors.password && <ErrorMessage>{signinerrors.password}</ErrorMessage>}
+                        <ForgotLink href='#'>Forgot your Password?</ForgotLink>
 
-                    <NavLink
-                    onClick={() => {
-                        handleSignInValidation();
-                        if(isSignInValid) {
-                            const userData = {
-                                email: signinvalues.email,
-                                password: signinvalues.password,
+                        <NavLink
+                        onClick={() => {
+                            handleSignInValidation();
+                            if(isSignInValid) {
+                                const userData = {
+                                    email: signinvalues.email,
+                                    password: signinvalues.password,
+                                }
+                                handleLogin(userData);
+                            } 
+                        }}
+                        style={{ textDecoration: 'none' }}
+                        disabled = {Object.keys(signinerrors).length > 0 || !isSignInValid}
+                        >
+                            Sign In
+                        </NavLink>
+
+                    </Form>
+
+                    <Form className='signup' show={click}>
+
+                        <Title>Sign Up</Title>
+                        <Input type='text' name='username' id='usernameId'
+                        placeholder='Username'
+                        onChange={handleSignUpInput}
+                        />
+                        {signuperrors.username && <ErrorMessage>{signuperrors.username}</ErrorMessage>}
+                        
+                        <Input type='email' name='email' id='emailSuId'
+                        placeholder='Email'
+                        onChange={handleSignUpInput}
+                        />
+                        {signuperrors.email && <ErrorMessage>{signuperrors.email}</ErrorMessage>}
+                        
+                        <Input 
+                        type='password' name='password' id='passwordSuId'
+                        placeholder='Password'
+                        onChange={handleSignUpInput}
+                        />
+                        {signuperrors.password && <ErrorMessage>{signuperrors.password}</ErrorMessage>}
+
+                        <NavLink
+                        onClick={() => {
+                            handleSignUpValidation();
+                            if(isSignUpValid) {
+                                const userData = {
+                                    username: signupvalues.username,
+                                    email: signupvalues.email,
+                                    password: signupvalues.password,
+                                }
+                                handleRegister(userData);
                             }
-                            handleLogin(userData);
-                        }
-                    }}
-                    style={{ textDecoration: 'none' }}
-                    disabled = {Object.keys(signinerrors).length > 0 || !isSignInValid}
-                    >
-                        Sign In
-                    </NavLink>
+                        }}
+                        style={{ textDecoration: 'none' }}
+                        disabled = {Object.keys(signuperrors).length > 0 || !isSignUpValid}
+                        >
+                            Sign Up
+                        </NavLink>
 
-                </Form>
+                    </Form>
 
-                <Form className='signup' show={click}>
+                </Box1>
 
-                    <Title>Sign Up</Title>
-                    <Input type='text' name='username' id='usernameId'
-                    placeholder='Username'
-                    onChange={handleSignUpInput}
-                    />
-                    {signuperrors.username && <ErrorMessage>{signuperrors.username}</ErrorMessage>}
+                <Box2 clicked={click}>
+                    <Text className='signintext' show={!click}>
+                        Welcome Back
+                        <br />
+                        Don't have an account yet?
+                        <br />
+                        <ButtonAnimate clicked={click} onClick={handleClick}></ButtonAnimate>
+                    </Text>
+                    <Text className='signuptext' show={click}>
+                        Hi There
+                        <br />
+                        Already have an account?
+                        <br />
+                        <ButtonAnimate clicked={click} onClick={handleClick}></ButtonAnimate>
+                    </Text>
                     
-                    <Input type='email' name='email' id='emailSuId'
-                    placeholder='Email'
-                    onChange={handleSignUpInput}
-                    />
-                    {signuperrors.email && <ErrorMessage>{signuperrors.email}</ErrorMessage>}
-                    
-                    <Input 
-                    type='password' name='password' id='passwordSuId'
-                    placeholder='Password'
-                    onChange={handleSignUpInput}
-                    />
-                    {signuperrors.password && <ErrorMessage>{signuperrors.password}</ErrorMessage>}
+                </Box2>
 
-                    <NavLink
-                    onClick={() => {
-                        handleSignUpValidation();
-                        if(isSignUpValid) {
-                            const userData = {
-                                username: signupvalues.username,
-                                email: signupvalues.email,
-                                password: signupvalues.password,
-                            }
-                            handleRegister(userData);
-                        }
-                    }}
-                    style={{ textDecoration: 'none' }}
-                    disabled = {Object.keys(signuperrors).length > 0 || !isSignUpValid}
-                    >
-                        Sign Up
-                    </NavLink>
+                { SignInPopUp && <SInPopUp setSignInPopUp={setSignInPopUp} isRegistered={isRegistered} /> }
+                { SignUpPopUp && <SUpPopUp setSignUpPopUp={setSignUpPopUp} isRegistered={isRegistered} /> }
 
-                </Form>
-
-            </Box1>
-
-            <Box2 clicked={click}>
-                <Text className='signintext' show={!click}>
-                    <h1>Welcome Back</h1>
-                    Don't have an account yet?
-                    <br />
-                    <ButtonAnimate clicked={click} onClick={handleClick}></ButtonAnimate>
-                </Text>
-                <Text className='signuptext' show={click}>
-                    <h1>Hi There</h1>
-                    Already have an account?
-                    <br />
-                    <ButtonAnimate clicked={click} onClick={handleClick}></ButtonAnimate>
-                </Text>
-                
-            </Box2>
-
-            { SignInPopUp && <SInPopUp setSignInPopUp={setSignInPopUp} /> }
-            { SignUpPopUp && <SUpPopUp setSignUpPopUp={setSignUpPopUp} /> }
-
-            {message && (
-                <div className="form-group">
-                    <div className="alert alert-danger" role="alert">
-                        {message}
+                {message && (
+                    <div className="form-group">
+                        <div className="alert alert-danger" role="alert">
+                            {message}
+                        </div>
                     </div>
-                </div>
-            )}
+                )}
 
-        </BackgroundBox>
+                <Stack spacing={2} sx={{ width: '100%' }}>
+                    <Snackbar open={open} autoHideDuration={2500} onClose={handleSnackClose}>
+                        <Alert onClose={handleSnackClose} severity="error" sx={{ width: '100%' }}>
+                        <h2 style={{fontFamily: 'Roboto', fontSize: "1.5rem"}}>One or more fields are empty/incorrect</h2>
+                        </Alert>
+                    </Snackbar>
+                </Stack>
+
+            </BackgroundBox>
+            
     )
 }
 

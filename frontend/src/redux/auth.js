@@ -10,9 +10,6 @@ export const register = createAsyncThunk(
   async ({ username, email, password }, thunkAPI) => {
     try {
       const response = await AuthService.register(username, email, password);
-      if (response.data.access_token) {
-        localStorage.setItem("user", JSON.stringify(response.data));
-      }
       thunkAPI.dispatch(setMessage(response.data.message));
       return response.data;
     } catch (error) {
@@ -33,6 +30,7 @@ export const login = createAsyncThunk(
   async ({ email, password }, thunkAPI) => {
     try {
       const data = await AuthService.login(email, password);
+      
       return { user: data };
     } catch (error) {
       const message =
