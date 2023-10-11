@@ -28,7 +28,6 @@ import Box from "@mui/material/Box";
 import FilterListIcon from '@mui/icons-material/FilterList';
 import FilterRedux from "./FilterRedux";
 
-
 const ProductsList = () => {
   const [openFormModal, setOpenFormModal] = useState(false);
   const [openFilter, setOpenFilter] = useState(false);
@@ -42,6 +41,7 @@ const ProductsList = () => {
   const [alertText, setAlertText] = useState("");
   const [isOperationSuccessful, setIsOperationSuccessful] = useState(false);
   const [searchValue, setSearchValue] = useState("");
+
   const [appliedFilters, setAppliedFilters] = useState({})
   const selectedCategory = useSelector(
     (state) => state.filters.selectedCategory
@@ -50,7 +50,7 @@ const ProductsList = () => {
   const maxValue = useSelector((state) => state.filters.maxValue);
   const minStock = useSelector((state) => state.filters.minStock);
   const maxStock = useSelector((state) => state.filters.maxStock); 
-  
+ 
 
   useEffect(() => {
     productsService
@@ -95,6 +95,7 @@ const ProductsList = () => {
     } catch (error) {
       console.error("Error al buscar productos", error);
     }
+
   };
 
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -154,6 +155,7 @@ const ProductsList = () => {
 
       const updatedProductsResponse = await productsService.getAllProducts();
       setProducts(updatedProductsResponse.data);
+
     } catch (error) {
       console.error("Error al agregar el producto", error);
       setIsOperationSuccessful(false);

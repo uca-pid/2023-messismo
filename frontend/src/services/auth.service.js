@@ -17,11 +17,12 @@ const login = (email, password) => {
       password,
     })
     .then((response) => {
-      if (response.data.access_token) {
+      if ((response.data.access_token) && (response.data.role !== 'EMPLOYEE')) {
         localStorage.setItem("user", JSON.stringify(response.data));
       }
 
       return response.data;
+      
     });
 };
 

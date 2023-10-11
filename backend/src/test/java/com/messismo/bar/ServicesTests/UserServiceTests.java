@@ -1,5 +1,6 @@
 package com.messismo.bar.ServicesTests;
 
+import com.messismo.bar.DTOs.UserDTO;
 import com.messismo.bar.Entities.Role;
 import com.messismo.bar.Entities.User;
 import com.messismo.bar.Repositories.UserRepository;
@@ -80,20 +81,21 @@ public class UserServiceTests {
         verify(userRepository, times(1)).findByEmail(null);
     }
 
-//    @Test
-//    public void testUserServiceGetAllEmployees() {
-//        User user1 = new User(1L, "admin", "admin@mail.com", "password1", Role.ADMIN);
-//        User user2 = new User(2L, "messi2", "messi2@gmail.com", "password123", Role.EMPLOYEE);
-//        User user3 = new User(3L, "messi3", "messi3@gmail.com", "password123", Role.EMPLOYEE);
-//        List<User> users = new ArrayList<>();
-//        users.add(user1);
-//        users.add(user2);
-//        users.add(user3);
-//        ResponseEntity<List<User>> response = ResponseEntity.status(HttpStatus.OK).body(users);
-//
-//        assertEquals(response, userService.getAllEmployees());
-//        verify(userRepository, times(1)).findAll();
-//    }
+    @Test
+    public void testUserServiceGetAllEmployees() {
+
+        UserDTO user1 =  UserDTO.builder().id(1L).email("admin@mail.com").username("admin").role(Role.ADMIN).build();
+        UserDTO user2 =  UserDTO.builder().id(2L).email("messi2@gmail.com").username("messi2").role(Role.EMPLOYEE).build();
+        UserDTO user3 =  UserDTO.builder().id(3L).email("messi3@gmail.com").username("messi3").role(Role.EMPLOYEE).build();
+        List<UserDTO> users = new ArrayList<>();
+        users.add(user1);
+        users.add(user2);
+        users.add(user3);
+        ResponseEntity<List<UserDTO>> response = ResponseEntity.status(HttpStatus.OK).body(users);
+
+        assertEquals(response, userService.getAllEmployees());
+        verify(userRepository, times(1)).findAll();
+    }
 
     @Test
     public void testUserServiceValidateEmployee() {
@@ -128,35 +130,35 @@ public class UserServiceTests {
     }
 
     @Test
-    public void testUserServiceValidateAdmin() {
+    public void testUserServiceValidateManager() {
 
         ResponseEntity<String> response = ResponseEntity.status(HttpStatus.OK).body("User IS NOW a MANAGER");
 
-        assertEquals(response, userService.validateAdmin(4L));
+        assertEquals(response, userService.validateManager(4L));
     }
 
     @Test
-    public void testUserServiceValidateAdmin_NotFound() {
+    public void testUserServiceValidateManager_NotFound() {
 
         ResponseEntity<String> response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User DOES NOT exist");
 
-        assertEquals(response, userService.validateAdmin(100L));
+        assertEquals(response, userService.validateManager(100L));
     }
 
     @Test
-    public void testUserServiceValidateAdmin_NullNotFound() {
+    public void testUserServiceValidateManager_NullNotFound() {
 
         ResponseEntity<String> response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User DOES NOT exist");
 
-        assertEquals(response, userService.validateAdmin(null));
+        assertEquals(response, userService.validateManager(null));
     }
 
     @Test
-    public void testUserServiceValidateAdmin_AlreadyAValidatedAdmin() {
+    public void testUserServiceValidateManager_AlreadyAValidatedAdmin() {
 
         ResponseEntity<String> response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User MUST be first a VALIDATED_EMPLOYEE");
 
-        assertEquals(response, userService.validateAdmin(5L));
+        assertEquals(response, userService.validateManager(5L));
     }
 }
 

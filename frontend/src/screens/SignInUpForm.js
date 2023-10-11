@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, forwardRef } from "react";
 import "../App.css";
 import { styled } from "styled-components";
 // import 'fontsource-roboto';
@@ -11,19 +11,20 @@ import signinvalidation from "../SignInValidation";
 import { login, register } from "../redux/auth";
 import { clearMessage } from "../redux/message";
 import { Dialog } from "@mui/material";
+import RecoverPasswordValidation from "../RecoverPasswordValidation";
+import ChangePasswordValidation from "../ChangePasswordValidation";
+import FormValidation from "../FormValidation";
+import SignInValidation from "../SignInValidation";
 import Filter from "../components/Filter";
 import DialogContent from "@mui/material/DialogContent";
 import Button from "@mui/material/Button";
 import SendIcon from "@mui/icons-material/Send";
 import authService from "../services/auth.service";
 import TextField from "@mui/material/TextField";
-import FormValidation from "../FormValidation";
-import SignInValidation from "../SignInValidation";
-import RecoverPasswordValidation from "../RecoverPasswordValidation";
-import ChangePasswordValidation from "../ChangePasswordValidation";
+import Stack from "@mui/material/Stack";
 import Snackbar from "@mui/material/Snackbar";
+import MuiAlert from "@mui/material/Alert";
 import Alert from "@mui/material/Alert";
-
 
 const BackgroundBox = styled.div`
   background-color: black;
@@ -58,6 +59,10 @@ const BackgroundBox = styled.div`
     z-index: ${(props) => (props.clicked ? "500" : "-600")};
     transform: ${(props) => (props.clicked ? "100%" : "none")};
     transition: transform 0.5s ease-in-out;
+  }
+
+  @media (max-width: 768px) {
+    width: 100%;
   }
 `;
 
@@ -180,7 +185,7 @@ const NavLink = styled(Link)`
 `;
 
 const Title = styled.h1`
-  font-size: 3.5rem;
+  font-size: 4em;
   margin-bottom: 2rem;
   font-family: "Roboto", serif;
   color: #a7d0cd;
@@ -193,18 +198,17 @@ const ForgotLink = styled.a`
   margin-top: 1.5rem;
   font-size: 1.1rem;
   font-family: "Roboto", serif;
+  text-align: center;
 `;
 
 const ButtonAnimate = styled.button`
-  position: absolute;
   z-index: 1000;
   border: none;
   cursor: pointer;
-  background-color: transparent;
   color: white;
   font-family: "Roboto", serif;
-  background-color: rgba(167, 208, 205, 0.2);
-  padding: 10px;
+  background-color: rgba(167, 208, 205, 0);
+
   text-align: center;
   top: 60%;
 
@@ -213,7 +217,7 @@ const ButtonAnimate = styled.button`
 
   &::before {
     content: "Click Here";
-    font-size: 2rem;
+    font-size: 1.5em;
   }
 
   &:focus {
@@ -228,13 +232,13 @@ const Text = styled.div`
   flex-direction: column;
   align-items: center;
   text-align: center;
-  font-size: 1.5rem;
   letter-spacing: 0.1rem;
   color: white;
   font-family: "Roboto", serif;
   background-color: rgba(167, 208, 205, 0.2);
   padding: 10px;
   display: ${(props) => (props.show ? "block" : "none")};
+  font-size: 2em;
 `;
 
 const ErrorMessage = styled.h4`
@@ -242,7 +246,15 @@ const ErrorMessage = styled.h4`
   font-family: "Roboto", serif;
 `;
 
+const Alert2 = forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
 function SignInUpForm() {
+  const [open, setOpen] = useState(false);
+
+  const [isRegistered, setIsRegistered] = useState(false);
+
   const [isSignInValid, setIsSignInValid] = useState(false);
   const [signinvalues, setSignInValues] = useState({
     email: "",
@@ -262,6 +274,7 @@ function SignInUpForm() {
 
   const { isLoggedIn } = useSelector((state) => state.auth);
   const { message } = useSelector((state) => state.message);
+  const { user: currentUser } = useSelector((state) => state.auth);
   const [openForm, setOpenForm] = useState(false);
   const [emailRecover, setEmailRecover] = useState("");
   const [openChangePasswordForm, setOpenChangePasswordForm] = useState(false);
@@ -272,7 +285,6 @@ function SignInUpForm() {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [alertText, setAlertText] = useState("");
   const [isOperationSuccessful, setIsOperationSuccessful] = useState(false);
-  
 
   let navigate = useNavigate();
   const dispatch = useDispatch();
@@ -302,16 +314,32 @@ function SignInUpForm() {
 
     dispatch(login({ email, password }))
       .unwrap()
-      .then(() => {
-        navigate("/homepage");
-        window.location.reload();
+      .then((response) => {
+        const userRole = response.user.role;
+        if (
+          userRole === "ADMIN" ||
+          userRole === "MANAGER" ||
+          userRole === "VALIDATEDEMPLOYEE"
+        ) {
+          navigate("/homepage");
+        }
+        if (userRole === "EMPLOYEE") {
+          setIsRegistered(true);
+          setSignInPopUp(true);
+        }
       })
       .catch(() => {
+        setIsRegistered(false);
         setSignInPopUp(true);
       });
   };
 
-  if (isLoggedIn) {
+  if (
+    isLoggedIn &&
+    (currentUser.role === "ADMIN" ||
+      currentUser.role === "MANAGER" ||
+      currentUser.role === "VALIDATEDEMPLOYEE")
+  ) {
     return <Navigate to="/homepage" />;
   }
 
@@ -330,6 +358,7 @@ function SignInUpForm() {
       setIsSignInValid(true);
     } else {
       setIsSignInValid(false);
+      handleSnackClick();
     }
   }
 
@@ -341,10 +370,11 @@ function SignInUpForm() {
     dispatch(register({ username, email, password }))
       .unwrap()
       .then(() => {
-        navigate("/homepage");
-        window.location.reload();
+        setIsRegistered(false);
+        setSignUpPopUp(true);
       })
       .catch(() => {
+        setIsRegistered(true);
         setSignUpPopUp(true);
       });
   };
@@ -364,8 +394,21 @@ function SignInUpForm() {
       setIsSignUpValid(true);
     } else {
       setIsSignUpValid(false);
+      handleSnackClick();
     }
   }
+
+  const handleSnackClick = () => {
+    setOpen(true);
+  };
+
+  const handleSnackClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpen(false);
+  };
 
   const handleOpenForm = () => {
     setOpenForm(true);
@@ -379,34 +422,30 @@ function SignInUpForm() {
   };
 
   const handleSendEmail = () => {
-
-
     const validationErrors = RecoverPasswordValidation({
-        email,
-      });
-  
-      if (Object.keys(validationErrors).length > 0) {
-        setErrors(validationErrors);
-        console.log(validationErrors);
-      } else {
-          
-
-    authService
-    .forgotPassword(email)
-    .then((response) => {
-      setAlertText("Email sent succesfully!");
-      setIsOperationSuccessful(true);
-      setOpenSnackbar(true);
-      handleCloseForm();
-      setOpenChangePasswordForm(true);
-    })
-    .catch((error) => {
-      setAlertText("Error sending password recovery email");
-      setIsOperationSuccessful(false);
-      setOpenSnackbar(true);
+      email,
     });
-    setEmail("");
-}
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      console.log(validationErrors);
+    } else {
+      authService
+        .forgotPassword(email)
+        .then((response) => {
+          setAlertText("Email sent succesfully!");
+          setIsOperationSuccessful(true);
+          setOpenSnackbar(true);
+          handleCloseForm();
+          setOpenChangePasswordForm(true);
+        })
+        .catch((error) => {
+          setAlertText("Error sending password recovery email");
+          setIsOperationSuccessful(false);
+          setOpenSnackbar(true);
+        });
+      setEmail("");
+    }
   };
 
   const handleOpenChangePasswordForm = () => {
@@ -433,17 +472,16 @@ function SignInUpForm() {
     };
 
     const validationErrors = ChangePasswordValidation({
-        email,
-        password,
-        pin
-      });
-  
-      if (Object.keys(validationErrors).length > 0) {
-        setErrors(validationErrors);
-        console.log(validationErrors);
-      } else {
-          
-        authService
+      email,
+      password,
+      pin,
+    });
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      console.log(validationErrors);
+    } else {
+      authService
         .changePassword(form)
         .then((response) => {
           setAlertText("Password changed succesfully!");
@@ -456,10 +494,10 @@ function SignInUpForm() {
           setIsOperationSuccessful(false);
           setOpenSnackbar(true);
         });
-        setEmail("");
-        setPassword("");
-        setPin("");
-      }
+      setEmail("");
+      setPassword("");
+      setPin("");
+    }
   };
 
   return (
@@ -522,25 +560,31 @@ function SignInUpForm() {
                   password
                 </p>
                 <TextField
-        required
-        id="name"
-        value={email}
-        onChange={handleInputChange}
-        variant="outlined"
-        error={errors.email ? true : false}
-        helperText={errors.email || ''}
-        style={{ width: '80%', marginTop: '3%', marginBottom: '3%', fontSize: '1.5rem'}}
-        InputProps={{
-          style: {
-            fontSize: '1.5rem', 
-          },}}
-          FormHelperTextProps={{
-            style: {
-              fontSize: '1.1rem', 
-            },
-          }}
-      />
-               
+                  required
+                  id="name"
+                  value={email}
+                  onChange={handleInputChange}
+                  variant="outlined"
+                  error={errors.email ? true : false}
+                  helperText={errors.email || ""}
+                  style={{
+                    width: "80%",
+                    marginTop: "3%",
+                    marginBottom: "3%",
+                    fontSize: "1.5rem",
+                  }}
+                  InputProps={{
+                    style: {
+                      fontSize: "1.5rem",
+                    },
+                  }}
+                  FormHelperTextProps={{
+                    style: {
+                      fontSize: "1.1rem",
+                    },
+                  }}
+                />
+
                 <div
                   className="buttons"
                   style={{
@@ -619,7 +663,7 @@ function SignInUpForm() {
                     },
                   }}
                 />
-                <p style={{ color: errors.pin? "red" : "black" }}>Pin *</p>
+                <p style={{ color: errors.pin ? "red" : "black" }}>Pin *</p>
                 <TextField
                   required
                   id="name"
@@ -627,7 +671,7 @@ function SignInUpForm() {
                   onChange={handlePinChange}
                   variant="outlined"
                   error={errors.pin ? true : false}
-                  helperText={errors.pin || ''}
+                  helperText={errors.pin || ""}
                   style={{
                     width: "80%",
                     marginTop: "3%",
@@ -645,7 +689,9 @@ function SignInUpForm() {
                     },
                   }}
                 />
-                <p style={{ color: errors.password ? "red" : "black" }}>New Password *</p>
+                <p style={{ color: errors.password ? "red" : "black" }}>
+                  New Password *
+                </p>
                 <TextField
                   required
                   id="password"
@@ -654,7 +700,7 @@ function SignInUpForm() {
                   onChange={handlePasswordChange}
                   variant="outlined"
                   error={errors.password ? true : false}
-                  helperText={errors.password || ''}
+                  helperText={errors.password || ""}
                   style={{
                     width: "80%",
                     marginTop: "3%",
@@ -703,7 +749,6 @@ function SignInUpForm() {
               </div>
             </DialogContent>
           </Dialog>
-
           <NavLink
             onClick={() => {
               handleSignInValidation();
@@ -779,21 +824,27 @@ function SignInUpForm() {
 
       <Box2 clicked={click}>
         <Text className="signintext" show={!click}>
-          <h1>Welcome Back</h1>
+          Welcome Back
+          <br />
           Don't have an account yet?
           <br />
           <ButtonAnimate clicked={click} onClick={handleClick}></ButtonAnimate>
         </Text>
         <Text className="signuptext" show={click}>
-          <h1>Hi There</h1>
+          Hi There
+          <br />
           Already have an account?
           <br />
           <ButtonAnimate clicked={click} onClick={handleClick}></ButtonAnimate>
         </Text>
       </Box2>
 
-      {SignInPopUp && <SInPopUp setSignInPopUp={setSignInPopUp} />}
-      {SignUpPopUp && <SUpPopUp setSignUpPopUp={setSignUpPopUp} />}
+      {SignInPopUp && (
+        <SInPopUp setSignInPopUp={setSignInPopUp} isRegistered={isRegistered} />
+      )}
+      {SignUpPopUp && (
+        <SUpPopUp setSignUpPopUp={setSignUpPopUp} isRegistered={isRegistered} />
+      )}
 
       {message && (
         <div className="form-group">
@@ -803,20 +854,38 @@ function SignInUpForm() {
         </div>
       )}
 
-<Snackbar
-     open={openSnackbar}
-     autoHideDuration={10000} 
-     onClose={() => setOpenSnackbar(false)}
-     anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-   >
-     <Alert onClose={() => setOpenSnackbar(false)} severity={isOperationSuccessful ? "success" : "error"} sx={{fontSize: '100%'}}>
-       {alertText}
-     </Alert>
-   </Snackbar>
+      <Stack spacing={2} sx={{ width: "100%" }}>
+        <Snackbar
+          open={open}
+          autoHideDuration={2500}
+          onClose={handleSnackClose}
+        >
+          <Alert2
+            onClose={handleSnackClose}
+            severity="error"
+            sx={{ width: "100%" }}
+          >
+            <h2 style={{ fontFamily: "Roboto", fontSize: "1.5rem" }}>
+              One or more fields are empty/incorrect
+            </h2>
+          </Alert2>
+        </Snackbar>
+      </Stack>
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={10000}
+        onClose={() => setOpenSnackbar(false)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+      >
+        <Alert
+          onClose={() => setOpenSnackbar(false)}
+          severity={isOperationSuccessful ? "success" : "error"}
+          sx={{ fontSize: "100%" }}
+        >
+          {alertText}
+        </Alert>
+      </Snackbar>
     </BackgroundBox>
-
-
- 
   );
 }
 

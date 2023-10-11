@@ -2,14 +2,15 @@ import axios from "axios";
 import authHeader from "./auth-header";
 import { useSelector } from "react-redux";
 
-const API_URL =
-  "http://localhost:8080//api/v1/validatedEmployee/getAllProducts";
+
+const API_URL = "http://localhost:8080/api/v1/validatedEmployee/getAllProducts";
 
 const getAllProducts = () => {
-  return axios.get(
-    "http://localhost:8080/api/v1/validatedEmployee/getAllProducts",
-    { headers: authHeader(), method: "GET", "Content-Type": "application/json" }
-  );
+
+  return axios.get(API_URL, {
+    headers: authHeader(), method: 'GET',
+    'Content-Type': 'application/json'
+  });
 };
 
 const addProducts = (product) => {
@@ -20,6 +21,7 @@ const addProducts = (product) => {
     stock: product.stock,
     category: product.category,
   };
+
 
   return axios
     .post(
@@ -81,6 +83,7 @@ const updateProductPrice = (productId, updatedPrice) => {
       console.error("Error al modificar el precio del producto:", error);
     });
 };
+
 
 const updateProductStock = (productId, updatedStock) => {
   const newProductStock= {
@@ -160,6 +163,7 @@ const productsService = {
   filterByName,
   filter,
   updateProductStock
+
 };
 
 export default productsService;

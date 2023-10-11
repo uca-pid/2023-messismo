@@ -27,16 +27,12 @@ function Products(){
     const { user: currentUser } = useSelector((state) => state.auth);
     const clicked = useSelector((state) => state.navigation.clicked);
 
-    const isAdminOrManager = currentUser && (currentUser.role === 'MANAGER' || currentUser.role === 'ADMIN' ||  currentUser.role === 'VALIDATEDEMPLOYEE' ||  currentUser.role === 'EMPLOYEE') ;
     const contentVisible = !clicked;
 
     if (!currentUser) {
         return <Navigate to="/" />;
     }
-    if (!isAdminOrManager) {
-        return <Navigate to="/homepage" />;
-    }
-
+    
     return(
         <Container className='products'>
             <Navbar />

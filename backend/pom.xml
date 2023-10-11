@@ -103,11 +103,6 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
-        <!--        <dependency>-->
-        <!--            <groupId>jakarta.persistence</groupId>-->
-        <!--            <artifactId>jakarta.persistence-api</artifactId>-->
-        <!--            <version>2.2.3</version>-->
-        <!--        </dependency>-->
         <dependency>
             <groupId>jakarta.persistence</groupId>
             <artifactId>jakarta.persistence-api</artifactId>
@@ -168,8 +163,10 @@
                     <excludes>
                         <exclude>**/Configurations/*.class</exclude>
                         <exclude>**/Controllers/*.class</exclude>
+                        <exclude>**/DTOs/*.class</exclude>
+                        <exclude>**/Entities/*.class</exclude>
                         <exclude>**/Exceptions/*.class</exclude>
-                        <exclude>**/BarApplication.java</exclude>
+                        <exclude>**/Repositories/*.class</exclude>
                     </excludes>
                 </configuration>
                 <executions>
