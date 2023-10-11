@@ -82,13 +82,32 @@ const updateProductPrice = (productId, updatedPrice) => {
     });
 };
 
-const filterByName = (name) => {
-  const product = {
-    productName: name,
-    categoryName: "",
-    
+const updateProductStock = (productId, updatedStock) => {
+  const newProductStock= {
+    productId: productId,
+    addStock: updatedStock,
   };
-  console.log(product.categoryName);
+
+  return axios
+    .put(
+      "http://localhost:8080/api/v1/manager/product/addStock",
+      newProductStock,
+      {
+        headers: authHeader(),
+        method: "PUT",
+        "Content-Type": "application/json",
+      }
+    )
+    .then((response) => {
+      console.log("Stock modificado con éxito:", response.data);
+    })
+    .catch((error) => {
+      console.error("Error al modificar el Stock del producto:", error);
+    });
+};
+
+const filterByName = (product) => {
+
   return axios
     .post(
       "http://localhost:8080/api/v1/validatedEmployee/filterProducts",
@@ -139,7 +158,8 @@ const productsService = {
   deleteProduct,
   updateProductPrice,
   filterByName,
-  filter
+  filter,
+  updateProductStock
 };
 
 export default productsService;

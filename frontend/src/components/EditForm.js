@@ -9,6 +9,7 @@ import { useSlotProps } from "@mui/base";
 import productsService from "../services/products.service";
 import { useSelector, useDispatch } from 'react-redux';
 import FormValidation from "../FormValidation";
+import EditFormValidation from "../EditFormValidation";
 
 const EditForm = (props) => {
   const [nombre, setNombre] = useState("");
@@ -19,6 +20,7 @@ const EditForm = (props) => {
   const token = currentUser.access_token
   const role = currentUser.role
   const [errors, setErrors] = useState({});
+  const [stock, setStock] = useState("");
   
   const handleNombreChange = (event) => {
     setNombre(event.target.value);
@@ -36,14 +38,19 @@ const EditForm = (props) => {
     setPrecio(event.target.value);
   };
 
+  const handleStockChange = (event) => {
+    setStock(event.target.value);
+  };
+
   const cancelarButton = (event) => {
     props.onClose();
   };
 
-  const handleEditProduct = () => {
+  const handleEditProduct = async () => {
     
-    const validationErrors = FormValidation({
+    const validationErrors = EditFormValidation({
       price: precio,
+      stock: stock,
     });
 
     if (Object.keys(validationErrors).length > 0) {
@@ -51,23 +58,53 @@ const EditForm = (props) => {
       console.log(validationErrors);
     } else {
 
-    props.onClose();
+  
+  const stockDTO = {
+    productId: props.product.productId,
+    addStock: stock,
+  }
+  console.log(stockDTO)
+    
+    productsService.updateProductStock(stockDTO)
 
-    productsService.updateProductPrice(props.product.productId, precio)
-    window.location.reload(); 
+    try {
+      const response = await productsService
+        .updateProductPrice(props.product.productId, precio)
+        .then((response) => {
+          console.log(response);
+        });
+      
+    } catch (error) {
+      console.error("Error al buscar productos", error);
+    }
+
+    try {
+      console.log(stock);
+      const response = await productsService
+        .updateProductStock(props.product.productId, stock)
+        .then((response) => {
+          console.log(response);
+        });
+      
+    } catch (error) {
+      console.error("Error al buscar productos", error);
+    }
+
+    props.onClose();
 
 
     setNombre("");
     setCategoria("");
     setDescripcion("");
     setPrecio("");
+    setStock("");
 
     }
   }
 
   return (
     <div>
-      <h1 style={{ marginBottom: "5%", fontSize: '2 rem'}}>Edit Product Price</h1>
+      <h1 style={{ marginBottom: "5%", fontSize: '2 rem'}}>Edit Product</h1>
       
       {/* <p>Name</p>
       <TextField
@@ -122,6 +159,47 @@ const EditForm = (props) => {
             value={precio}
             error={errors.price ? true : false}
             helperText={errors.price || ''}
+            style={{ width: "80%", marginTop: '3%', marginBottom: '3%' }}
+            defaultValue={props.product.unitPrice}
+            InputProps={{
+              style: {
+                fontSize: '1.5rem', 
+                inputMode: 'numeric', pattern: '[0-9]*'
+              },}}
+              FormHelperTextProps={{
+                style: {
+                  fontSize: '1.1rem', 
+                },
+              }}
+          />
+        </div>
+      ) : (
+        <TextField
+          disabled
+          id="outlined-disabled"
+          style={{ width: "80%" }}
+          defaultValue={props.product.unitPrice}
+          InputProps={{
+            style: {
+              fontSize: '1.5rem', 
+            },}}
+        />
+      )}
+      <p style={{ color: errors.price ? "red" : "black" }}>Add Stock</p>
+      {role === "ADMIN" || role=== "MANAGER" ? (
+        <div>
+          <TextField
+            required
+            id="filled-number"
+          type="number"
+          InputLabelProps={{
+            shrink: true,
+          }}
+            onChange={handleStockChange}
+            variant="outlined"
+            value={stock}
+            error={errors.stock ? true : false}
+            helperText={errors.stock || ''}
             style={{ width: "80%", marginTop: '3%', marginBottom: '3%' }}
             defaultValue={props.product.unitPrice}
             InputProps={{

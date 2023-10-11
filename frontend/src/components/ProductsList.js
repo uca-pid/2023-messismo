@@ -28,6 +28,7 @@ import Box from "@mui/material/Box";
 import FilterListIcon from '@mui/icons-material/FilterList';
 import FilterRedux from "./FilterRedux";
 
+
 const ProductsList = () => {
   const [openFormModal, setOpenFormModal] = useState(false);
   const [openFilter, setOpenFilter] = useState(false);
@@ -41,7 +42,14 @@ const ProductsList = () => {
   const [alertText, setAlertText] = useState("");
   const [isOperationSuccessful, setIsOperationSuccessful] = useState(false);
   const [searchValue, setSearchValue] = useState("");
-  const [appliedFilters, setAppliedFilters] = useState({}) 
+  const [appliedFilters, setAppliedFilters] = useState({})
+  const selectedCategory = useSelector(
+    (state) => state.filters.selectedCategory
+  );
+  const minValue = useSelector((state) => state.filters.minValue);
+  const maxValue = useSelector((state) => state.filters.maxValue);
+  const minStock = useSelector((state) => state.filters.minStock);
+  const maxStock = useSelector((state) => state.filters.maxStock); 
   
 
   useEffect(() => {
@@ -127,6 +135,14 @@ const ProductsList = () => {
   };
 
   const handleCloseEditForm = () => {
+    productsService
+      .getAllProducts()
+      .then((response) => {
+        setProducts(response.data);
+      })
+      .catch((error) => {
+        console.error("Error al mostrar los productos", error);
+      });
     setIsEditFormOpen(false);
   };
 
@@ -171,14 +187,18 @@ const ProductsList = () => {
 
   const handleSearch = async () => {
     console.log(searchValue);
-    if (searchValue == "") {
-      console.log("hoa");
+    const allfilters ={
+      productName: searchValue,
+      categoryName: selectedCategory,
+      minUnitPrice: minValue === "" ? null : minValue,
+      maxUnitPrice: maxValue === "" ? null : maxValue,
+      minStock: minStock === "" ? null : minStock,
+      maxStock: maxStock === "" ? null : maxStock,
     }
     try {
       const response = await productsService
-        .filterByName(searchValue)
+        .filter(allfilters)
         .then((response) => {
-          // Maneja la respuesta aquí
           console.log(response);
           setProducts(response);
         });
