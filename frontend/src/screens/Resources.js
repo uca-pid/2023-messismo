@@ -8,13 +8,13 @@ import Navbar from "../components/Navbar";
 import userService from "../services/user.service";
 import { Navigate } from "react-router-dom";
 import employeeService from "../services/employees.service";
-import user1 from '../images/users/user-1.png';
-import user2 from '../images/users/user-2.png';
-import user3 from '../images/users/user-3.png';
-import user4 from '../images/users/user-4.png';
-import user5 from '../images/users/user-5.png';
-import user6 from '../images/users/user-6.png';
-import user7 from '../images/users/user-7.png';
+import user1 from '../images/users2/user-1.png';
+import user2 from '../images/users2/user-2.png';
+import user3 from '../images/users2/user-3.png';
+import user4 from '../images/users2/user-4.png';
+import user5 from '../images/users2/user-5.png';
+import user6 from '../images/users2/user-6.png';
+import user7 from '../images/users2/user-7.png';
 
 const userimages = [user1,user2,user3,user4,user5,user6,user7];
 
@@ -26,14 +26,10 @@ const Container = styled.div`
 const MainContent = styled.div`
   display: ${(props) => (props.visible ? "" : "none")};
   padding: 3rem;
-`;
 
-const Title = styled.h1`
-  margin-top: 20px;
-  color: white;
-  font-family: "Roboto";
-  font-size: 30px;
-  margin-left: 10px;
+  @media(max-width: 600px){
+      padding: 0rem;
+    }
 `;
 
 const UserContainer = styled.div`
@@ -63,7 +59,7 @@ const Resource = styled.div`
     background-color: rgb(164, 212, 204, 0.6);
     border-radius: 0.2rem;
     color: black;
-    width: 28rem;
+    width: 21rem;
     display: flex;
     font-size: 1.4rem;
     text-align: center;
@@ -78,7 +74,26 @@ const Resource = styled.div`
     @media(max-width: 600px){
       width: 100%;
       height: 8em;
+      font-size: 1rem;
     }
+
+    @media(max-width: 430px){
+      height: 7.5em;
+    }
+
+    @media(max-width: 350px){
+      height: 7em;
+    }
+
+    @media(max-width: 335px){
+      height: 6em;
+    }
+
+    @media(max-width: 320px){
+      height: 5em;
+    }
+
+
   }
 
   .card-body{
@@ -86,10 +101,32 @@ const Resource = styled.div`
     margin: 1em;
   }
 
-  .card-username,
+  .card-username {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  @media(max-width: 430px){
+      font-size: 0.9rem;
+    }
+
+    @media(max-width: 300px){
+      padding: 0.5rem;
+    }
+  }
+
   .card-email {
   text-overflow: ellipsis;
   white-space: nowrap;
+
+  @media(max-width: 430px){
+      font-size: 0.8rem;
+    }
+
+    @media(max-width: 300px){
+      display: none;
+    }
+
+
   }
 `;
 
@@ -109,18 +146,30 @@ const Button = styled.button`
   &:hover{
     color: green;
   }
+
+  @media(max-width: 600px){
+      font-size: 1rem;
+    }
+
+    @media(max-width: 430px){
+      font-size: 0.8rem;
+    }
+
+    @media(max-width: 330px){
+      padding-top: 0.6rem;
+    }
+
 `;
 
 const UserImage = styled.img`
-  width: 10rem;
   height: 100%;
   object-fit: cover;
 
   @media screen and (min-width:600px){
-    width: 100%;
-    height: 22rem;
+
     object-fit: cover;
   }
+
 `;
 
 const UserItem = styled.div`
