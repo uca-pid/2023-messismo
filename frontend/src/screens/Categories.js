@@ -28,7 +28,7 @@ function Categories(){
     const { user: currentUser } = useSelector((state) => state.auth);
     const clicked = useSelector((state) => state.navigation.clicked);
 
-    const isAdminOrManager = currentUser && (currentUser.role === 'MANAGER' || currentUser.role === 'ADMIN' ||  currentUser.role === 'VALIDATEDEMPLOYEE' ||  currentUser.role === 'EMPLOYEE') ;
+    const isAdminOrManager = currentUser && (currentUser.role === 'MANAGER' || currentUser.role === 'ADMIN' ||  currentUser.role === 'VALIDATEDEMPLOYEE') ;
     const contentVisible = !clicked;
 
     if (!currentUser) {

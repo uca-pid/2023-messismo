@@ -24,12 +24,11 @@ import InputAdornment from "@mui/material/InputAdornment";
 import InputBase from "@mui/material/InputBase";
 import Fab from "@mui/material/Fab";
 import Box from "@mui/material/Box";
-import FilterListIcon from '@mui/icons-material/FilterList';
+import FilterListIcon from "@mui/icons-material/FilterList";
 import FilterRedux from "./FilterRedux";
 import Tooltip from "@mui/material/Tooltip";
-
-
-
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 
 const ProductsList = () => {
   const [openFormModal, setOpenFormModal] = useState(false);
@@ -44,17 +43,18 @@ const ProductsList = () => {
   const [alertText, setAlertText] = useState("");
   const [isOperationSuccessful, setIsOperationSuccessful] = useState(false);
   const [searchValue, setSearchValue] = useState("");
+  const [showFullDescriptions, setShowFullDescriptions] = useState([]);
 
-
-  const [appliedFilters, setAppliedFilters] = useState({})
+  const [appliedFilters, setAppliedFilters] = useState({});
   const selectedCategory = useSelector(
     (state) => state.filters.selectedCategory
   );
   const minValue = useSelector((state) => state.filters.minValue);
   const maxValue = useSelector((state) => state.filters.maxValue);
   const minStock = useSelector((state) => state.filters.minStock);
-  const maxStock = useSelector((state) => state.filters.maxStock); 
-
+  const maxStock = useSelector((state) => state.filters.maxStock);
+  const [sortField, setSortField] = useState(null);
+const [sortOrder, setSortOrder] = useState("asc");
 
   useEffect(() => {
     productsService
@@ -67,7 +67,6 @@ const ProductsList = () => {
       });
   }, [openFormModal, open]);
 
-
   const handleClose = () => {
     setOpen(false);
   };
@@ -78,7 +77,6 @@ const ProductsList = () => {
 
   const handleCloseProductsModal = () => {
     setOpenFormModal(false);
-
   };
 
   const handleOpenFilter = () => {
@@ -91,7 +89,7 @@ const ProductsList = () => {
 
   const handleApplyFilter = async (product) => {
     try {
-      setAppliedFilters(product)
+      setAppliedFilters(product);
       const response = await productsService
         .filter(product)
         .then((response) => {
@@ -101,7 +99,6 @@ const ProductsList = () => {
     } catch (error) {
       console.error("Error al buscar productos", error);
     }
-
   };
 
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -161,7 +158,6 @@ const ProductsList = () => {
 
       const updatedProductsResponse = await productsService.getAllProducts();
       setProducts(updatedProductsResponse.data);
-
     } catch (error) {
       console.error("Error al agregar el producto", error);
       setIsOperationSuccessful(false);
@@ -196,14 +192,14 @@ const ProductsList = () => {
   const handleSearch = async () => {
     console.log(searchValue);
 
-    const allfilters ={
+    const allfilters = {
       productName: searchValue,
       categoryName: selectedCategory,
       minUnitPrice: minValue === "" ? null : minValue,
       maxUnitPrice: maxValue === "" ? null : maxValue,
       minStock: minStock === "" ? null : minStock,
       maxStock: maxStock === "" ? null : maxStock,
-    }
+    };
     try {
       const response = await productsService
         .filter(allfilters)
@@ -216,29 +212,91 @@ const ProductsList = () => {
     }
   };
 
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
+
+  const handleShowMoreClick = (index) => {
+    const newShowFullDescriptions = [...showFullDescriptions];
+    newShowFullDescriptions[index] = true;
+    setShowFullDescriptions(newShowFullDescriptions);
+  };
+
+  const handleShowLessClick = (index) => {
+    const newShowFullDescriptions = [...showFullDescriptions];
+    newShowFullDescriptions[index] = false;
+    setShowFullDescriptions(newShowFullDescriptions);
+  };
+
+  
+  // Luego, puedes cambiar el campo y la dirección de orden en respuesta a alguna acción del usuario
+  const handleSort = (field) => {
+    
+    if (field === sortField) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      
+      setSortField(field);
+      setSortOrder("asc");
+    }
+
+
+  const sortedProducts = [...products].sort((a, b) => {
+    if (sortOrder === "asc") {
+      if (a[sortField] < b[sortField]) {
+        return -1;
+      }
+      if (a[sortField] > b[sortField]) {
+        return 1;
+      }
+      return 0;
+    } else {
+      if (a[sortField] > b[sortField]) {
+        return -1;
+      }
+      if (a[sortField] < b[sortField]) {
+        return 1;
+      }
+      return 0;
+    }
+  });
+
+  console.log(sortedProducts);
+  setProducts(sortedProducts);
+
+  };
+ 
+  
+  
+  
+  
+
   return (
     <div className="container">
-       <div className="input-container">
-            <input
-              type="text"
-              className="custom-input"
-              placeholder="Search..."
-              value={searchValue}
-              onChange={(e) => {
-                setSearchValue(e.target.value);
-                //handleSearch(e.target.value);
-              }}
-            />
-            <Fab
-            color="primary"
-            aria-label="edit"
-            size="small"
-            onClick={handleSearch}
-            style={{ backgroundColor: "grey" }}
-          >
-            <SearchIcon style={{ fontSize: "2rem" }} />
-          </Fab>
-        </div>
+      <div className="input-container">
+        <input
+          type="text"
+          className="custom-input"
+          placeholder="Search..."
+          value={searchValue}
+          onChange={(e) => {
+            setSearchValue(e.target.value);
+            //handleSearch(e.target.value);
+          }}
+          onKeyPress={handleKeyPress}
+        />
+        <Fab
+          color="primary"
+          aria-label="edit"
+          size="small"
+          onClick={handleSearch}
+          style={{ backgroundColor: "grey" }}
+        >
+          <SearchIcon style={{ fontSize: "2rem" }} />
+        </Fab>
+      </div>
 
       <div className="firstRow">
         <div className="add-product">
@@ -263,14 +321,19 @@ const ProductsList = () => {
             console.log("")
           )}
         </div>
-          <div className="filterBy">
-          <Button variant="contained" onClick={handleOpenFilter} endIcon={<FilterListIcon />} style={{
-                color: "white",
-                borderColor: "#007bff",
-                marginTop: "4%",
-                fontSize: "1rem",
-                height: "40px",
-              }}>
+        <div className="filterBy">
+          <Button
+            variant="contained"
+            onClick={handleOpenFilter}
+            endIcon={<FilterListIcon />}
+            style={{
+              color: "white",
+              borderColor: "#007bff",
+              marginTop: "4%",
+              fontSize: "1rem",
+              height: "40px",
+            }}
+          >
             Filter by
           </Button>
           <Dialog
@@ -283,10 +346,14 @@ const ProductsList = () => {
             fullWidth
           >
             <DialogContent>
-              <FilterRedux onClose={handleCloseFilter} onSave={handleApplyFilter} appliedFilters={appliedFilters}/>
+              <FilterRedux
+                onClose={handleCloseFilter}
+                onSave={handleApplyFilter}
+                appliedFilters={appliedFilters}
+              />
             </DialogContent>
           </Dialog>
-          </div>
+        </div>
         <Dialog
           open={openFormModal}
           dividers={true}
@@ -307,19 +374,67 @@ const ProductsList = () => {
       <div className="titles">
         <div className="title">
           <p>Product details</p>
+          <IconButton size="small" onClick={() => handleSort("name")}>
+      {sortField === "name" ? (
+        sortOrder === "asc" ? (
+          <ExpandLessIcon />
+        ) : (
+          <ExpandMoreIcon />
+        )
+      ) : (
+        <ExpandMoreIcon />
+      )}
+    </IconButton>
         </div>
         <div className="title">
           <p>Category</p>
+          <IconButton size="small" onClick={() => handleSort("category")}>
+      {sortField === "category" ? (
+        sortOrder === "asc" ? (
+          <ExpandLessIcon />
+        ) : (
+          <ExpandMoreIcon />
+        )
+      ) : (
+        <ExpandMoreIcon />
+      )}
+    </IconButton>
         </div>
+       
         <div className="title">
           <p>Stock</p>
+          <IconButton size="small" onClick={() => handleSort("stock")}>
+      {sortField === "stock" ? (
+        sortOrder === "asc" ? (
+          <ExpandLessIcon />
+        ) : (
+          <ExpandMoreIcon />
+        )
+      ) : (
+        <ExpandMoreIcon />
+      )}
+    </IconButton>
         </div>
+        
         <div className="title">
           <p>Price</p>
+          <IconButton size="small" onClick={() => handleSort("unitPrice")}>
+      {sortField === "unitPrice" ? (
+        sortOrder === "asc" ? (
+          <ExpandLessIcon />
+        ) : (
+          <ExpandMoreIcon />
+        )
+      ) : (
+        <ExpandMoreIcon />
+      )}
+    </IconButton>
         </div>
+        
         <div className="title">
           <p>Actions</p>
         </div>
+        
       </div>
       {products.map((producto, index) => (
         <div className="entradas" key={index}>
@@ -377,7 +492,33 @@ const ProductsList = () => {
               </div>
             </div>
             <div className="final-line">
-              <p className="descripcion">{producto.description}</p>
+              <p className="descripcion">
+                {showFullDescriptions[index]
+                  ? producto.description
+                  : window.innerWidth <= 600
+                    ? producto.description.substring(0, 15) + "..."
+                    : producto.description.substring(0, 50) +
+                    "..."}
+
+              </p>
+              {producto.description.length > (window.innerWidth <= 600 ? 15 : 50) &&
+                !showFullDescriptions[index] && (
+                  <IconButton
+                    color="primary"
+                    onClick={() => handleShowMoreClick(index)}
+                  >
+                    <ExpandMoreIcon fontSize="small"/>
+                  </IconButton>
+                )}
+                {producto.description.length > (window.innerWidth <= 600 ? 15 : 50) &&
+                showFullDescriptions[index] && (
+                  <IconButton
+                    color="primary"
+                    onClick={() => handleShowLessClick(index)}
+                  >
+                    <ExpandLessIcon fontSize="small"/>
+                  </IconButton>
+                )}
             </div>
           </div>
         </div>

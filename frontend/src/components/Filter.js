@@ -47,6 +47,7 @@ const Filter = (props) => {
   const [loadingPrice, setLoadingPrice] = useState(true);
   const [loadingStock, setLoadingStock] = useState(true);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [appliedFilters, setAppliedFilters] = useState({});
 
   const handleChange = () => {};
 
@@ -140,7 +141,6 @@ const Filter = (props) => {
   };
 
   useEffect( () => {
-    //handleFilters();
     
     categoryService
       .getAllCategories()
@@ -153,7 +153,6 @@ const Filter = (props) => {
   }, []);
 
   useEffect(() => {
-    // Establece los valores de los filtros aplicados en las variables de estado cuando se monta el componente
     if (props.appliedFilters) {
       console.log("hola")
       console.log(props.appliedFilters);

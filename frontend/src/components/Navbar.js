@@ -12,6 +12,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { toggleClicked } from '../redux/navSlice';
 import { Navigate } from 'react-router-dom';
 import { logout } from "../redux/auth";
+import CategoryIcon from '@mui/icons-material/Category';
+
 
 const NavLink = styled(Link)`
 
@@ -195,9 +197,9 @@ function Navbar() {
                         <span>Resources</span>
                     </NavLink>
                 )}
-                   {(showManagerBoard || showAdminBoard) && (
+                   {(showManagerBoard || showAdminBoard || showValidatedEmployeeBoard) && (
                     <NavLink to={'/categories'} onClick={clicked ? handleClick : undefined}>
-                        <BsPersonCircle className='icon'/>
+                        <CategoryIcon className='icon'/>
                         <span>Categories</span>
                     </NavLink>
                 )}

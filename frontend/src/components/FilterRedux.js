@@ -35,13 +35,8 @@ const FilterRedux = (props) => {
   const [openMinStock, setOpenMinStock] = React.useState(false);
   const [openMaxStock, setOpenMaxStock] = React.useState(false);
   const [categories, setCategories] = useState([]);
-  //const [selectedCategory, setSelectedCategory] = useState("");
-  //const [minValue, setMinValue] = useState("");
-  //const [maxValue, setMaxValue] = useState("");
   const [minValueTemp, setMinValueTemp] = useState("");
   const [maxValueTemp, setMaxValueTemp] = useState("");
-  //const [minStock, setMinStock] = useState("");
-  //const [maxStock, setMaxStock] = useState("");
   const [minStockTemp, setMinStockTemp] = useState("");
   const [maxStockTemp, setMaxStockTemp] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -54,6 +49,13 @@ const FilterRedux = (props) => {
   const maxStock = useSelector((state) => state.filters.maxStock);
   const dispatch = useDispatch();
   const [errors, setErrors] = useState({});
+  const [appliedFilters, setAppliedFilters] = useState({
+    selectedCategory: false,
+    minValue: false,
+    maxValue: false,
+    minStock: false,
+    maxStock: false,
+  });
 
   const handleOpenCategories = () => {
     setOpenCategories(!openCategories);
@@ -97,11 +99,7 @@ const FilterRedux = (props) => {
     dispatch(setMaxValue(maxValueTemp));
     }
   };
-  /*setLoadingPrice(true);
-    if (minValueTemp != "" || maxValueTemp != "") {
-      const response = await setPriceRange();
-      setLoadingPrice(false);
-    }*/
+ 
 
   const setPriceRange = async () => {
     
@@ -113,11 +111,7 @@ const FilterRedux = (props) => {
     dispatch(setMinStock(minStockTemp));
     dispatch(setMaxStock(maxStockTemp));
     
-    /*setLoadingStock(true);
-    if (minStockTemp != "" || maxStockTemp != "") {
-      const response = await setStockRange();
-      setLoadingStock(false);
-    }*/
+    
   };
 
   const handleStockRange = (value) => {
@@ -130,6 +124,8 @@ const FilterRedux = (props) => {
       setErrors(validationErrors);
       console.log(validationErrors);
     } else {
+    setAppliedFilters({...appliedFilters, minStock: true, maxStock: true});
+
     setErrors({});
     dispatch(setMinStock(minStockTemp));
     dispatch(setMaxStock(maxStockTemp));
@@ -434,7 +430,7 @@ const FilterRedux = (props) => {
             color: "grey",
             borderColor: "grey",
             width: "40%",
-            fontSize: "1.3rem",
+            fontSize: "1rem",
           }}
           onClick={handleClose}
         >
@@ -447,7 +443,7 @@ const FilterRedux = (props) => {
             color: "white",
             borderColor: "green",
             width: "40%",
-            fontSize: "1.3rem",
+            fontSize: "1rem",
           }}
           onClick={filterProduct}
         >

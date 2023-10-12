@@ -526,14 +526,16 @@ function SignInUpForm() {
             <ErrorMessage>{signinerrors.password}</ErrorMessage>
           )}
           <ForgotLink
-            href="#"
             onClick={(e) => {
-              e.preventDefault();
+              e.preventDefault(); // Evita que la página se actualice
               handleOpenForm();
             }}
+            
           >
+            
             Forgot your Password?
           </ForgotLink>
+          <button onClick={handleOpenForm} style={{marginTop: "2%", color: "white", backgroundColor: "rgba(167, 208, 205, 0.2)"}}>Forgot your Password?</button>
           <Dialog
             open={openForm}
             dividers={true}

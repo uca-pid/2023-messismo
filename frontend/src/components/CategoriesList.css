@@ -1,11 +1,22 @@
 .category-data {
-    width: 20%;
+    width: 40%;
   }
   
-  /* Estilos para pantallas pequeñas (hasta 768px) */
+.categoryTitle {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 3%;
+  margin-top: 2%;
+}
+
+.title {
+  color: gray;
+  
+}
 @media (max-width: 768px) {
     .category-data {
-      width: 90% !important; /* Cambia el ancho a 100% para pantallas pequeñas */
-      background-color: aqua;
+      width: 90% !important;
+      
     }
   }
