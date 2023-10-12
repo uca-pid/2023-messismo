@@ -30,10 +30,43 @@ const logout = () => {
   localStorage.removeItem("user");
 };
 
+const forgotPassword = (email) => {
+  return axios.post(API_URL + "/forgotPassword", email ,{
+    headers: {
+      'Content-Type': 'text/plain'
+    }})
+  .then(response => {
+    console.log(response)
+    return response.data;
+  })
+  .catch(error => {
+    console.log(error);
+    throw error
+  });
+  
+  
+};
+const changePassword = (form) => {
+  return axios.post(API_URL + "/changeForgottenPassword", form ,{ headers: {
+    'Content-Type': 'application/json',
+  }})
+  .then(response => {
+    console.log(response.data)
+    return response.data;
+  })
+  .catch(error => {
+    console.log(error)
+    throw error
+  });
+  
+};
+
 const authService = {
   register,
   login,
   logout,
+  forgotPassword,
+  changePassword
 };
 
 export default authService;

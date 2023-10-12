@@ -1,4 +1,4 @@
-function FormValidation(values) {
+function EditFormValidation(values) {
     let error = {}
     const priceRegex = /[-+]?\d*\.?\d+/g
     const stockRegex = /[-+]?\d*\.?\d+/g 
@@ -6,31 +6,27 @@ function FormValidation(values) {
 
 
     if (values.price === "") {
-        error.price = "Field is empty"
+        
     }
 
     else if (!priceRegex.test(values.price)) {
         error.price = "Invalid price"
     }
     
-    if(values.name === "" ) {
-        error.name = "Field is empty"
+    if(values.stock === "" ) {
+       
     } 
-
-    if(values.category === "" ) {
-        error.category = "Field is empty"
-    } 
-
-    if (values.stock === "") {
-        error.stock = "Field is empty"
-    }
 
     else if (!stockRegex.test(values.stock)) {
         error.stock = "Invalid stock"
     }
-    
+
+    if (values.price === "" && values.stock === "") {
+        error.price = "At least one field is required"
+        error.stock = "At least one field is required"
+    }
 
     return error;
 }
 
-export default FormValidation;
+export default EditFormValidation;

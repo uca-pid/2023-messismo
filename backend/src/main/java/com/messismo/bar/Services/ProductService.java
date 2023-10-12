@@ -1,5 +1,4 @@
 package com.messismo.bar.Services;
-
 import com.messismo.bar.DTOs.FilterProductDTO;
 import com.messismo.bar.DTOs.ProductDTO;
 import com.messismo.bar.DTOs.ProductPriceDTO;
@@ -93,6 +92,7 @@ public class ProductService {
         try {
             List<Product> filteredProducts = new ArrayList<>();
             List<Product> allProducts = productRepository.findAll();
+
             filteredProducts = filterByName(allProducts, filterProductDTO.getProductName());
             if (!(Objects.equals(filterProductDTO.getCategoryName(), "")) && filterProductDTO.getCategoryName() != null) {
                 Category category = categoryRepository.findByName(filterProductDTO.getCategoryName()).orElseThrow(() -> new CategoryNotFoundException("Provided category name DOES NOT match any category name"));
@@ -110,9 +110,11 @@ public class ProductService {
 
     public List<Product> filterByMaxStock(List<Product> allProducts, Integer maxStock) {
         List<Product> response = new ArrayList<>();
-        if (maxStock == null || maxStock == 0) {
+        if (maxStock == null || maxStock == 0){
             response.addAll(allProducts);
-        } else {
+        }
+        else {
+
             for (Product product : allProducts) {
                 if (product.getStock() < maxStock) {
                     response.add(product);
@@ -124,7 +126,7 @@ public class ProductService {
 
     public List<Product> filterByMinStock(List<Product> allProducts, Integer minStock) {
         List<Product> response = new ArrayList<>();
-        if (minStock == null || minStock == 0) {
+        if (minStock == null || minStock == 0){
             response.addAll(allProducts);
         } else {
             for (Product product : allProducts) {
@@ -138,9 +140,10 @@ public class ProductService {
 
     public List<Product> filterByMaxUnitPrice(List<Product> allProducts, Double maxUnitPrice) {
         List<Product> response = new ArrayList<>();
-        if (maxUnitPrice == null || maxUnitPrice == 0.00) {
+        if (maxUnitPrice == null || maxUnitPrice == 0.00){
             response.addAll(allProducts);
-        } else {
+        }
+        else {
             for (Product product : allProducts) {
                 if (product.getUnitPrice() < maxUnitPrice) {
                     response.add(product);
@@ -152,9 +155,10 @@ public class ProductService {
 
     public List<Product> filterByMinUnitPrice(List<Product> allProducts, Double minUnitPrice) {
         List<Product> response = new ArrayList<>();
-        if (minUnitPrice == null || minUnitPrice == 0.00) {
+        if (minUnitPrice == null || minUnitPrice == 0.00){
             response.addAll(allProducts);
-        } else {
+        }
+        else {
             for (Product product : allProducts) {
                 if (product.getUnitPrice() > minUnitPrice) {
                     response.add(product);

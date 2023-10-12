@@ -2,7 +2,7 @@
     width: 100vw;
     /*height: 100vh; */
     overflow-y: auto;
-    /*background-color: white;*/
+    background-color: lightgray;
     /*flex: 1;*/
     display: flex;
     align-items: center; 
@@ -17,7 +17,7 @@
 }
 
 .entradas {
-    width: 60%;
+    width: 80%;
     border-radius: 2%;
     display: flex;
     flex-direction: column;
@@ -29,7 +29,8 @@
 
 .product {
     width: 100%;
-    background-color: rgb(164, 212, 204, 0.7);
+    /*background-color: rgb(164, 212, 204, 0.7);*/
+    background-color: whitesmoke;
     padding: 0.2px;
     margin-top: 1%;
     border-width: 2px;
@@ -39,7 +40,23 @@
     border-radius: 9px;
 
 }
+.titles {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    width: 80%;
+    margin-top: 2%;
+    justify-content: space-between;
+    margin-bottom: 0.5%;
+    color: gray;
+}
 
+.title {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 .firstLine {
     display: flex;
     flex-direction: row;
@@ -62,7 +79,7 @@
 }
 
 .descripcion {
-    font-size: 100%;
+    font-size: 70%;
     margin-top: 0%;
 
 }
@@ -76,6 +93,7 @@
     margin-top: 0%;
     padding: 0%;
     font-size: medium;
+    background-color: aqua;
   }
 
   .buttons-edit {
@@ -84,6 +102,7 @@
     margin-bottom: 0%;
     display: flex;
     justify-content: flex-end;
+    
 
   }
 
@@ -103,16 +122,9 @@
     flex: 1;
     flex-direction: column;
     justify-content: flex-start;
-    margin-left: 1.5%;
+    margin-left: 1.2%;
     margin-bottom: 1%;
-}
-
-.add-product {
-    width: 60%;
-    flex: 1;
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: 1%;
+    width: 20%;
     
 }
 
@@ -121,7 +133,8 @@
     flex: 1;
     display: flex;
     justify-content: center;
-    margin-right: 10%;
+   
+    
     
 }
 
@@ -130,4 +143,99 @@
     display: flex;
     margin-left: 1%;
     margin-bottom: 0%;
+    margin-right: 2%;
 }
+
+.firstRow {
+    flex: 1;
+    display: flex;
+    width: 80%;
+    flex-direction: row;
+   
+}
+
+.add-product {
+  flex: 1;
+  justify-content: flex-start;
+
+    
+}
+
+.filter {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-direction: column;
+    align-items: center;
+    
+} 
+
+.input-container {
+    display: flex;
+    align-items: center;
+    border-radius: 10px;
+    width: 40%;
+    margin-top: 1%;
+    
+  }
+  
+  .custom-input {
+    /*border: none;*/
+    outline: none;
+    width: 100%;
+    font-size: 16px;
+    padding: 8px;
+    border-radius: 12px;
+    background-color: lightgray;
+    border-color: #999;
+    border-width: 2px;
+    width: 80%;
+    
+  }
+  
+  .custom-input::placeholder {
+    color: #999;
+    color: grey;
+  }
+  
+  
+
+  .custom-input:focus {
+    border: 2px solid #007bff; 
+  }
+
+  .filterBy {
+    width: 100%;
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    
+  }
+
+
+@media (max-width: 768px) {
+    .entradas{
+      width: 100% !important; 
+        padding: 1px;
+        font-size: 1.5rem;
+    }
+    .titles {
+        width: 100%;
+        justify-content: flex-start !important;
+        font-size: 1rem !important;
+    }
+    .descripcion {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .title {
+          font-size: 0.5rem !important;
+      }
+      .custom-input{
+        width: 80%;
+        margin-left: 2%;
+      }
+  }

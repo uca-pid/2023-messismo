@@ -7,11 +7,13 @@ import Home from "./screens/Home";
 import Products from "./screens/Products";
 import Orders from "./screens/Orders";
 import Resources from "./screens/Resources";
+import Categories from "./screens/Categories";
 import Login from "./screens/Login";
 import Register from "./screens/Register";
 
 function App() {
   return (
+    
     <div className="App">
       <BrowserRouter>
         <Routes>
@@ -22,6 +24,7 @@ function App() {
           <Route path="/products" element={<Products />} />
           <Route path="/orders" element={<Orders />} />
           <Route path="/resources" element={<Resources />} />
+          <Route path="/categories" element={<Categories />} />
         </Routes>
       </BrowserRouter>
     </div>

@@ -4,6 +4,7 @@ import authReducer from "./auth";
 import messageReducer from "./message";
 import userReducer from './userSlice';
 import navigationReducer from './navSlice';
+import filtersReducer from './filtersSlice';
 
 const store = configureStore({
   reducer: {
@@ -11,6 +12,7 @@ const store = configureStore({
     message: messageReducer,
     users: userReducer,
     navigation: navigationReducer,
+    filters: filtersReducer,
   },
   devTools: true,
 });

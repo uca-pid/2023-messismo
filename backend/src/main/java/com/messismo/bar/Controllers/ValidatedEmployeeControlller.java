@@ -40,7 +40,7 @@ public class ValidatedEmployeeControlller {
         return categoryService.getAllCategories();
     }
 
-    @GetMapping("/filterProducts")
+    @PostMapping("/filterProducts")
     public ResponseEntity<?> filterProducts(@RequestBody FilterProductDTO filterProductDTO) {
         return productService.filterProducts(filterProductDTO);
     }
