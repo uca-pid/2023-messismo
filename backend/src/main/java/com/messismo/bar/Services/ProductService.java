@@ -101,68 +101,16 @@ public class ProductService {
         try {
             List<Product> filteredProducts = new ArrayList<>();
             List<Product> allProducts = productRepository.findAll();
-            boolean filterApplied = false;
-            if (!Objects.equals(filterProductDTO.getProductName(), "")) {
-                filteredProducts = filterByName(allProducts, filterProductDTO.getProductName());
-                filterApplied = true;
+            filteredProducts = filterByName(allProducts, filterProductDTO.getProductName());
+            if (!(Objects.equals(filterProductDTO.getCategoryName(), "")) && filterProductDTO.getCategoryName() != null) {
+                Category category = categoryRepository.findByName(filterProductDTO.getCategoryName()).orElseThrow(() -> new CategoryNotFoundException("Provided category name DOES NOT match any category name"));
+                filteredProducts = filterByCategory(filteredProducts, category);
             }
-            if (!Objects.equals(filterProductDTO.getCategoryName(), "")) {
-                Category category = categoryRepository.findByName(filterProductDTO.getCategoryName()).orElseThrow(
-                        () -> new CategoryNotFoundException("Provided category name DOES NOT match any category name"));
-                if (filteredProducts.isEmpty() && !filterApplied) {
-                    filteredProducts = filterByCategory(allProducts, category);
-                    filterApplied = true;
-                } else {
-                    filteredProducts = filterByCategory(filteredProducts, category);
-                }
-            }
-            if (!(Objects.equals(filterProductDTO.getMinUnitPrice(), 0.00)
-                    || Objects.equals(filterProductDTO.getMinUnitPrice(), null)))
-            {
-                if (filteredProducts.isEmpty() && !filterApplied) {
-                    filteredProducts = filterByMinUnitPrice(allProducts, filterProductDTO.getMinUnitPrice());
-                    filterApplied = true;
-                } else {
-                    filteredProducts = filterByMinUnitPrice(filteredProducts, filterProductDTO.getMinUnitPrice());
-                }
-
-            }
-            if (!(Objects.equals(filterProductDTO.getMaxUnitPrice(), 0.00)
-                    || Objects.equals(filterProductDTO.getMaxUnitPrice(), null))) {
-                if (filteredProducts.isEmpty() && !filterApplied) {
-                    filteredProducts = filterByMaxUnitPrice(allProducts, filterProductDTO.getMaxUnitPrice());
-                    filterApplied = true;
-                } else {
-                    filteredProducts = filterByMaxUnitPrice(filteredProducts, filterProductDTO.getMaxUnitPrice());
-                }
-            }
-            if (!(Objects.equals(filterProductDTO.getMinStock(), 0.00)
-                    || Objects.equals(filterProductDTO.getMinStock(), null))) {
-                if (filteredProducts.isEmpty() && !filterApplied) {
-                    filteredProducts = filterByMinStock(allProducts, filterProductDTO.getMinStock());
-                    filterApplied = true;
-                } else {
-                    filteredProducts = filterByMinStock(filteredProducts, filterProductDTO.getMinStock());
-                }
-
-            }
-            if (!(Objects.equals(filterProductDTO.getMaxStock(), 0.00)
-                    || Objects.equals(filterProductDTO.getMaxStock(), null))) {
-
-                if (filteredProducts.isEmpty() && !filterApplied) {
-                    filteredProducts = filterByMaxStock(allProducts, filterProductDTO.getMaxStock());
-                    filterApplied = true;
-                } else {
-                    filteredProducts = filterByMaxStock(filteredProducts, filterProductDTO.getMaxStock());
-                }
-
-            }
-            if (filteredProducts.isEmpty() && !filterApplied) {
-                return ResponseEntity.status(HttpStatus.OK).body(allProducts);
-            }
-            else {
-                return ResponseEntity.status(HttpStatus.OK).body(filteredProducts);
-            }
+            filteredProducts = filterByMinUnitPrice(filteredProducts, filterProductDTO.getMinUnitPrice());
+            filteredProducts = filterByMaxUnitPrice(filteredProducts, filterProductDTO.getMaxUnitPrice());
+            filteredProducts = filterByMinStock(filteredProducts, filterProductDTO.getMinStock());
+            filteredProducts = filterByMaxStock(filteredProducts, filterProductDTO.getMaxStock());
+            return ResponseEntity.status(HttpStatus.OK).body(filteredProducts);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("CANNOT filter at the moment. " + e);
         }
@@ -170,9 +118,14 @@ public class ProductService {
 
     private List<Product> filterByMaxStock(List<Product> allProducts, Integer maxStock) {
         List<Product> response = new ArrayList<>();
-        for (Product product : allProducts) {
-            if (product.getStock() < maxStock) {
-                response.add(product);
+        if (maxStock == null || maxStock == 0){
+            response.addAll(allProducts);
+        }
+        else {
+            for (Product product : allProducts) {
+                if (product.getStock() < maxStock) {
+                    response.add(product);
+                }
             }
         }
         return response;
@@ -180,9 +133,14 @@ public class ProductService {
 
     private List<Product> filterByMinStock(List<Product> allProducts, Integer minStock) {
         List<Product> response = new ArrayList<>();
-        for (Product product : allProducts) {
-            if (product.getStock() > minStock) {
-                response.add(product);
+        if (minStock == null || minStock == 0){
+            response.addAll(allProducts);
+        }
+        else {
+            for (Product product : allProducts) {
+                if (product.getStock() > minStock) {
+                    response.add(product);
+                }
             }
         }
         return response;
@@ -190,9 +148,14 @@ public class ProductService {
 
     private List<Product> filterByMaxUnitPrice(List<Product> allProducts, Double maxUnitPrice) {
         List<Product> response = new ArrayList<>();
-        for (Product product : allProducts) {
-            if (product.getUnitPrice() < maxUnitPrice) {
-                response.add(product);
+        if (maxUnitPrice == null || maxUnitPrice == 0.00){
+            response.addAll(allProducts);
+        }
+        else {
+            for (Product product : allProducts) {
+                if (product.getUnitPrice() < maxUnitPrice) {
+                    response.add(product);
+                }
             }
         }
         return response;
@@ -200,9 +163,14 @@ public class ProductService {
 
     private List<Product> filterByMinUnitPrice(List<Product> allProducts, Double minUnitPrice) {
         List<Product> response = new ArrayList<>();
-        for (Product product : allProducts) {
-            if (product.getUnitPrice() > minUnitPrice) {
-                response.add(product);
+        if (minUnitPrice == null || minUnitPrice == 0.00){
+            response.addAll(allProducts);
+        }
+        else {
+            for (Product product : allProducts) {
+                if (product.getUnitPrice() > minUnitPrice) {
+                    response.add(product);
+                }
             }
         }
         return response;
@@ -210,10 +178,13 @@ public class ProductService {
 
     private List<Product> filterByCategory(List<Product> allProducts, Category category) {
         List<Product> response = new ArrayList<>();
-        for (Product product : allProducts) {
-            if (product.getCategory().equals(category)) {
-                System.out.println(product);
-                response.add(product);
+        if (category == null) {
+            response.addAll(allProducts);
+        } else {
+            for (Product product : allProducts) {
+                if (product.getCategory().equals(category)) {
+                    response.add(product);
+                }
             }
         }
         return response;

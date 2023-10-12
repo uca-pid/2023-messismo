@@ -209,6 +209,27 @@ const ProductsList = () => {
 
   return (
     <div className="container">
+       <div className="input-container">
+            <input
+              type="text"
+              className="custom-input"
+              placeholder="Search..."
+              value={searchValue}
+              onChange={(e) => {
+                setSearchValue(e.target.value);
+                //handleSearch(e.target.value);
+              }}
+            />
+            <Fab
+            color="primary"
+            aria-label="edit"
+            size="small"
+            onClick={handleSearch}
+            style={{ backgroundColor: "grey" }}
+          >
+            <SearchIcon style={{ fontSize: "2rem" }} />
+          </Fab>
+        </div>
       <div className="firstRow">
         <div className="add-product">
           {role === "ADMIN" ||
@@ -232,34 +253,13 @@ const ProductsList = () => {
             console.log("")
           )}
         </div>
-        <div className="filter">
-          <div className="input-container">
-            <input
-              type="text"
-              className="custom-input"
-              placeholder="Search..."
-              value={searchValue}
-              onChange={(e) => {
-                setSearchValue(e.target.value);
-                //handleSearch(e.target.value);
-              }}
-            />
-             <Fab
-            color="primary"
-            aria-label="edit"
-            size="small"
-            onClick={handleSearch}
-            style={{ backgroundColor: "grey" }}
-          >
-            <SearchIcon style={{ fontSize: "2rem" }} />
-          </Fab>
-          </div>
           <div className="filterBy">
           <Button variant="contained" onClick={handleOpenFilter} endIcon={<FilterListIcon />} style={{
                 color: "white",
                 borderColor: "#007bff",
                 marginTop: "4%",
-                fontSize: "1rem",
+                fontSize: "1.3rem",
+                height: "40px",
               }}>
             Filter by
           </Button>
@@ -277,7 +277,6 @@ const ProductsList = () => {
             </DialogContent>
           </Dialog>
           </div>
-        </div>
         <Dialog
           open={openFormModal}
           dividers={true}
