@@ -7,7 +7,6 @@ import com.messismo.bar.Entities.User;
 import com.messismo.bar.Repositories.PasswordRecoveryRepository;
 import com.messismo.bar.Repositories.UserRepository;
 import com.messismo.bar.Services.PasswordRecoveryService;
-import com.messismo.bar.Services.UserService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,7 +17,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.*;
@@ -52,17 +50,19 @@ public class PasswordRecoveryServiceTests {
     @Test
     public void testPasswordRecoveryServiceGenerateRandomPin() {
 
-        String pin =PasswordRecoveryService.generateRandomPin();
+        String pin = PasswordRecoveryService.generateRandomPin();
 
         Assertions.assertEquals(6, pin.length());
         Assertions.assertFalse(pin.isEmpty());
         Assertions.assertTrue(pin.matches("\\d+"));
     }
+
     @Test
     public void testPasswordRecoveryServiceForgotPassword() {
 
         String email = "user@example.com";
-        User user = User.builder().id(1L).username("user").email("user@example.com").password("Password1").role(Role.EMPLOYEE).build();
+        User user = User.builder().id(1L).username("user").email("user@example.com").password("Password1")
+                .role(Role.EMPLOYEE).build();
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
         when(passwordRecoveryRepository.findByUser(user)).thenReturn(Optional.empty());
         ResponseEntity<String> response = passwordRecoveryService.forgotPassword(email);
@@ -83,8 +83,10 @@ public class PasswordRecoveryServiceTests {
 
         verify(userRepository, times(1)).findByEmail(email);
         verify(javaMailSender, times(0)).send(any(SimpleMailMessage.class));
-        Assertions.assertEquals(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("CANNOT recover the password at the moment"), response);
+        Assertions.assertEquals(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("CANNOT recover the password at the moment"), response);
     }
+
     @Test
     public void testChangeForgottenPassword_Success() {
 

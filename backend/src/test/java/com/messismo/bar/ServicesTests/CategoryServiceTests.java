@@ -5,7 +5,6 @@ import com.messismo.bar.Entities.Product;
 import com.messismo.bar.Repositories.CategoryRepository;
 import com.messismo.bar.Entities.Category;
 import com.messismo.bar.Repositories.ProductRepository;
-import com.messismo.bar.Repositories.UserRepository;
 import com.messismo.bar.Services.CategoryService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,12 +16,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 public class CategoryServiceTests {
@@ -51,7 +47,8 @@ public class CategoryServiceTests {
         categories.add(category2);
 
         when(categoryRepository.findAll()).thenReturn(categories);
-        Assertions.assertEquals(categoryService.getAllCategories(), ResponseEntity.status(HttpStatus.OK).body(categories));
+        Assertions.assertEquals(categoryService.getAllCategories(),
+                ResponseEntity.status(HttpStatus.OK).body(categories));
     }
 
     @Test
@@ -60,7 +57,8 @@ public class CategoryServiceTests {
         CategoryRequestDTO requestDTO = CategoryRequestDTO.builder().categoryName("New Category").build();
 
         when(categoryRepository.findByName(requestDTO.getCategoryName())).thenReturn(Optional.empty());
-        Assertions.assertEquals(ResponseEntity.status(HttpStatus.CREATED).body("Category created successfully"), categoryService.addCategory(requestDTO));
+        Assertions.assertEquals(ResponseEntity.status(HttpStatus.CREATED).body("Category created successfully"),
+                categoryService.addCategory(requestDTO));
     }
 
     @Test
@@ -69,7 +67,8 @@ public class CategoryServiceTests {
         CategoryRequestDTO requestDTO = CategoryRequestDTO.builder().categoryName("Existing Category").build();
 
         when(categoryRepository.findByName(requestDTO.getCategoryName())).thenReturn(Optional.of(new Category()));
-        Assertions.assertEquals(ResponseEntity.status(HttpStatus.CONFLICT).body("The category already exists"), categoryService.addCategory(requestDTO));
+        Assertions.assertEquals(ResponseEntity.status(HttpStatus.CONFLICT).body("The category already exists"),
+                categoryService.addCategory(requestDTO));
     }
 
     @Test
@@ -77,7 +76,9 @@ public class CategoryServiceTests {
 
         CategoryRequestDTO requestDTO = CategoryRequestDTO.builder().build();
 
-        Assertions.assertEquals(ResponseEntity.status(HttpStatus.CONFLICT).body("Missing information to create a category"), categoryService.addCategory(requestDTO));
+        Assertions.assertEquals(
+                ResponseEntity.status(HttpStatus.CONFLICT).body("Missing information to create a category"),
+                categoryService.addCategory(requestDTO));
     }
 
     @Test
@@ -89,7 +90,8 @@ public class CategoryServiceTests {
 
         when(categoryRepository.findByName(requestDTO.getCategoryName())).thenReturn(Optional.of(categoryToDelete));
         when(productRepository.findByCategory(categoryToDelete)).thenReturn(emptyProductList);
-        Assertions.assertEquals(categoryService.deleteCategory(requestDTO), ResponseEntity.status(HttpStatus.OK).body("Category deleted successfully"));
+        Assertions.assertEquals(categoryService.deleteCategory(requestDTO),
+                ResponseEntity.status(HttpStatus.OK).body("Category deleted successfully"));
     }
 
     @Test
@@ -98,7 +100,8 @@ public class CategoryServiceTests {
         CategoryRequestDTO requestDTO = CategoryRequestDTO.builder().categoryName("NonExistentCategory").build();
 
         when(categoryRepository.findByName(requestDTO.getCategoryName())).thenReturn(Optional.empty());
-        Assertions.assertEquals(categoryService.deleteCategory(requestDTO), ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Category NOT deleted."));
+        Assertions.assertEquals(categoryService.deleteCategory(requestDTO),
+                ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Category NOT deleted."));
     }
 
     @Test
@@ -110,7 +113,8 @@ public class CategoryServiceTests {
 
         when(categoryRepository.findByName(requestDTO.getCategoryName())).thenReturn(Optional.of(categoryWithProducts));
         when(productRepository.findByCategory(categoryWithProducts)).thenReturn(productsWithCategory);
-        Assertions.assertEquals(categoryService.deleteCategory(requestDTO), ResponseEntity.status(HttpStatus.CONFLICT).body("The provided category has associated one or more products. Please delete them first"));
+        Assertions.assertEquals(categoryService.deleteCategory(requestDTO), ResponseEntity.status(HttpStatus.CONFLICT)
+                .body("The provided category has associated one or more products. Please delete them first"));
     }
 
     @Test

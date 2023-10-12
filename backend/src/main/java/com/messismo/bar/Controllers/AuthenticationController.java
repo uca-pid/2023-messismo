@@ -3,7 +3,6 @@ package com.messismo.bar.Controllers;
 import com.messismo.bar.DTOs.AuthenticationRequestDTO;
 import com.messismo.bar.DTOs.PasswordRecoveryDTO;
 import com.messismo.bar.DTOs.RegisterRequestDTO;
-import com.messismo.bar.Entities.PasswordRecovery;
 import com.messismo.bar.Services.AuthenticationService;
 import com.messismo.bar.Services.PasswordRecoveryService;
 import lombok.RequiredArgsConstructor;
@@ -30,10 +29,11 @@ public class AuthenticationController {
         return authenticationService.authenticate(request);
     }
 
-//    @PostMapping("/refresh-token")
-//    public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
-//        authenticationService.refreshToken(request, response);
-//    }
+    // @PostMapping("/refresh-token")
+    // public void refreshToken(HttpServletRequest request, HttpServletResponse
+    // response) throws IOException {
+    // authenticationService.refreshToken(request, response);
+    // }
 
     @PostMapping("/forgotPassword")
     public ResponseEntity<String> forgotPassword(@RequestBody String email) {

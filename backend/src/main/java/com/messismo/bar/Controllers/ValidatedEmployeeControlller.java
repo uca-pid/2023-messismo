@@ -50,5 +50,9 @@ public class ValidatedEmployeeControlller {
         return orderService.addNewOrder(orderRequestDTO);
     }
 
+    @GetMapping("orders/getAllOrders")
+    public ResponseEntity<?> getAllOrders(){
+        return orderService.getAllOrders();
+    }
 
 }

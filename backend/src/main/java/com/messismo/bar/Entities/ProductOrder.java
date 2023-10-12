@@ -1,6 +1,5 @@
 package com.messismo.bar.Entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,10 +19,10 @@ public class ProductOrder {
     @Column(name = "productOrderId")
     private Long productOrderId;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "order_id", referencedColumnName = "order_id")
-////    @JsonIgnore
-//    private Order order;
+    // @ManyToOne(fetch = FetchType.LAZY)
+    // @JoinColumn(name = "order_id", referencedColumnName = "order_id")
+    //// @JsonIgnore
+    // private Order order;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "product", referencedColumnName = "product_id")

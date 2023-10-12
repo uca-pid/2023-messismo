@@ -1,7 +1,5 @@
 package com.messismo.bar.DTOs;
 
-import com.messismo.bar.Entities.ProductOrder;
-import com.messismo.bar.Entities.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

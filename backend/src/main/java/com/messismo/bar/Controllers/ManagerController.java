@@ -2,7 +2,6 @@ package com.messismo.bar.Controllers;
 
 import com.messismo.bar.DTOs.*;
 import com.messismo.bar.Services.CategoryService;
-import com.messismo.bar.Services.OrderService;
 import com.messismo.bar.Services.ProductService;
 import com.messismo.bar.Services.UserService;
 import lombok.RequiredArgsConstructor;
@@ -22,8 +21,6 @@ public class ManagerController {
     private final UserService userService;
 
     private final CategoryService categoryService;
-
-    private final OrderService orderService;
 
     @PutMapping("/product/updatePrice")
     public ResponseEntity<?> updateProductPrice(@RequestBody ProductPriceDTO body) {
@@ -54,15 +51,10 @@ public class ManagerController {
     public ResponseEntity<?> addProduct(@RequestBody CategoryRequestDTO categoryRequestDTO) {
         return categoryService.addCategory(categoryRequestDTO);
     }
+
     @DeleteMapping("/category/deleteCategory")
     public ResponseEntity<?> deleteCategory(@RequestBody CategoryRequestDTO categoryRequestDTO) {
         return categoryService.deleteCategory(categoryRequestDTO);
     }
-
-    @GetMapping("orders/getAllOrders")
-    public ResponseEntity<?> getAllOrders(){
-        return orderService.getAllOrders();
-    }
-
 
 }
