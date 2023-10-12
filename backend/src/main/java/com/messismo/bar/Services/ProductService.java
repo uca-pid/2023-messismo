@@ -92,6 +92,7 @@ public class ProductService {
         try {
             List<Product> filteredProducts = new ArrayList<>();
             List<Product> allProducts = productRepository.findAll();
+
             filteredProducts = filterByName(allProducts, filterProductDTO.getProductName());
             if (!(Objects.equals(filterProductDTO.getCategoryName(), "")) && filterProductDTO.getCategoryName() != null) {
                 Category category = categoryRepository.findByName(filterProductDTO.getCategoryName()).orElseThrow(() -> new CategoryNotFoundException("Provided category name DOES NOT match any category name"));

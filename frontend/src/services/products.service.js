@@ -2,6 +2,7 @@ import axios from "axios";
 import authHeader from "./auth-header";
 import { useSelector } from "react-redux";
 
+<<<<<<< HEAD
 const API_URL =
   "http://localhost:8080//api/v1/validatedEmployee/getAllProducts";
 
@@ -20,6 +21,7 @@ const addProducts = (product) => {
     stock: product.stock,
     category: product.category,
   };
+
 
   return axios
     .post(
@@ -57,6 +59,7 @@ const deleteProduct = (productId) => {
     .catch((error) => {
       console.error("Error al eliminar el producto:", error);
     });
+
 
 };
 
@@ -102,6 +105,7 @@ const updateProductPrice = (productId, updatedPrice) => {
       console.error("Error al modificar el precio del producto:", error);
     });
 };
+
 
 const updateProductStock = (productId, updatedStock) => {
   const newProductStock= {
@@ -181,6 +185,7 @@ const productsService = {
   filterByName,
   filter,
   updateProductStock
+
 };
 
 export default productsService;

@@ -38,6 +38,7 @@ import InputAdornment from "@mui/material/InputAdornment";
 import InputBase from '@mui/material/InputBase';
 
 
+
 const ProductsList = () => {
   const [openFormModal, setOpenFormModal] = useState(false);
   const [openFilter, setOpenFilter] = useState(false);
@@ -51,6 +52,8 @@ const ProductsList = () => {
   const [alertText, setAlertText] = useState("");
   const [isOperationSuccessful, setIsOperationSuccessful] = useState(false);
   const [searchValue, setSearchValue] = useState("");
+
+
   const [appliedFilters, setAppliedFilters] = useState({})
   const selectedCategory = useSelector(
     (state) => state.filters.selectedCategory
@@ -59,7 +62,6 @@ const ProductsList = () => {
   const maxValue = useSelector((state) => state.filters.maxValue);
   const minStock = useSelector((state) => state.filters.minStock);
   const maxStock = useSelector((state) => state.filters.maxStock); 
-  
 
 
   useEffect(() => {
@@ -245,6 +247,7 @@ const ProductsList = () => {
             <SearchIcon style={{ fontSize: "2rem" }} />
           </Fab>
         </div>
+
       <div className="firstRow">
         <div className="add-product">
           {role === "ADMIN" ||
@@ -326,7 +329,6 @@ const ProductsList = () => {
           <p>Actions</p>
         </div>
       </div>
-   
       {products.map((producto, index) => (
         <div className="entradas" key={index}>
           <div className="product">
@@ -449,7 +451,6 @@ const ProductsList = () => {
       )}
       <Snackbar
         open={openSnackbar}
-
         autoHideDuration={10000}
         onClose={() => setOpenSnackbar(false)}
         anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
