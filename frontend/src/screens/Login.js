@@ -18,6 +18,16 @@ import { clearMessage } from "../redux/message";
 import Stack from '@mui/material/Stack';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
+import Alert from '@mui/material/Alert';
+import  Dialog from '@mui/material/Dialog';
+import TextField from '@mui/material/TextField';
+import authService from '../services/auth.service';
+import RecoverPasswordValidation from '../RecoverPasswordValidation';
+import ChangePasswordValidation from '../ChangePasswordValidation';
+import DialogContent from "@mui/material/DialogContent";
+import Button from "@mui/material/Button";
+
+
 
 const ForgotPassword = styled.a`   
     text-decoration: none;
@@ -31,7 +41,7 @@ const ErrorMessage = styled.h4`
     word-wrap: break-word;
 `;
 
-const Alert = forwardRef(function Alert(props, ref) {
+const Alert2 = forwardRef(function Alert(props, ref) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
@@ -55,6 +65,18 @@ function Login() {
 
     let navigate = useNavigate();
     const dispatch = useDispatch();
+    const [errors, setErrors] = useState({});
+    const [openForm, setOpenForm] = useState(false);
+    const [email, setEmail] = useState("");
+    const [pin, setPin] = useState("");
+    const [password, setPassword] = useState("");
+    const [openChangePasswordForm, setOpenChangePasswordForm] = useState(false);
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [alertText, setAlertText] = useState("");
+    const [isOperationSuccessful, setIsOperationSuccessful] = useState(false);
+
+
+  
 
     useEffect(() => {
         const validationErrors = signinvalidation(signinvalues);
@@ -125,6 +147,96 @@ function Login() {
         setOpen(false);
       };
 
+      const handleOpenForm = () => {
+        setOpenForm(true);
+      };
+      const handleCloseForm = () => {
+        setOpenForm(false);
+      };
+    
+      const handleInputChange = (e) => {
+        setEmail(e.target.value);
+      };
+    
+      const handleSendEmail = () => {
+        const validationErrors = RecoverPasswordValidation({
+          email,
+        });
+    
+        if (Object.keys(validationErrors).length > 0) {
+          setErrors(validationErrors);
+          console.log(validationErrors);
+        } else {
+          authService
+            .forgotPassword(email)
+            .then((response) => {
+              setAlertText("Email sent succesfully!");
+              setIsOperationSuccessful(true);
+              setOpenSnackbar(true);
+              handleCloseForm();
+              setOpenChangePasswordForm(true);
+            })
+            .catch((error) => {
+              setAlertText("Error sending password recovery email");
+              setIsOperationSuccessful(false);
+              setOpenSnackbar(true);
+            });
+          setEmail("");
+        }
+      };
+    
+      const handleOpenChangePasswordForm = () => {
+        setOpenChangePasswordForm(true);
+      };
+    
+      const handleCloseChangePasswordForm = () => {
+        setOpenChangePasswordForm(false);
+      };
+    
+      const handlePasswordChange = (e) => {
+        setPassword(e.target.value);
+      };
+    
+      const handlePinChange = (e) => {
+        setPin(e.target.value);
+      };
+    
+      const handleChangePassword = () => {
+        const form = {
+          email: email,
+          newPassword: password,
+          pin: pin,
+        };
+    
+        const validationErrors = ChangePasswordValidation({
+          email,
+          password,
+          pin,
+        });
+    
+        if (Object.keys(validationErrors).length > 0) {
+          setErrors(validationErrors);
+          console.log(validationErrors);
+        } else {
+          authService
+            .changePassword(form)
+            .then((response) => {
+              setAlertText("Password changed succesfully!");
+              setIsOperationSuccessful(true);
+              setOpenSnackbar(true);
+              setOpenChangePasswordForm(false);
+            })
+            .catch((error) => {
+              setAlertText("Error sending password recovery email");
+              setIsOperationSuccessful(false);
+              setOpenSnackbar(true);
+            });
+          setEmail("");
+          setPassword("");
+          setPin("");
+        }
+      };
+
     return(
         <div>
             <div className='loginPage flx'>
@@ -175,8 +287,229 @@ function Login() {
                             </Link>
 
                             <span className='forgotPassword'>
-                                <ForgotPassword href=''>Forgot your Password?</ForgotPassword>
+                            <ForgotPassword
+                            onClick={(e) => {
+                            e.preventDefault(); 
+                            handleOpenForm();
+                            }}>
+                                Forgot your Password?
+                            </ForgotPassword>
                             </span>
+                            <Dialog
+            open={openForm}
+            dividers={true}
+            onClose={handleCloseForm}
+            aria-labelledby="form-dialog-title"
+            className="custom-dialog"
+            maxWidth="sm"
+            fullWidth
+          >
+            <DialogContent>
+              <div>
+                <h1 style={{ marginBottom: "3%", fontSize: "2 rem" }}>
+                  Password Recovery
+                </h1>
+                <hr
+                  style={{
+                    borderTop: "1px solid lightgrey",
+                    marginBottom: "3%",
+                    width: "100%",
+                  }}
+                />
+                <p>
+                  Please enter you email to receive a link to reset your
+                  password
+                </p>
+                <TextField
+                  required
+                  id="name"
+                  value={email}
+                  onChange={handleInputChange}
+                  variant="outlined"
+                  error={errors.email ? true : false}
+                  helperText={errors.email || ""}
+                  style={{
+                    width: "80%",
+                    marginTop: "3%",
+                    marginBottom: "3%",
+                    fontSize: "1.5rem",
+                  }}
+                  InputProps={{
+                    style: {
+                      fontSize: "1.5rem",
+                    },
+                  }}
+                  FormHelperTextProps={{
+                    style: {
+                      fontSize: "1.1rem",
+                    },
+                  }}
+                />
+
+                <div
+                  className="buttons"
+                  style={{
+                    flex: 1,
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "flex-end",
+                  }}
+                >
+                  <Button
+                    variant="outlined"
+                    style={{
+                      color: "grey",
+                      borderColor: "grey",
+                      fontSize: "1.2rem",
+                    }}
+                    onClick={handleCloseForm}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="contained"
+                    style={{ marginLeft: "3%", fontSize: "1.2rem" }}
+                    onClick={handleSendEmail}
+                  >
+                    Send
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+          <Dialog
+            open={openChangePasswordForm}
+            dividers={true}
+            onClose={handleCloseChangePasswordForm}
+            aria-labelledby="form-dialog-title"
+            className="custom-dialog"
+            maxWidth="sm"
+            fullWidth
+          >
+            <DialogContent>
+              <div>
+                <h1 style={{ marginBottom: "3%", fontSize: "2 rem" }}>
+                  Change Password
+                </h1>
+                <hr
+                  style={{
+                    borderTop: "1px solid lightgrey",
+                    marginBottom: "3%",
+                    width: "100%",
+                  }}
+                />
+                <p style={{ color: errors.email ? "red" : "black" }}>Email *</p>
+                <TextField
+                  required
+                  id="name"
+                  value={email}
+                  onChange={handleInputChange}
+                  variant="outlined"
+                  error={errors.email ? true : false}
+                  helperText={errors.email || ""}
+                  style={{
+                    width: "80%",
+                    marginTop: "3%",
+                    marginBottom: "3%",
+                    fontSize: "1.5rem",
+                  }}
+                  InputProps={{
+                    style: {
+                      fontSize: "1.5rem",
+                    },
+                  }}
+                  FormHelperTextProps={{
+                    style: {
+                      fontSize: "1.1rem",
+                    },
+                  }}
+                />
+                <p style={{ color: errors.pin ? "red" : "black" }}>Pin *</p>
+                <TextField
+                  required
+                  id="name"
+                  value={pin}
+                  onChange={handlePinChange}
+                  variant="outlined"
+                  error={errors.pin ? true : false}
+                  helperText={errors.pin || ""}
+                  style={{
+                    width: "80%",
+                    marginTop: "3%",
+                    marginBottom: "3%",
+                    fontSize: "1.5rem",
+                  }}
+                  InputProps={{
+                    style: {
+                      fontSize: "1.5rem",
+                    },
+                  }}
+                  FormHelperTextProps={{
+                    style: {
+                      fontSize: "1.1rem",
+                    },
+                  }}
+                />
+                <p style={{ color: errors.password ? "red" : "black" }}>
+                  New Password *
+                </p>
+                <TextField
+                  required
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={handlePasswordChange}
+                  variant="outlined"
+                  error={errors.password ? true : false}
+                  helperText={errors.password || ""}
+                  style={{
+                    width: "80%",
+                    marginTop: "3%",
+                    marginBottom: "3%",
+                    fontSize: "1.5rem",
+                  }}
+                  InputProps={{
+                    style: {
+                      fontSize: "1.5rem",
+                    },
+                  }}
+                  FormHelperTextProps={{
+                    style: {
+                      fontSize: "1.1rem",
+                    },
+                  }}
+                />
+                <div
+                  className="buttons"
+                  style={{
+                    flex: 1,
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "flex-end",
+                  }}
+                >
+                  <Button
+                    variant="outlined"
+                    style={{
+                      color: "grey",
+                      borderColor: "grey",
+                      fontSize: "1.2rem",
+                    }}
+                    onClick={handleCloseChangePasswordForm}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="contained"
+                    style={{ marginLeft: "3%", fontSize: "1.2rem" }}
+                    onClick={handleChangePassword}
+                  >
+                    Change Password
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
 
                         </form>
                     </div>
@@ -205,11 +538,25 @@ function Login() {
 
             <Stack spacing={2} sx={{ width: '100%' }} >
                 <Snackbar open={open} autoHideDuration={2500} onClose={handleSnackClose} anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}>
-                    <Alert onClose={handleSnackClose} severity="error" sx={{ width: '100%' }}>
+                    <Alert2 onClose={handleSnackClose} severity="error" sx={{ width: '100%' }}>
                         <h2 style={{fontFamily: 'Roboto', fontSize: "1rem"}}>One or more fields are empty/incorrect</h2>
-                    </Alert>
+                    </Alert2>
                 </Snackbar>
             </Stack>
+            <Snackbar
+        open={openSnackbar}
+        autoHideDuration={10000}
+        onClose={() => setOpenSnackbar(false)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+      >
+        <Alert
+          onClose={() => setOpenSnackbar(false)}
+          severity={isOperationSuccessful ? "success" : "error"}
+          sx={{ fontSize: "100%" }}
+        >
+          {alertText}
+        </Alert>
+      </Snackbar>
 
         </div>
     )
