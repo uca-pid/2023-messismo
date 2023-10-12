@@ -197,7 +197,7 @@ function Navbar() {
                         <span>Resources</span>
                     </NavLink>
                 )}
-                   {(showManagerBoard || showAdminBoard) && (
+                   {(showManagerBoard || showAdminBoard || showValidatedEmployeeBoard) && (
                     <NavLink to={'/categories'} onClick={clicked ? handleClick : undefined}>
                         <CategoryIcon className='icon'/>
                         <span>Categories</span>

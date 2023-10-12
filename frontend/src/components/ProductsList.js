@@ -233,11 +233,11 @@ const [sortOrder, setSortOrder] = useState("asc");
   
   // Luego, puedes cambiar el campo y la dirección de orden en respuesta a alguna acción del usuario
   const handleSort = (field) => {
-    // Si el campo es el mismo que el campo actual, cambia la dirección de orden
+    
     if (field === sortField) {
       setSortOrder(sortOrder === "asc" ? "desc" : "asc");
     } else {
-      // Si el campo es diferente, establece un nuevo campo y dirección ascendente
+      
       setSortField(field);
       setSortOrder("asc");
     }
