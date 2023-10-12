@@ -175,8 +175,9 @@
 .input-container {
     display: flex;
     align-items: center;
+    justify-content: center;
     border-radius: 10px;
-    width: 40%;
+    width: 100%;
     margin-top: 1%;
     
   }
@@ -191,7 +192,7 @@
     background-color: lightgray;
     border-color: #999;
     border-width: 2px;
-    width: 80%;
+    width: 30%;
     
   }
   
@@ -232,7 +233,7 @@
           font-size: 0.5rem !important;
       }
       .custom-input{
-        width: 80%;
+        width: 70% !important;
         margin-left: 2%;
       }
   }

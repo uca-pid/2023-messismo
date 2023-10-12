@@ -231,8 +231,13 @@ const [sortOrder, setSortOrder] = useState("asc");
   };
 
   
-  // Luego, puedes cambiar el campo y la dirección de orden en respuesta a alguna acción del usuario
+  
   const handleSort = (field) => {
+
+    const fieldArray = field.split(".");
+  const firstField = fieldArray[0];
+  
+  
     
     if (field === sortField) {
       setSortOrder(sortOrder === "asc" ? "desc" : "asc");
@@ -241,33 +246,58 @@ const [sortOrder, setSortOrder] = useState("asc");
       setSortField(field);
       setSortOrder("asc");
     }
-
-
-  const sortedProducts = [...products].sort((a, b) => {
-    if (sortOrder === "asc") {
-      if (a[sortField] < b[sortField]) {
-        return -1;
-      }
-      if (a[sortField] > b[sortField]) {
-        return 1;
-      }
-      return 0;
-    } else {
-      if (a[sortField] > b[sortField]) {
-        return -1;
-      }
-      if (a[sortField] < b[sortField]) {
-        return 1;
-      }
-      return 0;
-    }
-  });
-
-  console.log(sortedProducts);
-  setProducts(sortedProducts);
-
+  
   };
  
+  useEffect(() => {
+    if (sortField) {
+      if (sortField !== "category"){
+      const sortedProducts = [...products].sort((a, b) => {
+        if (sortOrder === "asc") {
+          if (a[sortField] < b[sortField]) {
+            return -1;
+          }
+          if (a[sortField] > b[sortField]) {
+            return 1;
+          }
+          return 0;
+        } else {
+          if (a[sortField] > b[sortField]) {
+            return -1;
+          }
+          if (a[sortField] < b[sortField]) {
+            return 1;
+          }
+          return 0;
+        }
+      });
+      setProducts(sortedProducts);
+    }
+    else {
+      const sortedProducts = [...products].sort((a, b) => {
+        if (sortOrder === "asc") {
+          if (a[sortField]["name"] < b[sortField]["name"]) {
+            return -1;
+          }
+          if (a[sortField]["name"] > b[sortField]["name"]) {
+            return 1;
+          }
+          return 0;
+        } else {
+          if (a[sortField]["name"] > b[sortField]["name"]) {
+            return -1;
+          }
+          if (a[sortField]["name"] < b[sortField]["name"]) {
+            return 1;
+          }
+          return 0;
+        }
+    });
+    setProducts(sortedProducts);
+  }
+      
+    }
+  }, [sortField, sortOrder]);
   
   
   
@@ -294,7 +324,7 @@ const [sortOrder, setSortOrder] = useState("asc");
           onClick={handleSearch}
           style={{ backgroundColor: "grey" }}
         >
-          <SearchIcon style={{ fontSize: "2rem" }} />
+          <SearchIcon style={{ fontSize: "1.5rem" }} />
         </Fab>
       </div>
 

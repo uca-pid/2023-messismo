@@ -10,7 +10,9 @@ import productsService from "../services/products.service";
 import { useSelector, useDispatch } from 'react-redux';
 import FormValidation from "../FormValidation";
 import EditFormValidation from "../EditFormValidation";
-
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
+import { convertQuickFilterV7ToLegacy } from "@mui/x-data-grid/internals";
 const EditForm = (props) => {
   const [nombre, setNombre] = useState("");
   const [categoria, setCategoria] = useState("");
@@ -21,7 +23,9 @@ const EditForm = (props) => {
   const role = currentUser.role
   const [errors, setErrors] = useState({});
   const [stock, setStock] = useState("");
-  
+  const [isOperationSuccessful, setIsOperationSuccessful] = useState(false);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [alertText, setAlertText] = useState("");
   const handleNombreChange = (event) => {
     setNombre(event.target.value);
   };
@@ -56,38 +60,39 @@ const EditForm = (props) => {
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       console.log(validationErrors);
-    } else {
-
-  
-  const stockDTO = {
-    productId: props.product.productId,
-    addStock: stock,
-  }
-  console.log(stockDTO)
-    
-    productsService.updateProductStock(stockDTO)
-
+    } else {    
+    //productsService.updateProductStock(stockDTO)
+    if (precio !== ""){
     try {
       const response = await productsService
         .updateProductPrice(props.product.productId, precio)
         .then((response) => {
           console.log(response);
+          setIsOperationSuccessful(true);
+          setAlertText("Price modified successfully");
+          setOpenSnackbar(true);
         });
       
     } catch (error) {
       console.error("Error al buscar productos", error);
+      setIsOperationSuccessful(false);
+        setAlertText("Failed to modify price");
+        setOpenSnackbar(true);
     }
+  }
 
     try {
       console.log(stock);
-      const response = await productsService
-        .updateProductStock(props.product.productId, stock)
-        .then((response) => {
-          console.log(response);
-        });
+        await productsService.updateProductStock(props.product.productId, stock)
+          setIsOperationSuccessful(true);
+          setAlertText("Stock added successfully");
+          setOpenSnackbar(true);
       
     } catch (error) {
       console.error("Error al buscar productos", error);
+      setIsOperationSuccessful(false);
+        setAlertText("Failed to add stock");
+        setOpenSnackbar(true);
     }
 
     props.onClose();
@@ -248,6 +253,20 @@ const EditForm = (props) => {
           Save
         </Button>
       </div>
+      <Snackbar
+    open={openSnackbar}
+    autoHideDuration={10000}
+    onClose={() => setOpenSnackbar(false)}
+    anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+  >
+    <Alert
+      onClose={() => setOpenSnackbar(false)}
+      severity={isOperationSuccessful ? "success" : "error"}
+      sx={{ fontSize: "75%" }}
+    >
+      {alertText}
+    </Alert>
+  </Snackbar>
     </div>
   );
 };
