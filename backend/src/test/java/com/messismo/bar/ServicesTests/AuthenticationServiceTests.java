@@ -27,10 +27,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class AuthenticationServiceTests {
     @InjectMocks
@@ -68,6 +68,7 @@ public class AuthenticationServiceTests {
 
     @Test
     public void testAuthenticationServiceRegisterEmployee() {
+
         RegisterRequestDTO newRegisterRequest = new RegisterRequestDTO("martincito", "ramon@gmail.com", "password");
 
         ResponseEntity<String> response = ResponseEntity.status(HttpStatus.CREATED).body("SomeJWT");
@@ -76,33 +77,34 @@ public class AuthenticationServiceTests {
 
     @Test
     public void testAuthenticationServiceRegisterEmployee_NullUsername() {
+
         RegisterRequestDTO newRegisterRequest = new RegisterRequestDTO(null, "ramon@gmail.com", "password");
 
-        ResponseEntity<String> response = ResponseEntity.status(HttpStatus.CONFLICT)
-                .body("Missing data for user registration");
+        ResponseEntity<String> response = ResponseEntity.status(HttpStatus.CONFLICT).body("Missing data for user registration");
         assertEquals(response.getStatusCode(), authenticationService.register(newRegisterRequest).getStatusCode());
     }
 
     @Test
     public void testAuthenticationServiceRegisterEmployee_NulEmail() {
+
         RegisterRequestDTO newRegisterRequest = new RegisterRequestDTO("martincito", null, "password");
 
-        ResponseEntity<String> response = ResponseEntity.status(HttpStatus.CONFLICT)
-                .body("Missing data for user registration");
+        ResponseEntity<String> response = ResponseEntity.status(HttpStatus.CONFLICT).body("Missing data for user registration");
         assertEquals(response.getStatusCode(), authenticationService.register(newRegisterRequest).getStatusCode());
     }
 
     @Test
     public void testAuthenticationServiceRegisterEmployee_NullPassword() {
+
         RegisterRequestDTO newRegisterRequest = new RegisterRequestDTO("martincito", "ramon@gmail.com", null);
 
-        ResponseEntity<String> response = ResponseEntity.status(HttpStatus.CONFLICT)
-                .body("Missing data for user registration");
+        ResponseEntity<String> response = ResponseEntity.status(HttpStatus.CONFLICT).body("Missing data for user registration");
         assertEquals(response.getStatusCode(), authenticationService.register(newRegisterRequest).getStatusCode());
     }
 
     @Test
     public void testAuthenticationServiceRegisterEmployee_DuplicatedUsername() {
+
         RegisterRequestDTO newRegisterRequest = new RegisterRequestDTO("martincito2", "ramon@gmail.com", "password");
 
         ResponseEntity<String> response = ResponseEntity.status(HttpStatus.CONFLICT).body("The user already exists");
@@ -111,6 +113,7 @@ public class AuthenticationServiceTests {
 
     @Test
     public void testAuthenticationServiceRegisterEmployee_DuplicatedEmail() {
+
         RegisterRequestDTO newRegisterRequest = new RegisterRequestDTO("martincito", "ramon2@gmail.com", "password");
 
         ResponseEntity<String> response = ResponseEntity.status(HttpStatus.CONFLICT).body("The user already exists");
@@ -119,14 +122,14 @@ public class AuthenticationServiceTests {
 
     @Test
     public void testAuthenticationServiceLoginUser() {
+
         AuthenticationRequestDTO authenticationRequestDTO = new AuthenticationRequestDTO();
         authenticationRequestDTO.setEmail("exampleUser");
         authenticationRequestDTO.setPassword("examplePassword");
         User user = new User();
         user.setEmail("exampleUser");
         user.setPassword("examplePassword");
-        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
-                .thenReturn(mock(Authentication.class));
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(mock(Authentication.class));
         when(userRepository.findByEmail(authenticationRequestDTO.getEmail())).thenReturn(Optional.ofNullable(user));
         when(jwtService.generateToken(user)).thenReturn("exampleToken");
         when(jwtService.generateRefreshToken(user)).thenReturn("exampleToken");
@@ -138,51 +141,46 @@ public class AuthenticationServiceTests {
 
     @Test
     public void testAuthenticationServiceLoginUser_InvalidCredentials() {
+
         AuthenticationRequestDTO authenticationRequestDTO = new AuthenticationRequestDTO();
         authenticationRequestDTO.setEmail("invalidUser");
         authenticationRequestDTO.setPassword("invalidPassword");
-        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
-                .thenThrow(new AuthenticationException("Invalid credentials") {
-                });
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenThrow(new AuthenticationException("Invalid credentials") {
+        });
 
-        ResponseEntity<String> response = ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body("Invalid user credentials");
-        assertEquals(response.getStatusCode(),
-                authenticationService.authenticate(authenticationRequestDTO).getStatusCode());
+        ResponseEntity<String> response = ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid user credentials");
+        assertEquals(response.getStatusCode(), authenticationService.authenticate(authenticationRequestDTO).getStatusCode());
     }
 
     @Test
     public void testAuthenticationServiceLoginUser_NullUsername() {
+
         AuthenticationRequestDTO authenticationRequestDTO = new AuthenticationRequestDTO();
         authenticationRequestDTO.setEmail(null);
         authenticationRequestDTO.setPassword("invalidPassword");
-        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
-                .thenThrow(new AuthenticationException("Invalid credentials") {
-                });
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenThrow(new AuthenticationException("Invalid credentials") {
+        });
 
-        ResponseEntity<String> response = ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body("Missing data for user login");
-        assertEquals(response.getStatusCode(),
-                authenticationService.authenticate(authenticationRequestDTO).getStatusCode());
+        ResponseEntity<String> response = ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Missing data for user login");
+        assertEquals(response.getStatusCode(), authenticationService.authenticate(authenticationRequestDTO).getStatusCode());
     }
 
     @Test
     public void testAuthenticationServiceLoginUser_NullPassword() {
+
         AuthenticationRequestDTO authenticationRequestDTO = new AuthenticationRequestDTO();
         authenticationRequestDTO.setEmail("validUsername");
         authenticationRequestDTO.setPassword(null);
-        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
-                .thenThrow(new AuthenticationException("Invalid credentials") {
-                });
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenThrow(new AuthenticationException("Invalid credentials") {
+        });
 
-        ResponseEntity<String> response = ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body("Missing data for user login");
-        assertEquals(response.getStatusCode(),
-                authenticationService.authenticate(authenticationRequestDTO).getStatusCode());
+        ResponseEntity<String> response = ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Missing data for user login");
+        assertEquals(response.getStatusCode(), authenticationService.authenticate(authenticationRequestDTO).getStatusCode());
     }
 
     @Test
-    public void testRevokeAllUserTokens() {
+    public void testRevokeAllUserTokens_Empty() {
+
         TokenRepository tokenRepository = mock(TokenRepository.class);
         User user = new User();
         List<Token> validTokens = new ArrayList<>();
@@ -192,5 +190,35 @@ public class AuthenticationServiceTests {
             Assertions.assertTrue(token.isRevoked());
             Assertions.assertTrue(token.isExpired());
         }
+    }
+
+    @Test
+    public void testRevokeAllUserTokens() {
+
+        User user = User.builder().id(1L).build();
+        Token token1 = Token.builder().id(1L).revoked(false).expired(false).build();
+        Token token2 = Token.builder().id(2L).revoked(false).expired(false).build();
+        List<Token> validTokens = new ArrayList<>();
+        validTokens.add(token1);
+        validTokens.add(token2);
+
+        when(tokenRepository.findAllValidTokenByUser(user.getId())).thenReturn(validTokens);
+        authenticationService.revokeAllUserTokens(user);
+        for (Token token : validTokens) {
+            Assertions.assertTrue(token.isRevoked());
+            Assertions.assertTrue(token.isExpired());
+        }
+        verify(tokenRepository, times(1)).saveAll(validTokens);
+    }
+
+    @Test
+    public void testRegisterWithException() {
+
+        when(userRepository.findByUsername(anyString())).thenReturn(Optional.empty());
+        when(userRepository.findByEmail(anyString())).thenReturn(Optional.empty());
+        when(userRepository.save(any(User.class))).thenThrow(new RuntimeException("Error al guardar el usuario"));
+        RegisterRequestDTO request = RegisterRequestDTO.builder().username("testuser").email("test@example.com").password("password").build();
+
+        assertEquals(authenticationService.register(request), ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User CANNOT be created"));
     }
 }

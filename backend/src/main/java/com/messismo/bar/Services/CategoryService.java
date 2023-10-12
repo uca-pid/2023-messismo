@@ -19,6 +19,7 @@ import java.util.Optional;
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
+
     private final ProductRepository productRepository;
 
     public ResponseEntity<?> addCategory(CategoryRequestDTO categoryRequestDTO) {
@@ -35,7 +36,7 @@ public class CategoryService {
                 return ResponseEntity.status(HttpStatus.CREATED).body("Category created successfully");
             }
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Category NOT created. " + e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Category NOT created.");
         }
     }
 
@@ -55,7 +56,7 @@ public class CategoryService {
                         .body("The provided category has associated one or more products. Please delete them first");
             }
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Category NOT deleted. " + e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Category NOT deleted.");
         }
     }
 

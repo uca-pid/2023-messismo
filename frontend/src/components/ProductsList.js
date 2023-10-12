@@ -27,6 +27,15 @@ import Fab from "@mui/material/Fab";
 import Box from "@mui/material/Box";
 import FilterListIcon from '@mui/icons-material/FilterList';
 import FilterRedux from "./FilterRedux";
+import productsService from "../services/products.service";
+import { useSelector} from "react-redux";
+import Tooltip from "@mui/material/Tooltip";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
+import SearchIcon from '@mui/icons-material/Search';
+import TextField from '@mui/material/TextField';
+import InputAdornment from "@mui/material/InputAdornment";
+import InputBase from '@mui/material/InputBase';
 
 
 const ProductsList = () => {
@@ -52,6 +61,7 @@ const ProductsList = () => {
   const maxStock = useSelector((state) => state.filters.maxStock); 
   
 
+
   useEffect(() => {
     productsService
       .getAllProducts()
@@ -63,6 +73,7 @@ const ProductsList = () => {
       });
   }, [openFormModal, open]);
 
+
   const handleClose = () => {
     setOpen(false);
   };
@@ -73,6 +84,7 @@ const ProductsList = () => {
 
   const handleCloseProductsModal = () => {
     setOpenFormModal(false);
+
   };
 
   const handleOpenFilter = () => {
@@ -95,6 +107,7 @@ const ProductsList = () => {
     } catch (error) {
       console.error("Error al buscar productos", error);
     }
+
   };
 
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -154,6 +167,7 @@ const ProductsList = () => {
 
       const updatedProductsResponse = await productsService.getAllProducts();
       setProducts(updatedProductsResponse.data);
+
     } catch (error) {
       console.error("Error al agregar el producto", error);
       setIsOperationSuccessful(false);
@@ -187,6 +201,7 @@ const ProductsList = () => {
 
   const handleSearch = async () => {
     console.log(searchValue);
+
     const allfilters ={
       productName: searchValue,
       categoryName: selectedCategory,
@@ -311,6 +326,7 @@ const ProductsList = () => {
           <p>Actions</p>
         </div>
       </div>
+   
       {products.map((producto, index) => (
         <div className="entradas" key={index}>
           <div className="product">
@@ -433,6 +449,7 @@ const ProductsList = () => {
       )}
       <Snackbar
         open={openSnackbar}
+
         autoHideDuration={10000}
         onClose={() => setOpenSnackbar(false)}
         anchorOrigin={{ vertical: "bottom", horizontal: "left" }}

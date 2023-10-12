@@ -57,7 +57,7 @@ public class AuthenticationService {
                 return ResponseEntity.status(HttpStatus.CREATED).body(authenticationResponseDTO);
             }
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User CANNOT be created" + e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User CANNOT be created");
         }
     }
 
