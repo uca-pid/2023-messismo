@@ -128,7 +128,6 @@ public class ProductService {
         List<Product> response = new ArrayList<>();
         if (minStock == null || minStock == 0){
             response.addAll(allProducts);
-        }
         } else {
             for (Product product : allProducts) {
                 if (product.getStock() > minStock) {

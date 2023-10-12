@@ -2,7 +2,7 @@ import axios from "axios";
 import authHeader from "./auth-header";
 import { useSelector } from "react-redux";
 
-<<<<<<< HEAD
+
 const API_URL =
   "http://localhost:8080//api/v1/validatedEmployee/getAllProducts";
 
@@ -61,24 +61,6 @@ const deleteProduct = (productId) => {
     });
 
 
-};
-
-const updateProductPrice = (productId, updatedPrice) => {
-  const newProductPrice = {
-    productId: productId,
-    unitPrice: updatedPrice
-  }
-
-  return axios.put("http://localhost:8080/api/v1/manager/product/updatePrice", newProductPrice, {
-    headers: authHeader(), method: 'PUT',
-    'Content-Type': 'application/json'
-  })
-    .then(response => {
-      console.log("Precio modificado con éxito:", response.data);
-    })
-    .catch(error => {
-      console.error("Error al modificar el precio del producto:", error);
-    });
 };
 
 

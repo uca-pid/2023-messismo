@@ -16,7 +16,6 @@ import EditForm from "./EditForm";
 import Filter from "./Filter";
 import productsService from "../services/products.service";
 import { useSelector } from "react-redux";
-import Tooltip from "@mui/material/Tooltip";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import SearchIcon from "@mui/icons-material/Search";
@@ -27,15 +26,8 @@ import Fab from "@mui/material/Fab";
 import Box from "@mui/material/Box";
 import FilterListIcon from '@mui/icons-material/FilterList';
 import FilterRedux from "./FilterRedux";
-import productsService from "../services/products.service";
-import { useSelector} from "react-redux";
 import Tooltip from "@mui/material/Tooltip";
-import Snackbar from "@mui/material/Snackbar";
-import Alert from "@mui/material/Alert";
-import SearchIcon from '@mui/icons-material/Search';
-import TextField from '@mui/material/TextField';
-import InputAdornment from "@mui/material/InputAdornment";
-import InputBase from '@mui/material/InputBase';
+
 
 
 
@@ -260,7 +252,7 @@ const ProductsList = () => {
                 color: "white",
                 borderColor: "#007bff",
                 marginTop: "4%",
-                fontSize: "1.3rem",
+                fontSize: "1rem",
                 height: "40px",
               }}
               onClick={handleOpenProductsModal}
@@ -276,7 +268,7 @@ const ProductsList = () => {
                 color: "white",
                 borderColor: "#007bff",
                 marginTop: "4%",
-                fontSize: "1.3rem",
+                fontSize: "1rem",
                 height: "40px",
               }}>
             Filter by
@@ -358,7 +350,7 @@ const ProductsList = () => {
                       color="red"
                       onClick={() => handleEditClick(producto)}
                     >
-                      <EditIcon style={{ fontSize: "2rem" }} />
+                      <EditIcon style={{ fontSize: "1.5rem" }} />
                     </IconButton>
                   </Tooltip>
                 ) : (
@@ -376,7 +368,7 @@ const ProductsList = () => {
                       style={{ color: "red", fontSize: "1.5 rem" }}
                       onClick={() => handleDeleteClick(producto)}
                     >
-                      <DeleteIcon style={{ fontSize: "2rem" }} />
+                      <DeleteIcon style={{ fontSize: "1.5rem" }} />
                     </IconButton>
                   </Tooltip>
                 ) : (

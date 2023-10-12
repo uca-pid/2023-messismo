@@ -112,7 +112,7 @@ const Form = (props) => {
         style={{ width: '80%', marginTop: '3%', marginBottom: '3%', fontSize: '1.5rem'}}
         InputProps={{
           style: {
-            fontSize: '1.5rem', 
+            fontSize: '1.1rem', 
           },}}
           FormHelperTextProps={{
             style: {
@@ -128,10 +128,10 @@ const Form = (props) => {
         onChange={handleCategoriaChange}
         error={errors.category ? true : false}
         helperText={errors.category || ''}
-        style={{ width: '80%', marginTop: '3%', marginBottom: '3%', fontSize: '1.5rem'}}
+        style={{ width: '80%', marginTop: '3%', marginBottom: '3%', fontSize: '1.1rem'}}
         InputProps={{
           style: {
-            fontSize: '1.5rem',
+            fontSize: '1.1rem',
           },
         }}
         FormHelperTextProps={{
@@ -156,7 +156,7 @@ const Form = (props) => {
         style={{ width: '80%', marginTop: '3%', marginBottom: '3%', fontSize: '1.5rem'}}
         InputProps={{
           style: {
-            fontSize: '1.5rem', 
+            fontSize: '1.1rem', 
           },}}
       />
       <p style={{ fontSize: "1rem", color: characterCount > maxCharacterLimit ? "red" : "black" }}>
@@ -174,7 +174,7 @@ const Form = (props) => {
         helperText={errors.price || ''}
         InputProps={{
           style: {
-            fontSize: '1.5rem', 
+            fontSize: '1.1rem', 
             inputMode: 'numeric', pattern: '[0-9]*'
           },}}
           FormHelperTextProps={{
@@ -195,7 +195,7 @@ const Form = (props) => {
         helperText={errors.stock || ''}
         InputProps={{
           style: {
-            fontSize: '1.5rem', 
+            fontSize: '1.1rem', 
             inputMode: 'numeric', pattern: '[0-9]*'
           },}}
           FormHelperTextProps={{
@@ -207,7 +207,7 @@ const Form = (props) => {
       <div className="buttons-add">
         <Button
           variant="outlined"
-          style={{ color: "grey", borderColor: "grey" , width: "40%", fontSize: '1.3rem'}}
+          style={{ color: "grey", borderColor: "grey" , width: "40%", fontSize: '1rem'}}
           onClick={cancelarButton}
         >
           Cancel
@@ -219,7 +219,7 @@ const Form = (props) => {
             color: "black",
             borderColor: "green",
             width: "40%",
-            fontSize: '1.5rem'
+            fontSize: '1rem'
           }}
           onClick={handleAddProduct}
 
