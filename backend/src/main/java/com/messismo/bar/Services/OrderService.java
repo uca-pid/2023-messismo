@@ -47,7 +47,7 @@ public class OrderService {
                     productOrderList.add(productOrder);
                 }
             }
-            Order newOrder = Order.builder().productOrders(productOrderList).user(employee).dateCreated(orderRequestDTO.getDateCreated()).totalPrice(orderRequestDTO.getTotalPrice()).build();
+            Order newOrder = Order.builder().productOrders(productOrderList).user(employee).dateCreated(orderRequestDTO.getDateCreated()).totalPrice(orderRequestDTO.getTotalPrice()).totalCost(orderRequestDTO.getTotalCost()).build();
             orderRepository.save(newOrder);
             return ResponseEntity.status(HttpStatus.CREATED).body("Order created successfully");
         } catch (Exception e) {

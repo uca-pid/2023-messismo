@@ -258,7 +258,7 @@ public class ProductServiceTests {
         ResponseEntity<String> response = ResponseEntity.status(HttpStatus.OK)
                 .body("Product stock updated successfully");
 
-        assertEquals(response, productService.addProductStock(productStockDTO));
+        assertEquals(response, productService.modifyProductStock(productStockDTO));
     }
 
     @Test
@@ -268,7 +268,7 @@ public class ProductServiceTests {
         ResponseEntity<String> response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body("Product stock CANNOT be updated");
 
-        assertEquals(response, productService.addProductStock(productStockDTO));
+        assertEquals(response, productService.modifyProductStock(productStockDTO));
     }
 
     @Test
@@ -278,7 +278,7 @@ public class ProductServiceTests {
         ResponseEntity<String> response = ResponseEntity.status(HttpStatus.CONFLICT)
                 .body("Missing data to add product stock");
 
-        assertEquals(response, productService.addProductStock(productStockDTO));
+        assertEquals(response, productService.modifyProductStock(productStockDTO));
     }
 
     @Test
@@ -288,7 +288,7 @@ public class ProductServiceTests {
         ResponseEntity<String> response = ResponseEntity.status(HttpStatus.CONFLICT)
                 .body("Missing data to add product stock");
 
-        assertEquals(response, productService.addProductStock(productStockDTO));
+        assertEquals(response, productService.modifyProductStock(productStockDTO));
     }
 
     @Test

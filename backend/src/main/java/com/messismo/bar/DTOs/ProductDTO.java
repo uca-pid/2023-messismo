@@ -15,6 +15,8 @@ public class ProductDTO {
 
     private Double unitPrice;
 
+    private Double unitCost;
+
     private String category;
 
     private String description;

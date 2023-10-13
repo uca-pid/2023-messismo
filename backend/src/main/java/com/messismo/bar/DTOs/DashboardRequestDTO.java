@@ -1,2 +1,4 @@
-package com.messismo.bar.DTOs;public class DashboardRequestDTO {
+package com.messismo.bar.DTOs;
+
+public class DashboardRequestDTO {
 }

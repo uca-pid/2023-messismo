@@ -13,5 +13,7 @@ public class ProductStockDTO {
 
     private Long productId;
 
-    private Integer addStock;
+    private String operation;
+
+    private Integer modifyStock;
 }
