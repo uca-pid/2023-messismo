@@ -1,9 +1,6 @@
 package com.messismo.bar.Services;
 
-import com.messismo.bar.DTOs.FilterProductDTO;
-import com.messismo.bar.DTOs.ProductDTO;
-import com.messismo.bar.DTOs.ProductPriceDTO;
-import com.messismo.bar.DTOs.ProductStockDTO;
+import com.messismo.bar.DTOs.*;
 import com.messismo.bar.Entities.Category;
 import com.messismo.bar.Entities.Product;
 import com.messismo.bar.Exceptions.CategoryNotFoundException;
@@ -28,19 +25,25 @@ public class ProductService {
 
     private final CategoryRepository categoryRepository;
 
+    private final CategoryService categoryService;
+
     public ResponseEntity<?> addProduct(ProductDTO productDTO) {
-        if (productDTO.getCategory() == null || productDTO.getName() == null || productDTO.getName().isEmpty() || productDTO.getUnitPrice() == null || productDTO.getDescription() == null || productDTO.getStock() == null || productDTO.getUnitCost() == null) {
+        if (productDTO.getCategory() == null || productDTO.getName() == null || productDTO.getName().isEmpty() || productDTO.getUnitPrice() == null || productDTO.getDescription() == null || productDTO.getStock() == null || productDTO.getUnitCost() == null || productDTO.getNewCategory() == null) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Missing information to create a product");
         }
-        if(productDTO.getUnitCost()<=0 || productDTO.getStock()<0 || productDTO.getUnitPrice()<0){
+        if (productDTO.getUnitCost() <= 0 || productDTO.getStock() < 0 || productDTO.getUnitPrice() < 0) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Some values cannot be less than zero. Please check.");
         }
         try {
             Optional<Product> product = productRepository.findByName(productDTO.getName());
-            Category category = categoryRepository.findByName(productDTO.getCategory()).orElseThrow(() -> new CategoryNotFoundException("Provided category name DOES NOT match any category name"));
             if (product.isPresent()) {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body("The product already exists");
             } else {
+                if(productDTO.getNewCategory()==Boolean.TRUE){
+                    CategoryRequestDTO categoryRequestDTO = CategoryRequestDTO.builder().categoryName(productDTO.getCategory()).build();
+                    categoryService.addCategory(categoryRequestDTO);
+                }
+                Category category = categoryRepository.findByName(productDTO.getCategory()).orElseThrow(() -> new CategoryNotFoundException("Provided category name DOES NOT match any category name"));
                 Product newProduct = Product.builder().name(productDTO.getName()).unitPrice(productDTO.getUnitPrice()).category(category).description(productDTO.getDescription()).stock(productDTO.getStock()).unitCost(productDTO.getUnitCost()).build();
                 productRepository.save(newProduct);
                 return ResponseEntity.status(HttpStatus.CREATED).body("Product created successfully");
@@ -64,7 +67,7 @@ public class ProductService {
         if (productPriceDTO.getUnitPrice() == null || productPriceDTO.getProductId() == null) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Missing data to modify product price");
         }
-        if(productPriceDTO.getUnitPrice()<=0){
+        if (productPriceDTO.getUnitPrice() <= 0) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Product price CANNOT be less than 0.");
         }
         try {
@@ -74,6 +77,23 @@ public class ProductService {
             return ResponseEntity.status(HttpStatus.OK).body("Product price updated successfully");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Product price CANNOT be updated");
+        }
+    }
+
+    public ResponseEntity<?> modifyProductCost(ProductPriceDTO productPriceDTO) {
+        if (productPriceDTO.getUnitPrice() == null || productPriceDTO.getProductId() == null) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Missing data to modify product cost");
+        }
+        if (productPriceDTO.getUnitPrice() <= 0) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Product cost CANNOT be less than 0.");
+        }
+        try {
+            Product product = productRepository.findByProductId(productPriceDTO.getProductId()).orElseThrow(() -> new ProductNotFoundException("ProductId DOES NOT match any productId"));
+            product.setUnitCost(productPriceDTO.getUnitPrice());
+            productRepository.save(product);
+            return ResponseEntity.status(HttpStatus.OK).body("Product cost updated successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Product cost CANNOT be updated");
         }
     }
 
@@ -108,13 +128,14 @@ public class ProductService {
         try {
             List<Product> filteredProducts = new ArrayList<>();
             List<Product> allProducts = productRepository.findAll();
-
             filteredProducts = filterByName(allProducts, filterProductDTO.getProductName());
+            List<Product> filteredProductsByCategory = new ArrayList<>();
             if (filterProductDTO.getCategories() != null) {
-                for(String aCategory : filterProductDTO.getCategories()){
+                for (String aCategory : filterProductDTO.getCategories()) {
                     Category category = categoryRepository.findByName(aCategory).orElseThrow(() -> new CategoryNotFoundException("Provided category name DOES NOT match any category name"));
-                    filteredProducts = filterByCategory(filteredProducts, category);
+                    filteredProductsByCategory.addAll(filterByCategory(filteredProducts, category));
                 }
+                filteredProducts = filteredProductsByCategory;
             }
             filteredProducts = filterByMinUnitPrice(filteredProducts, filterProductDTO.getMinUnitPrice());
             filteredProducts = filterByMaxUnitPrice(filteredProducts, filterProductDTO.getMaxUnitPrice());

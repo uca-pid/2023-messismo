@@ -42,9 +42,12 @@ public class Order {
     @Column(name = "total_cost")
     private Double totalCost;
 
+    @Column(name = "status")
+    private String status;
+
     @Override
     public String toString() {
-        return "Order{" + "id=" + id + ", user=" + user.getEmail() + ", dateCreated=" + dateCreated + ", productOrder=" + productOrders + ", totalPrice=" + totalPrice + ", totalCost=" + totalCost +'}';
+        return "Order{" + "id=" + id + ", user=" + user.getEmail() + ", dateCreated=" + dateCreated + ", productOrder=" + productOrders + ", totalPrice=" + totalPrice + ", totalCost=" + totalCost + ", status=" + status + '}';
     }
 
 }

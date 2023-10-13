@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -33,13 +34,24 @@ public class DashboardService {
     public ResponseEntity<?> getTotalInfo() {
         try {
             List<Order> allOrders = orderRepository.findAll();
+            double closedEarnings = 0.00;
+            double openEarnings = 0.00;
             double totalEarnings = 0.00;
-            for(Order order : allOrders){
-                totalEarnings= totalEarnings + order.getTotalPrice();
+            for (Order order : allOrders) {
+                if (Objects.equals(order.getStatus(), "Closed")) {
+                    closedEarnings += (order.getTotalPrice() - order.getTotalCost());
+                } else {
+                    openEarnings += (order.getTotalPrice() - order.getTotalCost());
+                }
+                totalEarnings += (order.getTotalPrice() - order.getTotalCost());
             }
             HashMap<String, Object> response = new HashMap<>();
             response.put("totalSalesInEarnings", totalEarnings);
+            response.put("openSalesInEarnings", openEarnings);
+            response.put("closedSalesInEarnings", closedEarnings);
             response.put("totalOrdersQuantity", allOrders.size());
+            response.put("openOrdersQuantity", orderRepository.findByStatus("Open").size());
+            response.put("closedOrdersQuantity", orderRepository.findByStatus("Closed").size());
             response.put("totalProducts", productRepository.findAll().size());
             response.put("totalCategories", categoryRepository.findAll().size());
             return ResponseEntity.status(HttpStatus.OK).body(response);
