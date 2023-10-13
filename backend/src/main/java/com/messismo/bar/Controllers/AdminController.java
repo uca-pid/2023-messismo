@@ -16,7 +16,6 @@ public class AdminController {
 
     private final UserService userService;
 
-
    @PutMapping("/validateAdmin")
     public ResponseEntity<?> validateEmployee(@RequestBody UserIdDTO body) {
         return userService.validateManager(body.getUserId());
