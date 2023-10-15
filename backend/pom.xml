@@ -160,14 +160,17 @@
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.10</version>
                 <configuration>
-                    <excludes>
-                        <exclude>**/Configurations/*.class</exclude>
-                        <exclude>**/Controllers/*.class</exclude>
-                        <exclude>**/DTOs/*.class</exclude>
-                        <exclude>**/Entities/*.class</exclude>
-                        <exclude>**/Exceptions/*.class</exclude>
-                        <exclude>**/Repositories/*.class</exclude>
-                    </excludes>
+<!--                    <excludes>-->
+<!--                        <exclude>**/Configurations/*.class</exclude>-->
+<!--                        <exclude>**/Controllers/*.class</exclude>-->
+<!--                        <exclude>**/DTOs/*.class</exclude>-->
+<!--                        <exclude>**/Entities/*.class</exclude>-->
+<!--                        <exclude>**/Exceptions/*.class</exclude>-->
+<!--                        <exclude>**/Repositories/*.class</exclude>-->
+<!--                    </excludes>-->
+                    <includes>
+                        <include>**/Services/*.class</include>
+                    </includes>
                 </configuration>
                 <executions>
                     <execution>

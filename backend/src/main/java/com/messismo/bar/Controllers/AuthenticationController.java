@@ -21,7 +21,6 @@ public class AuthenticationController {
 
     private final PasswordRecoveryService passwordRecoveryService;
 
-    private final DashboardService dashboardService;
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequestDTO request) {
@@ -49,9 +48,6 @@ public class AuthenticationController {
         return passwordRecoveryService.changeForgottenPassword(passwordRecoveryDTO);
     }
 
-    @PostMapping("/dashboard/getDashboard")
-    public ResponseEntity<?> getDashboardInformation(@RequestBody DashboardRequestDTO dashboardRequestDTO) {
-        return dashboardService.getDashboardInformation(dashboardRequestDTO);
-    }
+
 
 }

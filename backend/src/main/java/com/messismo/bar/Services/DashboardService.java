@@ -2,22 +2,21 @@ package com.messismo.bar.Services;
 
 import com.messismo.bar.DTOs.DashboardRequestDTO;
 import com.messismo.bar.DTOs.ThresholdDTO;
+import com.messismo.bar.Entities.Category;
 import com.messismo.bar.Entities.Order;
 import com.messismo.bar.Entities.Product;
+import com.messismo.bar.Entities.ProductOrder;
 import com.messismo.bar.Repositories.CategoryRepository;
 import com.messismo.bar.Repositories.OrderRepository;
 import com.messismo.bar.Repositories.ProductRepository;
 import lombok.RequiredArgsConstructor;
-import org.antlr.v4.runtime.atn.SemanticContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.YearMonth;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 
 @Service
@@ -60,10 +59,10 @@ public class DashboardService {
     }
 
     public ResponseEntity<?> getProductStock(ThresholdDTO thresholdDTO) {
-        if (thresholdDTO.getMinStock() != null || thresholdDTO.getMinStock() < 0) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Some values cannot be less than zero. Please check.");
-        }
         try {
+            if (thresholdDTO.getMinStock() != null || thresholdDTO.getMinStock() < 0) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("Some values cannot be less than zero. Please check.");
+            }
             HashMap<String, List<Product>> response = new HashMap<>();
             List<Product> allProducts = productRepository.findAll();
             List<Product> productsNearEndStock = new ArrayList<>();
@@ -105,6 +104,7 @@ public class DashboardService {
 
     private HashMap<String, Object> getDailyInformation(String dateRequested) { // ESE MES DESDE DIA 1 HASTA UN MES MAS
         List<Order> allOrders = orderRepository.findAll();
+        List<Order> filteredOrders = new ArrayList<>();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate requestedDate = LocalDate.parse(dateRequested + "-01", formatter);
         int year = requestedDate.getYear();
@@ -122,6 +122,7 @@ public class DashboardService {
         for (Order order : allOrders) {
             LocalDate orderDate = order.getDateCreated().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
             if (orderDate.getYear() == year && orderDate.getMonthValue() == month) {
+                filteredOrders.add(order);
                 String formattedDate = orderDate.format(DateTimeFormatter.ofPattern("dd"));
                 orderByDayQuantity.put(formattedDate, orderByDayQuantity.get(formattedDate) + 1);
                 double currentEarnings = orderByDayEarnings.get(formattedDate) + (order.getTotalPrice() - order.getTotalCost());
@@ -138,11 +139,17 @@ public class DashboardService {
         result.put("orderByEarnings", orderByDayEarnings);
         result.put("orderByQuantity", orderByDayQuantity);
         result.put("averageByOrder", averageByOrder);
+        result.put("quantityProductDonut", getQuantityProductDonut(filteredOrders));
+        result.put("earningProductDonut", getEarningProductDonut(filteredOrders));
+        result.put("quantityCategoryDonut", getQuantityCategoryDonut(filteredOrders));
+        result.put("earningCategoryDonut", getEarningCategoryDonut(filteredOrders));
         result.put("labels", new ArrayList<>(orderByDayEarnings.keySet()));
         return result;
     }
 
+
     private HashMap<String, Object> getWeeklyInformation(String dateRequested) { // ESE DIA HASTA UNA SEMANA MAS
+        List<Order> filteredOrders = new ArrayList<>();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate requestedDate = LocalDate.parse(dateRequested, formatter);
         LocalDate endDate = requestedDate.plusDays(6);
@@ -160,6 +167,7 @@ public class DashboardService {
         for (Order order : allOrders) {
             LocalDate orderDate = order.getDateCreated().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
             if (!orderDate.isBefore(requestedDate) && !orderDate.isAfter(endDate)) {
+                filteredOrders.add(order);
                 String formattedDate = orderDate.format(DateTimeFormatter.ofPattern("dd/MM"));
                 orderByDateQuantity.put(formattedDate, orderByDateQuantity.get(formattedDate) + 1);
                 double currentEarnings = orderByDateEarnings.get(formattedDate) + (order.getTotalPrice() - order.getTotalCost());
@@ -176,11 +184,16 @@ public class DashboardService {
         result.put("orderByEarnings", orderByDateEarnings);
         result.put("orderByQuantity", orderByDateQuantity);
         result.put("averageByOrder", averageByOrder);
+        result.put("quantityProductDonut", getQuantityProductDonut(filteredOrders));
+        result.put("earningProductDonut", getEarningProductDonut(filteredOrders));
+        result.put("quantityCategoryDonut", getQuantityCategoryDonut(filteredOrders));
+        result.put("earningCategoryDonut", getEarningCategoryDonut(filteredOrders));
         result.put("labels", new ArrayList<>(orderByDateEarnings.keySet()));
         return result;
     }
 
     private HashMap<String, Object> getMonthlyInformation(String yearRequested) { // ESE AÑO HASTA UN AÑO MAS
+        List<Order> filteredOrders = new ArrayList<>();
         List<Order> allOrders = orderRepository.findAll();
         List<String> labels = List.of("01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12");
         int year = Integer.parseInt(yearRequested);
@@ -196,6 +209,7 @@ public class DashboardService {
         for (Order order : allOrders) {
             LocalDate orderDate = order.getDateCreated().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
             if (orderDate.isAfter(startDate) && orderDate.isBefore(endDate)) {
+                filteredOrders.add(order);
                 String month = String.format("%02d", orderDate.getMonthValue());
                 ordersByMonthQuantity.put(month, ordersByMonthQuantity.get(month) + 1);
                 ordersByMonthEarnings.put(month, ordersByMonthEarnings.get(month) + (order.getTotalPrice() - order.getTotalCost()));
@@ -211,6 +225,10 @@ public class DashboardService {
         response.put("orderByQuantity", ordersByMonthQuantity);
         response.put("orderByEarnings", ordersByMonthEarnings);
         response.put("averageByOrder", averageByOrder);
+        response.put("quantityProductDonut", getQuantityProductDonut(filteredOrders));
+        response.put("earningProductDonut", getEarningProductDonut(filteredOrders));
+        response.put("quantityCategoryDonut", getQuantityCategoryDonut(filteredOrders));
+        response.put("earningCategoryDonut", getEarningCategoryDonut(filteredOrders));
         response.put("labels", labels);
         return response;
     }
@@ -251,7 +269,66 @@ public class DashboardService {
         response.put("orderByQuantity", ordersByMonthQuantity);
         response.put("orderByEarnings", ordersByMonthEarnings);
         response.put("averageByOrder", averageByOrder);
+        response.put("quantityProductDonut", getQuantityProductDonut(allOrders));
+        response.put("earningProductDonut", getEarningProductDonut(allOrders));
+        response.put("quantityCategoryDonut", getQuantityCategoryDonut(allOrders));
+        response.put("earningCategoryDonut", getEarningCategoryDonut(allOrders));
         response.put("labels", labels);
         return response;
+    }
+
+
+    private HashMap<String, Object> getEarningCategoryDonut(List<Order> orders) {
+        HashMap<String, Object> categoryEarningsMap = new HashMap<>();
+        List<Category> categories = categoryRepository.findAll();
+        for (Category category : categories) {
+            String categoryName = category.getName();
+            double categoryEarnings = 0.0;
+            for (Order order : orders) {
+                for (ProductOrder productOrder : order.getProductOrders()) {
+                    Product product = productOrder.getProduct();
+                    if (product.getCategory().equals(category)) {
+                        categoryEarnings += productOrder.getQuantity() * (product.getUnitPrice() - product.getUnitCost());
+                    }
+                }
+            }
+            categoryEarningsMap.put(categoryName, categoryEarnings);
+        }
+        return categoryEarningsMap;
+    }
+
+    private HashMap<String, Object> getQuantityCategoryDonut(List<Order> orders) {
+        HashMap<String, Integer> categorySalesMap = new HashMap<>();
+        for (Order order : orders) {
+            for (ProductOrder productOrder : order.getProductOrders()) {
+                Product product = productOrder.getProduct();
+                Category category = product.getCategory();
+                categorySalesMap.put(category.getName(), categorySalesMap.getOrDefault(category.getName(), 0) + productOrder.getQuantity());
+            }
+        }
+        return new HashMap<>(categorySalesMap);
+    }
+
+    private HashMap<String, Double> getEarningProductDonut(List<Order> orders) {
+        HashMap<String, Double> productProfitsMap = new HashMap<>();
+        for (Order order : orders) {
+            for (ProductOrder productOrder : order.getProductOrders()) {
+                Product product = productOrder.getProduct();
+                double productProfit = (product.getUnitPrice() - product.getUnitCost()) * productOrder.getQuantity();
+                productProfitsMap.put(product.getName(), productProfitsMap.getOrDefault(product.getName(), 0.0) + productProfit);
+            }
+        }
+        return productProfitsMap;
+    }
+
+    private HashMap<String, Integer> getQuantityProductDonut(List<Order> orders) {
+        HashMap<String, Integer> productSalesMap = new HashMap<>();
+        for (Order order : orders) {
+            for (ProductOrder productOrder : order.getProductOrders()) {
+                Product product = productOrder.getProduct();
+                productSalesMap.put(product.getName(), productSalesMap.getOrDefault(product.getName(), 0) + productOrder.getQuantity());
+            }
+        }
+        return productSalesMap;
     }
 }
