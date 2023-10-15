@@ -2,6 +2,7 @@ package com.messismo.bar.Controllers;
 
 import com.messismo.bar.DTOs.*;
 import com.messismo.bar.Services.CategoryService;
+import com.messismo.bar.Services.DashboardService;
 import com.messismo.bar.Services.ProductService;
 import com.messismo.bar.Services.UserService;
 import lombok.RequiredArgsConstructor;
@@ -22,15 +23,23 @@ public class ManagerController {
 
     private final CategoryService categoryService;
 
+    private final DashboardService dashboardService;
+
     @PutMapping("/product/updatePrice")
     public ResponseEntity<?> updateProductPrice(@RequestBody ProductPriceDTO body) {
         return productService.modifyProductPrice(body);
     }
 
-    @PutMapping("/product/addStock")
-    public ResponseEntity<?> addProductStock(@RequestBody ProductStockDTO body) {
-        return productService.addProductStock(body);
+    @PutMapping("/product/updateCost")
+    public ResponseEntity<?> updateProductCost(@RequestBody ProductPriceDTO body) {
+        return productService.modifyProductCost(body);
     }
+
+    @PutMapping("/product/modifyProductStock")
+    public ResponseEntity<?> modifyProductStock(@RequestBody ProductStockDTO body) {
+        return productService.modifyProductStock(body);
+    }
+
 
     @DeleteMapping("/product/deleteProduct/{productId}")
     public ResponseEntity<?> deleteProduct(@PathVariable Long productId) {
@@ -55,6 +64,21 @@ public class ManagerController {
     @DeleteMapping("/category/deleteCategory")
     public ResponseEntity<?> deleteCategory(@RequestBody CategoryRequestDTO categoryRequestDTO) {
         return categoryService.deleteCategory(categoryRequestDTO);
+    }
+
+    @GetMapping("/dashboard/getTotalInfo")
+    public ResponseEntity<?> getTotalInfo(){
+        return dashboardService.getTotalInfo();
+    }
+
+    @PostMapping("/dashboard/getProductStock")
+    public ResponseEntity<?> getProductStock(@RequestBody ThresholdDTO thresholdDTO) {
+        return dashboardService.getProductStock(thresholdDTO);
+    }
+
+    @PostMapping("/dashboard/getDashboard")
+    public ResponseEntity<?> getDashboardInformation(@RequestBody DashboardRequestDTO dashboardRequestDTO) {
+        return dashboardService.getDashboardInformation(dashboardRequestDTO);
     }
 
 }

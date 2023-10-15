@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -19,6 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 public class CategoryServiceTests {
@@ -123,6 +126,14 @@ public class CategoryServiceTests {
         ResponseEntity<?> response = categoryService.deleteCategory(requestDTO);
         Assertions.assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
         Assertions.assertEquals("Missing information to delete a category", response.getBody());
+    }
+    @Test
+    public void testAddCategory_CategoryNotCreated() {
+        CategoryRequestDTO requestDTO = CategoryRequestDTO.builder().categoryName("New Category").build();
+        when(categoryRepository.findByName(requestDTO.getCategoryName())).thenReturn(Optional.empty());
+        doThrow(new DataIntegrityViolationException("Error saving")).when(categoryRepository).save(any(Category.class));
+        ResponseEntity<?> response = categoryService.addCategory(requestDTO);
+        Assertions.assertEquals(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Category NOT created."), response);
     }
 
 }

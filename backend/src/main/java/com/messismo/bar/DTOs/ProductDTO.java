@@ -15,6 +15,10 @@ public class ProductDTO {
 
     private Double unitPrice;
 
+    private Double unitCost;
+
+    private Boolean newCategory;
+
     private String category;
 
     private String description;

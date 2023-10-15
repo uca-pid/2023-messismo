@@ -9,11 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductStockDTO {
+public class OrderIdDTO {
 
-    private Long productId;
+    private Long orderId;
 
-    private String operation;
-
-    private Integer modifyStock;
 }

@@ -9,11 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductStockDTO {
+public class ThresholdDTO {
 
-    private Long productId;
+    private Integer minStock;
 
-    private String operation;
-
-    private Integer modifyStock;
 }

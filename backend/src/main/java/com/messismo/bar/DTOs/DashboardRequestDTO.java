@@ -9,11 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductStockDTO {
+public class DashboardRequestDTO {
 
-    private Long productId;
-
-    private String operation;
-
-    private Integer modifyStock;
+    private String dateRequested;
+    
 }

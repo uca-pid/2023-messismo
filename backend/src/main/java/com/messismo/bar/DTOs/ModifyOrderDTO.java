@@ -5,15 +5,20 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductStockDTO {
 
-    private Long productId;
+public class ModifyOrderDTO {
 
-    private String operation;
+    private Long orderId;
 
-    private Integer modifyStock;
+    private List<ProductOrderDTO> productOrders;
+
+    private Double totalPrice;
+
+    private Double totalCost;
 }

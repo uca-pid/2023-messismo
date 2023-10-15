@@ -102,28 +102,4 @@ public class AuthenticationService {
         tokenRepository.saveAll(validUserTokens);
     }
 
-    // public void refreshToken(HttpServletRequest request, HttpServletResponse
-    // response) throws IOException {
-    // final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-    // final String refreshToken;
-    // final String userEmail;
-    // if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-    // return;
-    // }
-    // refreshToken = authHeader.substring(7);
-    // userEmail = jwtService.extractUsername(refreshToken);
-    // if (userEmail != null) {
-    // User user = this.userRepository.findByEmail(userEmail).orElseThrow();
-    // if (jwtService.isTokenValid(refreshToken, user)) {
-    // String accessToken = jwtService.generateToken(user);
-    // revokeAllUserTokens(user);
-    // saveUserToken(user, accessToken);
-    // AuthenticationResponseDTO authenticationResponseDTO = new
-    // AuthenticationResponseDTO(accessToken, refreshToken, user.getEmail(),
-    // user.getRole());
-    // new ObjectMapper().writeValue(response.getOutputStream(),
-    // authenticationResponseDTO);
-    // }
-    // }
-    // }
 }

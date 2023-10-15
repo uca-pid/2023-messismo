@@ -1,8 +1,6 @@
 package com.messismo.bar.Controllers;
 
-import com.messismo.bar.DTOs.FilterProductDTO;
-import com.messismo.bar.DTOs.OrderRequestDTO;
-import com.messismo.bar.DTOs.ProductDTO;
+import com.messismo.bar.DTOs.*;
 import com.messismo.bar.Services.CategoryService;
 import com.messismo.bar.Services.OrderService;
 import com.messismo.bar.Services.ProductService;
@@ -48,6 +46,16 @@ public class ValidatedEmployeeControlller {
     @PostMapping("/addNewOrder")
     public ResponseEntity<?> addNewOrder(@RequestBody OrderRequestDTO orderRequestDTO) {
         return orderService.addNewOrder(orderRequestDTO);
+    }
+
+    @PostMapping("/closeOrder")
+    public ResponseEntity<?> closeOrder(@RequestBody OrderIdDTO orderIdDTO) {
+        return orderService.closeOrder(orderIdDTO);
+    }
+
+    @PostMapping("/modifyOrder")
+    public ResponseEntity<?> modifyOrder(@RequestBody ModifyOrderDTO modifyOrderDTO) {
+        return orderService.modifyOrder(modifyOrderDTO);
     }
 
     @GetMapping("orders/getAllOrders")
