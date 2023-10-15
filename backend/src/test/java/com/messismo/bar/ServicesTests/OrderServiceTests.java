@@ -1,5 +1,7 @@
 package com.messismo.bar.ServicesTests;
 
+import com.messismo.bar.DTOs.ModifyOrderDTO;
+import com.messismo.bar.DTOs.OrderIdDTO;
 import com.messismo.bar.DTOs.OrderRequestDTO;
 import com.messismo.bar.DTOs.ProductOrderDTO;
 import com.messismo.bar.Entities.*;
@@ -21,6 +23,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 public class OrderServiceTests {
@@ -111,4 +114,78 @@ public class OrderServiceTests {
         when(userRepository.findByEmail("employee@example.com")).thenReturn(Optional.ofNullable(user));
         Assertions.assertEquals(orderService.addNewOrder(orderRequestDTO), ResponseEntity.status(HttpStatus.CONFLICT).body("Not enough stock of a product"));
     }
+    @Test
+    public void testCloseOrderPositive() {
+
+        Order existingOrder = new Order();
+        existingOrder.setId(1L);
+        existingOrder.setStatus("Open");
+        OrderIdDTO orderIdDTO = new OrderIdDTO();
+        orderIdDTO.setOrderId(1L);
+        when(orderRepository.findById(anyLong())).thenReturn(Optional.of(existingOrder));
+        ResponseEntity<?> response = orderService.closeOrder(orderIdDTO);
+
+        Assertions.assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        Assertions.assertEquals("Order closed successfully", response.getBody());
+        verify(orderRepository, times(1)).save(any());
+    }
+
+    @Test
+    public void testCloseOrderError() {
+
+        OrderIdDTO orderIdDTO = new OrderIdDTO();
+        orderIdDTO.setOrderId(1L);
+        when(orderRepository.findById(anyLong())).thenReturn(Optional.empty());
+        ResponseEntity<?> response = orderService.closeOrder(orderIdDTO);
+
+        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        Assertions.assertEquals("CANNOT close an order at the moment.", response.getBody());
+        verify(orderRepository, never()).save(any());
+    }
+    @Test
+    public void testModifyOrder_InsufficientStock() {
+
+        User usuario = User.builder().username("admincito").id(155L).role(Role.ADMIN).email("admin@mail.com").password("Password1").build();
+        Order existingOrder = Order.builder().dateCreated(new Date()).status("open").id(166L).productOrders(new ArrayList<>()).totalCost(0.00).totalPrice(0.00).user(usuario).build();
+        List<ProductOrderDTO> productOrderDTO= new ArrayList<>();
+        Category category = Category.builder().categoryId(166L).name("Tomates").build();
+        Product product = Product.builder().name("Tomato").productId(155L).unitCost(500.00).unitPrice(4500.00).description("aProduct").category(category).stock(10).build();
+        ProductOrderDTO productOrderDTO1= ProductOrderDTO.builder().product(product).quantity(111).build();
+        productOrderDTO.add(productOrderDTO1);
+        ModifyOrderDTO modifyOrderDTO = ModifyOrderDTO.builder().orderId(166L).totalPrice(4500.00).totalCost(500.00).productOrders(productOrderDTO).build();
+        when(orderRepository.findById(existingOrder.getId())).thenReturn(Optional.of(existingOrder));
+        ResponseEntity<?> response = orderService.modifyOrder(modifyOrderDTO);
+
+        Assertions.assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+        Assertions.assertEquals("Not enough stock of a product", response.getBody());
+    }
+
+    @Test
+    public void testModifyOrder_ExceptionInCatchBlock() {
+
+        ModifyOrderDTO modifyOrderDTO = new ModifyOrderDTO();
+        modifyOrderDTO.setOrderId(10000L);
+        ResponseEntity<?> response = orderService.modifyOrder(modifyOrderDTO);
+
+        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        Assertions.assertEquals("CANNOT modify this order at the moment.", response.getBody());
+    }
+    @Test
+    public void testModifyOrder_PositiveScenario() {
+
+        User usuario = User.builder().username("admincito").id(155L).role(Role.ADMIN).email("admin@mail.com").password("Password1").build();
+        Order existingOrder = Order.builder().dateCreated(new Date()).status("open").id(166L).productOrders(new ArrayList<>()).totalCost(0.00).totalPrice(0.00).user(usuario).build();
+        List<ProductOrderDTO> productOrderDTO= new ArrayList<>();
+        Category category = Category.builder().categoryId(166L).name("Tomates").build();
+        Product product = Product.builder().name("Tomato").productId(155L).unitCost(500.00).unitPrice(4500.00).description("aProduct").category(category).stock(10).build();
+        ProductOrderDTO productOrderDTO1= ProductOrderDTO.builder().product(product).quantity(1).build();
+        productOrderDTO.add(productOrderDTO1);
+        ModifyOrderDTO modifyOrderDTO = ModifyOrderDTO.builder().orderId(166L).totalPrice(4500.00).totalCost(500.00).productOrders(productOrderDTO).build();
+        when(orderRepository.findById(existingOrder.getId())).thenReturn(Optional.of(existingOrder));
+        ResponseEntity<?> response = orderService.modifyOrder(modifyOrderDTO);
+
+        Assertions.assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        Assertions.assertEquals("Order modified successfully", response.getBody());
+    }
+
 }

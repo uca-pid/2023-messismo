@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class DashboardRequestDTO {
+public class ThresholdDTO {
 
-    private String dateRequested;
-    
+    private Integer minStock;
+
 }

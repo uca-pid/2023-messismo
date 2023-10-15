@@ -71,6 +71,11 @@ public class ManagerController {
         return dashboardService.getTotalInfo();
     }
 
+    @PostMapping("/dashboard/getProductStock")
+    public ResponseEntity<?> getProductStock(@RequestBody ThresholdDTO thresholdDTO) {
+        return dashboardService.getProductStock(thresholdDTO);
+    }
+
     @PostMapping("/dashboard/getDashboard")
     public ResponseEntity<?> getDashboardInformation(@RequestBody DashboardRequestDTO dashboardRequestDTO) {
         return dashboardService.getDashboardInformation(dashboardRequestDTO);

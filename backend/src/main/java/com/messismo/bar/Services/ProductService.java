@@ -41,7 +41,7 @@ public class ProductService {
             } else {
                 if(productDTO.getNewCategory()==Boolean.TRUE){
                     CategoryRequestDTO categoryRequestDTO = CategoryRequestDTO.builder().categoryName(productDTO.getCategory()).build();
-                    categoryService.addCategory(categoryRequestDTO);
+                    ResponseEntity<?> response = categoryService.addCategory(categoryRequestDTO);
                 }
                 Category category = categoryRepository.findByName(productDTO.getCategory()).orElseThrow(() -> new CategoryNotFoundException("Provided category name DOES NOT match any category name"));
                 Product newProduct = Product.builder().name(productDTO.getName()).unitPrice(productDTO.getUnitPrice()).category(category).description(productDTO.getDescription()).stock(productDTO.getStock()).unitCost(productDTO.getUnitCost()).build();
