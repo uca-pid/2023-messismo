@@ -60,7 +60,7 @@ public class DashboardService {
 
     public ResponseEntity<?> getProductStock(ThresholdDTO thresholdDTO) {
         try {
-            if (thresholdDTO.getMinStock() != null || thresholdDTO.getMinStock() < 0) {
+            if (thresholdDTO.getMinStock() == null || thresholdDTO.getMinStock() < 0) {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body("Some values cannot be less than zero. Please check.");
             }
             HashMap<String, List<Product>> response = new HashMap<>();
@@ -102,7 +102,7 @@ public class DashboardService {
         }
     }
 
-    private HashMap<String, Object> getDailyInformation(String dateRequested) { // ESE MES DESDE DIA 1 HASTA UN MES MAS
+    public HashMap<String, Object> getDailyInformation(String dateRequested) { // ESE MES DESDE DIA 1 HASTA UN MES MAS
         List<Order> allOrders = orderRepository.findAll();
         List<Order> filteredOrders = new ArrayList<>();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -148,7 +148,7 @@ public class DashboardService {
     }
 
 
-    private HashMap<String, Object> getWeeklyInformation(String dateRequested) { // ESE DIA HASTA UNA SEMANA MAS
+    public HashMap<String, Object> getWeeklyInformation(String dateRequested) { // ESE DIA HASTA UNA SEMANA MAS
         List<Order> filteredOrders = new ArrayList<>();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate requestedDate = LocalDate.parse(dateRequested, formatter);
@@ -192,7 +192,7 @@ public class DashboardService {
         return result;
     }
 
-    private HashMap<String, Object> getMonthlyInformation(String yearRequested) { // ESE AÑO HASTA UN AÑO MAS
+    public HashMap<String, Object> getMonthlyInformation(String yearRequested) { // ESE AÑO HASTA UN AÑO MAS
         List<Order> filteredOrders = new ArrayList<>();
         List<Order> allOrders = orderRepository.findAll();
         List<String> labels = List.of("01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12");
@@ -233,7 +233,7 @@ public class DashboardService {
         return response;
     }
 
-    private HashMap<String, Object> getHistoricInformation() {  // DESDE PRIMER ORDEN HASTA AHORA
+    public HashMap<String, Object> getHistoricInformation() {  // DESDE PRIMER ORDEN HASTA AHORA
         List<Order> allOrders = orderRepository.findAll();
         LocalDate minDate = allOrders.stream().map(order -> order.getDateCreated().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()).min(Comparator.naturalOrder()).orElse(LocalDate.now());
         LocalDate maxDate = allOrders.stream().map(order -> order.getDateCreated().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()).max(Comparator.naturalOrder()).orElse(LocalDate.now());
@@ -278,7 +278,7 @@ public class DashboardService {
     }
 
 
-    private HashMap<String, Object> getEarningCategoryDonut(List<Order> orders) {
+    public HashMap<String, Object> getEarningCategoryDonut(List<Order> orders) {
         HashMap<String, Object> categoryEarningsMap = new HashMap<>();
         List<Category> categories = categoryRepository.findAll();
         for (Category category : categories) {
@@ -297,7 +297,7 @@ public class DashboardService {
         return categoryEarningsMap;
     }
 
-    private HashMap<String, Object> getQuantityCategoryDonut(List<Order> orders) {
+    public HashMap<String, Object> getQuantityCategoryDonut(List<Order> orders) {
         HashMap<String, Integer> categorySalesMap = new HashMap<>();
         for (Order order : orders) {
             for (ProductOrder productOrder : order.getProductOrders()) {
@@ -309,7 +309,7 @@ public class DashboardService {
         return new HashMap<>(categorySalesMap);
     }
 
-    private HashMap<String, Double> getEarningProductDonut(List<Order> orders) {
+    public HashMap<String, Double> getEarningProductDonut(List<Order> orders) {
         HashMap<String, Double> productProfitsMap = new HashMap<>();
         for (Order order : orders) {
             for (ProductOrder productOrder : order.getProductOrders()) {
@@ -321,7 +321,7 @@ public class DashboardService {
         return productProfitsMap;
     }
 
-    private HashMap<String, Integer> getQuantityProductDonut(List<Order> orders) {
+    public HashMap<String, Integer> getQuantityProductDonut(List<Order> orders) {
         HashMap<String, Integer> productSalesMap = new HashMap<>();
         for (Order order : orders) {
             for (ProductOrder productOrder : order.getProductOrders()) {

@@ -168,9 +168,6 @@
                         <exclude>**/Exceptions/*.class</exclude>
                         <exclude>**/Repositories/*.class</exclude>
                     </excludes>
-                    <!-- <includes>
-                        <include>**/Services/*.class</include>
-                    </includes> -->
                 </configuration>
                 <executions>
                     <execution>

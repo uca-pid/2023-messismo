@@ -1,13 +1,11 @@
 package com.messismo.bar.ServicesTests;
 
-import com.messismo.bar.DTOs.FilterProductDTO;
-import com.messismo.bar.DTOs.ProductDTO;
-import com.messismo.bar.DTOs.ProductPriceDTO;
-import com.messismo.bar.DTOs.ProductStockDTO;
+import com.messismo.bar.DTOs.*;
 import com.messismo.bar.Entities.Category;
 import com.messismo.bar.Entities.Product;
 import com.messismo.bar.Repositories.CategoryRepository;
 import com.messismo.bar.Repositories.ProductRepository;
+import com.messismo.bar.Services.CategoryService;
 import com.messismo.bar.Services.ProductService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,6 +32,9 @@ public class ProductServiceTests {
     @Mock
     private CategoryRepository categoryRepository;
 
+    @Mock
+    private CategoryService categoryService;
+
     @BeforeEach
     public void setUp() {
 
@@ -41,8 +42,8 @@ public class ProductServiceTests {
 
         Category category1 = Category.builder().categoryId(1L).name("Entrada").build();
         Product product1 = Product.builder().productId(1L).name("Milanesa").unitPrice(14.99).category(category1).stock(50).description("Milanesa con papas fritas").unitCost(5.00).build();
-        Product product2 = Product.builder().productId(2L).name("Milanesas").unitPrice(44.99).category(category1).stock(25).description("Milanesas con papas fritas2").unitCost(5.00).build();
-        Product product3 = Product.builder().productId(3L).name("Pollo").unitPrice(15.99).category(category1).stock(5).description("Pollo con papas fritas").unitCost(5.00).build();
+        Product product2 = Product.builder().productId(2L).name("Milanesas").unitPrice(44.99).category(category1).stock(25).description("Milanesas con papas fritas2").unitCost(55.00).build();
+        Product product3 = Product.builder().productId(3L).name("Pollo").unitPrice(15.99).category(category1).stock(5).description("Pollo con papas fritas").unitCost(15.00).build();
 
         List<Product> products = new ArrayList<>();
         products.add(product1);
@@ -64,8 +65,8 @@ public class ProductServiceTests {
 
         Category category1 = Category.builder().categoryId(1L).name("Entrada").build();
         Product product1 = Product.builder().productId(1L).name("Milanesa").unitPrice(14.99).category(category1).stock(50).description("Milanesa con papas fritas").unitCost(5.00).build();
-        Product product2 = Product.builder().productId(2L).name("Milanesas").unitPrice(44.99).category(category1).stock(25).description("Milanesas con papas fritas2").unitCost(5.00).build();
-        Product product3 = Product.builder().productId(3L).name("Pollo").unitPrice(15.99).category(category1).stock(5).description("Pollo con papas fritas").unitCost(5.00).build();
+        Product product2 = Product.builder().productId(2L).name("Milanesas").unitPrice(44.99).category(category1).stock(25).description("Milanesas con papas fritas2").unitCost(55.00).build();
+        Product product3 = Product.builder().productId(3L).name("Pollo").unitPrice(15.99).category(category1).stock(5).description("Pollo con papas fritas").unitCost(15.00).build();
         List<Product> products = new ArrayList<>();
         products.add(product1);
         products.add(product2);
@@ -581,7 +582,7 @@ public class ProductServiceTests {
 
         FilterProductDTO filterProductDTO = FilterProductDTO.builder().productName("Pollo").build();
         Category category1 = Category.builder().categoryId(1L).name("Entrada").build();
-        Product product3 = Product.builder().productId(3L).name("Pollo").unitPrice(15.99).category(category1).stock(5).description("Pollo con papas fritas").unitCost(5.00).build();
+        Product product3 = Product.builder().productId(3L).name("Pollo").unitPrice(15.99).category(category1).stock(5).description("Pollo con papas fritas").unitCost(15.00).build();
         List<Product> response = new ArrayList<>();
         response.add(product3);
         ResponseEntity<List<Product>> responseEntity = ResponseEntity.status(HttpStatus.OK).body(response);
@@ -595,8 +596,8 @@ public class ProductServiceTests {
         FilterProductDTO filterProductDTO = FilterProductDTO.builder().categories(List.of("Entrada")).build();
         Category category1 = Category.builder().categoryId(1L).name("Entrada").build();
         Product product1 = Product.builder().productId(1L).name("Milanesa").unitPrice(14.99).category(category1).stock(50).description("Milanesa con papas fritas").unitCost(5.00).build();
-        Product product2 = Product.builder().productId(2L).name("Milanesas").unitPrice(44.99).category(category1).stock(25).description("Milanesas con papas fritas2").unitCost(5.00).build();
-        Product product3 = Product.builder().productId(3L).name("Pollo").unitPrice(15.99).category(category1).stock(5).description("Pollo con papas fritas").unitCost(5.00).build();
+        Product product2 = Product.builder().productId(2L).name("Milanesas").unitPrice(44.99).category(category1).stock(25).description("Milanesas con papas fritas2").unitCost(55.00).build();
+        Product product3 = Product.builder().productId(3L).name("Pollo").unitPrice(15.99).category(category1).stock(5).description("Pollo con papas fritas").unitCost(15.00).build();
         List<Product> response = new ArrayList<>();
         response.add(product1);
         response.add(product2);
@@ -612,7 +613,7 @@ public class ProductServiceTests {
         FilterProductDTO filterProductDTO = FilterProductDTO.builder().maxUnitPrice(20.00).build();
         Category category1 = Category.builder().categoryId(1L).name("Entrada").build();
         Product product1 = Product.builder().productId(1L).name("Milanesa").unitPrice(14.99).category(category1).stock(50).description("Milanesa con papas fritas").unitCost(5.00).build();
-        Product product3 = Product.builder().productId(3L).name("Pollo").unitPrice(15.99).category(category1).stock(5).description("Pollo con papas fritas").unitCost(5.00).build();
+        Product product3 = Product.builder().productId(3L).name("Pollo").unitPrice(15.99).category(category1).stock(5).description("Pollo con papas fritas").unitCost(15.00).build();
         List<Product> response = new ArrayList<>();
         response.add(product1);
         response.add(product3);
@@ -626,7 +627,35 @@ public class ProductServiceTests {
 
         FilterProductDTO filterProductDTO = FilterProductDTO.builder().minUnitPrice(20.00).build();
         Category category1 = Category.builder().categoryId(1L).name("Entrada").build();
-        Product product2 = Product.builder().productId(2L).name("Milanesas").unitPrice(44.99).category(category1).stock(25).description("Milanesas con papas fritas2").unitCost(5.00).build();
+        Product product2 = Product.builder().productId(2L).name("Milanesas").unitPrice(44.99).category(category1).stock(25).description("Milanesas con papas fritas2").unitCost(55.00).build();
+        List<Product> response = new ArrayList<>();
+        response.add(product2);
+        ResponseEntity<List<Product>> responseEntity = ResponseEntity.status(HttpStatus.OK).body(response);
+
+        assertEquals(responseEntity, productService.filterProducts(filterProductDTO));
+    }
+
+    @Test
+    public void testProductServiceFilterProductsByMaxUnitCost() {
+
+        FilterProductDTO filterProductDTO = FilterProductDTO.builder().maxUnitCost(20.00).build();
+        Category category1 = Category.builder().categoryId(1L).name("Entrada").build();
+        Product product1 = Product.builder().productId(1L).name("Milanesa").unitPrice(14.99).category(category1).stock(50).description("Milanesa con papas fritas").unitCost(5.00).build();
+        Product product3 = Product.builder().productId(3L).name("Pollo").unitPrice(15.99).category(category1).stock(5).description("Pollo con papas fritas").unitCost(15.00).build();
+        List<Product> response = new ArrayList<>();
+        response.add(product1);
+        response.add(product3);
+        ResponseEntity<List<Product>> responseEntity = ResponseEntity.status(HttpStatus.OK).body(response);
+
+        assertEquals(responseEntity, productService.filterProducts(filterProductDTO));
+    }
+
+    @Test
+    public void testProductServiceFilterProductsByMinUnitCost() {
+
+        FilterProductDTO filterProductDTO = FilterProductDTO.builder().minUnitCost(50.00).build();
+        Category category1 = Category.builder().categoryId(1L).name("Entrada").build();
+        Product product2 = Product.builder().productId(2L).name("Milanesas").unitPrice(44.99).category(category1).stock(25).description("Milanesas con papas fritas2").unitCost(55.00).build();
         List<Product> response = new ArrayList<>();
         response.add(product2);
         ResponseEntity<List<Product>> responseEntity = ResponseEntity.status(HttpStatus.OK).body(response);
@@ -639,7 +668,7 @@ public class ProductServiceTests {
 
         FilterProductDTO filterProductDTO = FilterProductDTO.builder().maxStock(20).build();
         Category category1 = Category.builder().categoryId(1L).name("Entrada").build();
-        Product product3 = Product.builder().productId(3L).name("Pollo").unitPrice(15.99).category(category1).stock(5).description("Pollo con papas fritas").unitCost(5.00).build();
+        Product product3 = Product.builder().productId(3L).name("Pollo").unitPrice(15.99).category(category1).stock(5).description("Pollo con papas fritas").unitCost(15.00).build();
         List<Product> response = new ArrayList<>();
         response.add(product3);
         ResponseEntity<List<Product>> responseEntity = ResponseEntity.status(HttpStatus.OK).body(response);
@@ -653,7 +682,7 @@ public class ProductServiceTests {
         FilterProductDTO filterProductDTO = FilterProductDTO.builder().minStock(20).build();
         Category category1 = Category.builder().categoryId(1L).name("Entrada").build();
         Product product1 = Product.builder().productId(1L).name("Milanesa").unitPrice(14.99).category(category1).stock(50).description("Milanesa con papas fritas").unitCost(5.00).build();
-        Product product2 = Product.builder().productId(2L).name("Milanesas").unitPrice(44.99).category(category1).stock(25).description("Milanesas con papas fritas2").unitCost(5.00).build();
+        Product product2 = Product.builder().productId(2L).name("Milanesas").unitPrice(44.99).category(category1).stock(25).description("Milanesas con papas fritas2").unitCost(55.00).build();
         List<Product> response = new ArrayList<>();
         response.add(product1);
         response.add(product2);
@@ -667,7 +696,7 @@ public class ProductServiceTests {
 
         FilterProductDTO filterProductDTO = FilterProductDTO.builder().productName("Milanesa").categories(List.of("Entrada")).maxStock(30).minStock(0).maxUnitPrice(50.00).minUnitPrice(16.00).build();
         Category category1 = Category.builder().categoryId(1L).name("Entrada").build();
-        Product product2 = Product.builder().productId(2L).name("Milanesas").unitPrice(44.99).category(category1).stock(25).description("Milanesas con papas fritas2").unitCost(5.00).build();
+        Product product2 = Product.builder().productId(2L).name("Milanesas").unitPrice(44.99).category(category1).stock(25).description("Milanesas con papas fritas2").unitCost(55.00).build();
         List<Product> response = new ArrayList<>();
         response.add(product2);
         ResponseEntity<List<Product>> responseEntity = ResponseEntity.status(HttpStatus.OK).body(response);
@@ -682,6 +711,156 @@ public class ProductServiceTests {
         ResponseEntity<String> responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("CANNOT filter at the moment.");
 
         assertEquals(responseEntity, productService.filterProducts(filterProductDTO));
+    }
+
+    @Test
+    public void testProductServiceInvalidProductDTO() {
+
+        ProductDTO productDTO = ProductDTO.builder().unitCost(-1.0).stock(-10).unitPrice(-20.0).name("product1").category("category1").newCategory(false).description("description1").build();
+        ResponseEntity<?> response = productService.addProduct(productDTO);
+
+        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+        assertEquals("Some values cannot be less than zero. Please check.", response.getBody());
+    }
+
+    @Test
+    public void testAddProductWithNewCategory() {
+
+        ProductDTO productDTO = new ProductDTO();
+        productDTO.setName("New Product");
+        productDTO.setUnitPrice(19.99);
+        productDTO.setCategory("New Category");
+        productDTO.setDescription("A new product");
+        productDTO.setStock(100);
+        productDTO.setUnitCost(10.0);
+        productDTO.setNewCategory(true);
+        Category category1 = Category.builder().categoryId(5L).name("New Category").build();
+        when(categoryRepository.findByName("New Category")).thenReturn(Optional.ofNullable(category1));
+        when(productRepository.findByName("New Product")).thenReturn(Optional.empty());
+        when(productRepository.save(any(Product.class))).thenReturn(new Product());
+        ResponseEntity<?> response = productService.addProduct(productDTO);
+
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertEquals("Product created successfully", response.getBody());
+    }
+
+    @Test
+    public void testModifyProductPriceWithNegativeUnitPrice() {
+
+        ProductPriceDTO productPriceDTO = new ProductPriceDTO();
+        productPriceDTO.setProductId(1L);
+        productPriceDTO.setUnitPrice(-10.0);
+        when(productRepository.findByProductId(productPriceDTO.getProductId()))
+                .thenReturn(Optional.of(new Product()));
+        ResponseEntity<?> response = productService.modifyProductPrice(productPriceDTO);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals("Product price CANNOT be less than 0.", response.getBody());
+        verify(productRepository, never()).save(any());
+    }
+
+    @Test
+    public void testModifyProductCostWithMissingData() {
+
+        ProductPriceDTO productPriceDTO = new ProductPriceDTO();
+        ResponseEntity<?> response = productService.modifyProductCost(productPriceDTO);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals("Missing data to modify product cost", response.getBody());
+        verify(productRepository, never()).findByProductId(anyLong());
+    }
+
+    @Test
+    public void testModifyProductCostWithNegativeUnitPrice() {
+
+        ProductPriceDTO productPriceDTO = new ProductPriceDTO();
+        productPriceDTO.setProductId(1L);
+        productPriceDTO.setUnitPrice(-10.0);
+        when(productRepository.findByProductId(productPriceDTO.getProductId()))
+                .thenReturn(Optional.of(new Product()));
+        ResponseEntity<?> response = productService.modifyProductCost(productPriceDTO);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals("Product cost CANNOT be less than 0.", response.getBody());
+        verify(productRepository, never()).save(any());
+    }
+
+    @Test
+    public void testModifyProductCostWithValidInput() {
+
+        ProductPriceDTO productPriceDTO = new ProductPriceDTO();
+        productPriceDTO.setProductId(1L);
+        productPriceDTO.setUnitPrice(20.0);
+        when(productRepository.findByProductId(productPriceDTO.getProductId()))
+                .thenReturn(Optional.of(new Product()));
+        ResponseEntity<?> response = productService.modifyProductCost(productPriceDTO);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Product cost updated successfully", response.getBody());
+        verify(productRepository, times(1)).save(any());
+    }
+    @Test
+    public void testModifyProductCostWithException() {
+
+        ProductPriceDTO productPriceDTO = new ProductPriceDTO();
+        productPriceDTO.setProductId(1L);
+        productPriceDTO.setUnitPrice(20.0);
+        when(productRepository.findByProductId(productPriceDTO.getProductId()))
+                .thenReturn(Optional.of(new Product()));
+        doThrow(new RuntimeException("Simulated exception")).when(productRepository).save(any());
+        ResponseEntity<?> response = productService.modifyProductCost(productPriceDTO);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals("Product cost CANNOT be updated", response.getBody());
+        verify(productRepository, times(1)).save(any());
+    }
+
+    @Test
+    public void testModifyProductStockWithNegativeStock() {
+
+        ProductStockDTO productStockDTO = new ProductStockDTO();
+        productStockDTO.setProductId(1L);
+        productStockDTO.setModifyStock(-10);
+        productStockDTO.setOperation("add");
+        when(productRepository.findByProductId(productStockDTO.getProductId()))
+                .thenReturn(Optional.of(new Product()));
+        ResponseEntity<?> response = productService.modifyProductStock(productStockDTO);
+
+        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+        assertEquals("Stock quantity cannot be less than 0", response.getBody());
+        verify(productRepository, never()).save(any());
+    }
+
+    @Test
+    public void testModifyProductStockWithSubstractOperation() {
+
+        ProductStockDTO productStockDTO = new ProductStockDTO();
+        productStockDTO.setProductId(1L);
+        productStockDTO.setModifyStock(10);
+        productStockDTO.setOperation("substract");
+        when(productRepository.findByProductId(productStockDTO.getProductId()))
+                .thenReturn(Optional.of(Product.builder().productId(5L).name("aProduct").stock(5).unitPrice(15.00).unitCost(5.00).description("aDescription").build()));
+        ResponseEntity<?> response = productService.modifyProductStock(productStockDTO);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Product stock updated successfully", response.getBody());
+        verify(productRepository, times(1)).save(any());
+    }
+
+    @Test
+    public void testModifyProductStockWithIncorrectOperation() {
+
+        ProductStockDTO productStockDTO = new ProductStockDTO();
+        productStockDTO.setProductId(1L);
+        productStockDTO.setModifyStock(10);
+        productStockDTO.setOperation("multiply");
+        when(productRepository.findByProductId(productStockDTO.getProductId()))
+                .thenReturn(Optional.of(new Product()));
+        ResponseEntity<?> response = productService.modifyProductStock(productStockDTO);
+
+        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+        assertEquals("Incorrect type of operation", response.getBody());
+        verify(productRepository, never()).save(any());
     }
 
 }
