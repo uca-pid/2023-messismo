@@ -199,12 +199,22 @@ public class DashboardServiceTest {
 
         Assertions.assertEquals(expectedMap, result);
     }
+
+    @Test
+    public void testGetDashboardInformationYearly() {
+
+        List<Order> fakeOrders = createFakeOrders();
+        when(orderRepository.findAll()).thenReturn(fakeOrders);
+        DashboardRequestDTO request = DashboardRequestDTO.builder().build();
+        ResponseEntity<?> response = dashboardService.getDashboardInformation(request);
+        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
     @Test
     public void testGetDashboardInformationHistoric() {
 
         List<Order> fakeOrders = createFakeOrders();
         when(orderRepository.findAll()).thenReturn(fakeOrders);
-        DashboardRequestDTO request = new DashboardRequestDTO();
+        DashboardRequestDTO request = DashboardRequestDTO.builder().dateRequested("historic").build();
         ResponseEntity<?> response = dashboardService.getDashboardInformation(request);
 
         Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
