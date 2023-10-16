@@ -1,8 +1,10 @@
 package com.messismo.bar.Configurations;
 
 import com.messismo.bar.DTOs.*;
+import com.messismo.bar.Entities.Order;
 import com.messismo.bar.Entities.Role;
 import com.messismo.bar.Entities.User;
+import com.messismo.bar.Repositories.OrderRepository;
 import com.messismo.bar.Repositories.ProductRepository;
 import com.messismo.bar.Repositories.UserRepository;
 import com.messismo.bar.Services.AuthenticationService;
@@ -16,6 +18,8 @@ import org.springframework.context.annotation.Configuration;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 
@@ -24,7 +28,7 @@ import java.util.List;
 public class InitialConfiguration {
 
     @Bean
-    public CommandLineRunner commandLineRunner(AuthenticationService authenticationService, UserRepository userRepository, ProductService productService, CategoryService categoryService, OrderService orderService, ProductRepository productRepository) {
+    public CommandLineRunner commandLineRunner(AuthenticationService authenticationService, UserRepository userRepository, ProductService productService, CategoryService categoryService, OrderService orderService, OrderRepository orderRepository, ProductRepository productRepository) {
         return args -> {
             RegisterRequestDTO admin = new RegisterRequestDTO();
             admin.setUsername("admin");
@@ -38,7 +42,19 @@ public class InitialConfiguration {
             addSampleCategories(categoryService);
             addSampleProducts(productService);
             addSampleOrders(orderService, productRepository);
+            closeOrders(orderRepository);
         };
+    }
+
+    private void closeOrders(OrderRepository orderRepository) {
+        List<Order> allOrders = orderRepository.findAll();
+        LocalDate cutoffDate = LocalDate.of(2023, 10, 1);
+        for(Order order : allOrders){
+            if (order.getDateCreated().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().isBefore(cutoffDate)) {
+                order.setStatus("Closed");
+                orderRepository.save(order);
+            }
+        }
     }
 
     private void addSampleOrders(OrderService orderService, ProductRepository productRepository) throws ParseException {
@@ -65,8 +81,8 @@ public class InitialConfiguration {
         generateOrderRequestDTO(orderService, "admin@mail.com", "2023-02-14 10:25:15", List.of(ProductOrderDTO.builder().product(productRepository.findByName("Margherita Pizza").get()).quantity(1).build()));
         generateOrderRequestDTO(orderService, "john.smith@example.com", "2023-05-20 19:15:40", List.of(ProductOrderDTO.builder().product(productRepository.findByName("Chocolate Profiteroles").get()).quantity(1).build(), ProductOrderDTO.builder().product(productRepository.findByName("Italian Antipasto").get()).quantity(2).build(), ProductOrderDTO.builder().product(productRepository.findByName("Craft Beer").get()).quantity(3).build(), ProductOrderDTO.builder().product(productRepository.findByName("Shrimp Ceviche").get()).quantity(1).build(), ProductOrderDTO.builder().product(productRepository.findByName("Green Tea").get()).quantity(2).build()));
         generateOrderRequestDTO(orderService, "sarah.jones@example.com", "2023-07-08 15:40:30", List.of(ProductOrderDTO.builder().product(productRepository.findByName("Caramel Flan").get()).quantity(1).build(), ProductOrderDTO.builder().product(productRepository.findByName("Assorted Sushi").get()).quantity(2).build(), ProductOrderDTO.builder().product(productRepository.findByName("Veal Milanese with Fries").get()).quantity(3).build(), ProductOrderDTO.builder().product(productRepository.findByName("Lemon Mojito").get()).quantity(1).build(), ProductOrderDTO.builder().product(productRepository.findByName("Tomato Bruschetta").get()).quantity(2).build(), ProductOrderDTO.builder().product(productRepository.findByName("Raspberry Soda").get()).quantity(3).build()));
-        generateOrderRequestDTO(orderService, "sarah.jones@example.com", "2023-11-18 12:30:55", List.of(ProductOrderDTO.builder().product(productRepository.findByName("Margherita Pizza").get()).quantity(2).build(), ProductOrderDTO.builder().product(productRepository.findByName("Lemon Mojito").get()).quantity(1).build(), ProductOrderDTO.builder().product(productRepository.findByName("Tiramisu").get()).quantity(1).build()));
-        generateOrderRequestDTO(orderService, "martinguido@gmail.com", "2023-12-22 17:10:30", List.of(ProductOrderDTO.builder().product(productRepository.findByName("Mango Mousse").get()).quantity(2).build(), ProductOrderDTO.builder().product(productRepository.findByName("Veal Milanese with Fries").get()).quantity(1).build(), ProductOrderDTO.builder().product(productRepository.findByName("Lemon Mojito").get()).quantity(2).build(), ProductOrderDTO.builder().product(productRepository.findByName("Raspberry Soda").get()).quantity(2).build()));
+        generateOrderRequestDTO(orderService, "sarah.jones@example.com", "2023-09-18 12:30:55", List.of(ProductOrderDTO.builder().product(productRepository.findByName("Margherita Pizza").get()).quantity(2).build(), ProductOrderDTO.builder().product(productRepository.findByName("Lemon Mojito").get()).quantity(1).build(), ProductOrderDTO.builder().product(productRepository.findByName("Tiramisu").get()).quantity(1).build()));
+        generateOrderRequestDTO(orderService, "martinguido@gmail.com", "2023-10-22 17:10:30", List.of(ProductOrderDTO.builder().product(productRepository.findByName("Mango Mousse").get()).quantity(2).build(), ProductOrderDTO.builder().product(productRepository.findByName("Veal Milanese with Fries").get()).quantity(1).build(), ProductOrderDTO.builder().product(productRepository.findByName("Lemon Mojito").get()).quantity(2).build(), ProductOrderDTO.builder().product(productRepository.findByName("Raspberry Soda").get()).quantity(2).build()));
         generateOrderRequestDTO(orderService, "martinguido@gmail.com", "2023-01-15 08:45:20", List.of(ProductOrderDTO.builder().product(productRepository.findByName("Tomato Bruschetta").get()).quantity(1).build(), ProductOrderDTO.builder().product(productRepository.findByName("Lemon Mojito").get()).quantity(2).build()));
         generateOrderRequestDTO(orderService, "john.smith@example.com", "2023-01-25 19:30:10", List.of(ProductOrderDTO.builder().product(productRepository.findByName("Margherita Pizza").get()).quantity(2).build(), ProductOrderDTO.builder().product(productRepository.findByName("Chocolate Profiteroles").get()).quantity(1).build(), ProductOrderDTO.builder().product(productRepository.findByName("Fried Calamari").get()).quantity(1).build()));
         generateOrderRequestDTO(orderService, "sarah.jones@example.com", "2023-02-10 12:15:30", List.of(ProductOrderDTO.builder().product(productRepository.findByName("Caramel Flan").get()).quantity(1).build()));
@@ -79,9 +95,9 @@ public class InitialConfiguration {
         generateOrderRequestDTO(orderService, "guidomartin7@gmail.com", "2023-08-05 11:25:15", List.of(ProductOrderDTO.builder().product(productRepository.findByName("Shrimp Ceviche").get()).quantity(1).build()));
         generateOrderRequestDTO(orderService, "martinguido@gmail.com", "2023-09-19 08:30:20", List.of(ProductOrderDTO.builder().product(productRepository.findByName("Tomato Bruschetta").get()).quantity(1).build(), ProductOrderDTO.builder().product(productRepository.findByName("Lemon Mojito").get()).quantity(1).build()));
         generateOrderRequestDTO(orderService, "john.smith@example.com", "2023-10-22 15:15:45", List.of(ProductOrderDTO.builder().product(productRepository.findByName("Veal Milanese with Fries").get()).quantity(2).build(), ProductOrderDTO.builder().product(productRepository.findByName("Mango Mousse").get()).quantity(1).build(), ProductOrderDTO.builder().product(productRepository.findByName("Caramel Flan").get()).quantity(1).build()));
-        generateOrderRequestDTO(orderService, "sarah.jones@example.com", "2023-11-11 19:00:30", List.of(ProductOrderDTO.builder().product(productRepository.findByName("Fried Calamari").get()).quantity(1).build()));
-        generateOrderRequestDTO(orderService, "sarah.jones@example.com", "2023-12-14 17:20:35", List.of(ProductOrderDTO.builder().product(productRepository.findByName("Tiramisu").get()).quantity(1).build(), ProductOrderDTO.builder().product(productRepository.findByName("Assorted Sushi").get()).quantity(1).build()));
-        generateOrderRequestDTO(orderService, "john.smith@example.com", "2023-12-28 21:10:50", List.of(ProductOrderDTO.builder().product(productRepository.findByName("Lemon Mojito").get()).quantity(1).build(), ProductOrderDTO.builder().product(productRepository.findByName("Cheeseburger").get()).quantity(2).build(), ProductOrderDTO.builder().product(productRepository.findByName("Caramel Flan").get()).quantity(1).build()));
+        generateOrderRequestDTO(orderService, "sarah.jones@example.com", "2023-08-11 19:00:30", List.of(ProductOrderDTO.builder().product(productRepository.findByName("Fried Calamari").get()).quantity(1).build()));
+        generateOrderRequestDTO(orderService, "sarah.jones@example.com", "2023-10-14 17:20:35", List.of(ProductOrderDTO.builder().product(productRepository.findByName("Tiramisu").get()).quantity(1).build(), ProductOrderDTO.builder().product(productRepository.findByName("Assorted Sushi").get()).quantity(1).build()));
+        generateOrderRequestDTO(orderService, "john.smith@example.com", "2023-10-28 21:10:50", List.of(ProductOrderDTO.builder().product(productRepository.findByName("Lemon Mojito").get()).quantity(1).build(), ProductOrderDTO.builder().product(productRepository.findByName("Cheeseburger").get()).quantity(2).build(), ProductOrderDTO.builder().product(productRepository.findByName("Caramel Flan").get()).quantity(1).build()));
         generateOrderRequestDTO(orderService, "martinguido@gmail.com", "2022-01-10 12:45:30", List.of(ProductOrderDTO.builder().product(productRepository.findByName("Tomato Bruschetta").get()).quantity(1).build(), ProductOrderDTO.builder().product(productRepository.findByName("Mango Mousse").get()).quantity(1).build()));
         generateOrderRequestDTO(orderService, "john.smith@example.com", "2022-01-25 19:30:15", List.of(ProductOrderDTO.builder().product(productRepository.findByName("Veal Milanese with Fries").get()).quantity(2).build(), ProductOrderDTO.builder().product(productRepository.findByName("Tiramisu").get()).quantity(1).build()));
         generateOrderRequestDTO(orderService, "sarah.jones@example.com", "2022-02-08 14:15:22", List.of(ProductOrderDTO.builder().product(productRepository.findByName("Spanish Omelette").get()).quantity(3).build(), ProductOrderDTO.builder().product(productRepository.findByName("Chocolate Profiteroles").get()).quantity(1).build()));
