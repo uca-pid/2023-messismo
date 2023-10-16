@@ -12,7 +12,12 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import ProgressBar from "../components/ProgressBar";
 import productsService from "../services/products.service";
+import categoryService from "../services/category.service";
 import { makeStyles } from '@mui/styles';
+import dashboardService from "../services/dashboard.service";
+import moment from 'moment';
+import dayjs from 'dayjs';
+import BarChart from "../components/BarChart";
 
 const CustomizedDateTimePicker = styled(DatePicker)`
    
@@ -57,10 +62,10 @@ const MainContent = styled.div`
 
 const Graphs = styled.div`
     #wrap { overflow:auto; }
-    #div2{ background:red; width: 45vw; height: 35vh; float:left; }
-    #div3{ background:green; width: 45vw; height: 35vh; float:left;  }
-    #div5{ background:blue; width: 32vw; height: 35vh; float:left; }
-    #div6{ background:purple; width: 32vw; height: 35vh; float:left; }
+    #div2{ background:red; width: 45%; height: 35vh; float:left; }
+    #div3{ background:white; width: 45%; height: 35vh; float:left;  }
+    #div5{ background:blue; width: 30%; height: 35vh; float:left; }
+    #div6{ background:purple; width: 30%; height: 35vh; float:left; }
 `;
 
 const Buttons = styled.div`
@@ -103,7 +108,7 @@ const DatePick = styled.div`
 
 const DateFilter = styled.div`
     //background:white; 
-    width: 45vw; 
+    width: 45%; 
     height: 12vh; 
     float:left;
 
@@ -113,7 +118,7 @@ const DateFilter = styled.div`
 
 const TotalStats = styled.div`
     //background:yellow; 
-    width: 55vw; 
+    width: 55%; 
     height: 12vh; 
     float:right;
 
@@ -163,7 +168,7 @@ const Stat = styled.div`
 
 const OutOfStock = styled.div`
     //background:orange; 
-    width: 23vw; 
+    width: 25%; 
     height: 70vh; 
     float:right;
 
@@ -205,10 +210,34 @@ function Dashboard(){
     const classes = useStyles();
 
     const [products, setProducts] = useState([]);
+    const [totalproducts, setTotalProducts] = useState([]);
+    const [categories, setCategories] = useState([]);
+    const [selectedDate, setSelectedDate] = useState("");
     const [sliderValue, setSliderValue] = useState(15);
     const [datePickerVisible, setDatePickerVisible] = useState(false);
     const [datePickerType, setDatePickerType] = useState('');
     const [isDateButtonClicked, setIsDateButtonClicked] = useState(false);
+    const [dashboardData, setDashboardData] = useState({
+        data: {
+            quantityCategoryDonut: {},
+            quantityProductDonut: {},
+            earningProductDonut: {},
+            averageByOrder: {},
+            orderByQuantity: {},
+            earningCategoryDonut: {},
+            orderByEarnings: {}
+        }
+    });
+    
+
+    useEffect(() => {
+        dashboardService.getDashboard({ dateRequested: "" }).then((response) => {
+            console.log(response);
+            setDashboardData(response);
+        }).catch((error) => {
+            console.error(error);
+        });
+    },[]);
 
     useEffect(() => {
         productsService
@@ -216,12 +245,24 @@ function Dashboard(){
           .then((response) => {
             const filteredProducts = response.data.filter(product => product.stock <= sliderValue);
             setProducts(filteredProducts);
+            setTotalProducts(response.data);
           })
           .catch((error) => {
             console.error("Error al mostrar los productos", error);
           });
-      },);
-      
+    },);
+
+    useEffect(() => {
+        categoryService
+          .getAllCategories()
+          .then((response) => {
+            setCategories(response.data);
+          })
+          .catch((error) => {
+            console.error("Error al obtener categorías:", error);
+          });
+      }, []);
+
 
     if (!currentUser) {
         return <Navigate to="/" />;
@@ -235,21 +276,90 @@ function Dashboard(){
         setIsDateButtonClicked(true);
     };
 
-    const handleOtherButtonClick = () => {
+    const handleOtherButtonClick = (type) => {
+        setDatePickerType(type);
         setIsDateButtonClicked(false);
         setDatePickerVisible(false);
+
+
+        if (type === 'yearly') {
+            const yearly = "";
+            setSelectedDate(yearly);
+        }
+        else if (type === 'lastweek') {
+            const today = new Date();
+            const lastWeekDate = new Date(today.setDate(today.getDate() - 7));
+            setSelectedDate(lastWeekDate);
+        }
+        else if (type === 'lastmonth') {
+            const today = new Date();
+            const lastMonthFirstDay = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+            setSelectedDate(lastMonthFirstDay);
+        }
+        else if (type === 'lastyear') {
+            const lastYearDate = new Date();
+            lastYearDate.setFullYear(lastYearDate.getFullYear() - 1);
+            lastYearDate.setMonth(0);
+            lastYearDate.setDate(1);
+            setSelectedDate(lastYearDate);
+        }
+
     };
 
     const handleSliderChange = (event, newValue) => {
       setSliderValue(newValue);
     };
 
+    const handleDateChange = (date) => {
+        setSelectedDate(date);
+      };
 
-    const totalRevenue = 12345678
-    const abbreviatedRevenue = abbreviateNumber(totalRevenue);
-    const totalOrders = 1000
-    const totalProducts = 20
-    const totalCategories = 5
+    const handleButtonClick = () => {
+        const dateObject = new Date(selectedDate);
+        let date = "";
+    
+        switch (datePickerType) {
+            case 'daily':
+            case'lastmonth':
+                date = (`${dateObject.getFullYear()}-${String(dateObject.getMonth() + 1).padStart(2, '0')}`);
+                break;
+            case 'weekly':
+            case'lastweek':
+                date = (dateObject.toISOString().slice(0, 10));
+                break;
+            case 'monthly':
+            case'lastyear':
+                date = (dateObject.getFullYear()).toString();
+                break;
+            case 'yearly':
+                date = (selectedDate);
+                break;
+            default:
+                date = ('Tipo no reconocido');
+        }
+
+        dashboardService.getDashboard({ dateRequested: date }).then((response) => {
+            console.log(response);
+            setDashboardData(response);
+        }).catch((error) => {
+            console.error(error);
+        });        
+        
+      };
+
+    let totalRevenue = 0;
+    let abbreviatedRevenue = 0;
+    let totalOrders = 0;
+    let totalProducts = 0;
+    let totalCategories = 0;
+
+    if (dashboardData.data) {
+        totalRevenue = Object.values(dashboardData.data.orderByEarnings).reduce((a, b) => a + b, 0);
+        abbreviatedRevenue = abbreviateNumber(totalRevenue);
+        totalOrders = Object.values(dashboardData.data.orderByQuantity).reduce((a, b) => a + b, 0);
+        totalProducts = totalproducts.length;
+        totalCategories = categories.length;
+    }
 
     return(
         <Container>
@@ -265,27 +375,32 @@ function Dashboard(){
                             <DateButton onClick={() => handleDateButtonClick('daily')}>Daily</DateButton>
                             <DateButton onClick={() => handleDateButtonClick('weekly')}>Weekly</DateButton>
                             <DateButton onClick={() => handleDateButtonClick('monthly')}>Monthly</DateButton>
-                            <DateButton onClick={handleOtherButtonClick}>Yearly</DateButton>
-                            <br/>
-                            <DateButton onClick={handleOtherButtonClick}>Last Week</DateButton>
-                            <DateButton onClick={handleOtherButtonClick}>Last Month</DateButton>
-                            <DateButton onClick={handleOtherButtonClick}>Last Year</DateButton>
+                            <DateButton onClick={() => handleOtherButtonClick('yearly')}>Yearly</DateButton>
+                            {/* <br/>
+                            <DateButton onClick={() => handleOtherButtonClick('lastweek')}>Last Week</DateButton>
+                            <DateButton onClick={() => handleOtherButtonClick('lastmonth')}>Last Month</DateButton>
+                            <DateButton onClick={() => handleOtherButtonClick('lastyear')}>Last Year</DateButton> */}
                         </Buttons>
 
                         {datePickerVisible && isDateButtonClicked && (
                             <DatePick style={{ backgroundColor: 'transparent'}}>
                                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                                     { datePickerType === 'weekly' && 
-                                        <CustomizedDateTimePicker label={'YYYY-MM-DD'} views={['year', 'month', 'day']} format="YYYY-MM-DD" /> }
+                                        <CustomizedDateTimePicker label={'YYYY-MM-DD'} views={['year', 'month', 'day']} format="YYYY-MM-DD" 
+                                        value={selectedDate} onChange={handleDateChange} /> }
 
                                     { datePickerType === 'daily' && 
-                                        <CustomizedDateTimePicker label={'YYYY-MM'} views={['month', 'year']} format="YYYY-MM" /> }
+                                        <CustomizedDateTimePicker label={'YYYY-MM'} views={['month', 'year']} format="YYYY-MM" 
+                                        value={selectedDate} onChange={handleDateChange} /> }
 
                                     { datePickerType === 'monthly' && 
-                                        <CustomizedDateTimePicker label={'YYYY'} views={['year']} /> }
+                                        <CustomizedDateTimePicker label={'YYYY'} views={['year']} 
+                                        value={selectedDate} onChange={handleDateChange} /> }
                                 </LocalizationProvider>
                             </DatePick>
                         )}
+
+                        <DateButton onClick={handleButtonClick}>Submit</DateButton>
                     </DateFilter>
 
                     <TotalStats>
@@ -338,7 +453,13 @@ function Dashboard(){
                     </OutOfStock>
 
                     <div id="div2">
-
+                        <div style={{ height: '100%' }}>
+                            <BarChart 
+                            data={Object(dashboardData.data.orderByEarnings)} 
+                            label={'Revenue'} 
+                            max={Math.max(...Object.values(dashboardData.data.orderByEarnings))}/>
+                        </div>
+                        
                     </div>
 
                     <div id="div6">
@@ -346,7 +467,12 @@ function Dashboard(){
                     </div> 
 
                     <div id="div3">
-                        
+                        <div style={{ height: '100%' }}>
+                            <BarChart 
+                            data={Object(dashboardData.data.orderByQuantity)} 
+                            label={'Sales'} 
+                            max={Math.max(...Object.values(dashboardData.data.orderByQuantity))}/>
+                        </div>
                     </div>  
 
                     <div id="div5">
