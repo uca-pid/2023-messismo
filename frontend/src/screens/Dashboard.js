@@ -62,8 +62,6 @@ const MainContent = styled.div`
 
 const Graphs = styled.div`
     #wrap { overflow:auto; }
-    #div2{ background:red; width: 45%; height: 35vh; float:left; }
-    #div3{ background:white; width: 45%; height: 35vh; float:left;  }
     #div5{ background:blue; width: 30%; height: 35vh; float:left; }
     #div6{ background:purple; width: 30%; height: 35vh; float:left; }
 `;
@@ -181,6 +179,25 @@ const StockList = styled.div`
     width: 80%;
     margin: 3rem;
 
+`;
+
+const RevenueBarChartDiv = styled.div`
+    //background:red; 
+    width: 45%; 
+    height: 35vh; 
+    float:left;
+`;
+
+const SalesBarChartDiv = styled.div`
+    //background:white; 
+    width: 45%; 
+    height: 35vh; 
+    float:left;
+`;
+
+const BarChartDiv = styled.div`
+    max-height: 95%;
+    margin-left: 8rem;
 `;
 
 function abbreviateNumber(number) {
@@ -452,28 +469,27 @@ function Dashboard(){
                         </StockList>
                     </OutOfStock>
 
-                    <div id="div2">
-                        <div style={{ height: '100%' }}>
+                    <RevenueBarChartDiv>
+                        <BarChartDiv>
                             <BarChart 
                             data={Object(dashboardData.data.orderByEarnings)} 
                             label={'Revenue'} 
                             max={Math.max(...Object.values(dashboardData.data.orderByEarnings))}/>
-                        </div>
-                        
-                    </div>
+                        </BarChartDiv>
+                    </RevenueBarChartDiv>
 
                     <div id="div6">
                         
                     </div> 
 
-                    <div id="div3">
-                        <div style={{ height: '100%' }}>
+                    <SalesBarChartDiv>
+                        <BarChartDiv>
                             <BarChart 
                             data={Object(dashboardData.data.orderByQuantity)} 
                             label={'Sales'} 
                             max={Math.max(...Object.values(dashboardData.data.orderByQuantity))}/>
-                        </div>
-                    </div>  
+                        </BarChartDiv>
+                    </SalesBarChartDiv>  
 
                     <div id="div5">
                         

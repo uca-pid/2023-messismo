@@ -34,16 +34,26 @@ export default function Bars({ data, label, max }) {
         animation: false,
         plugins: {
             legend: {
-                display: true
+                display: true,
+                labels: {
+                    color: 'white'
+                }
             }
         },
         scales: {
             y: {
                 min: 0,
-                max: max
+                max: max,
+                ticks: { color: 'white' },
+                gridlines: {
+                    color: "red"
+                  }
             },
             x: {
-                ticks: { color: 'rgba(0, 220, 195)' }
+                ticks: { color: 'white' },
+                gridlines: {
+                    color: "red"
+                  }
             }
         }
     };
@@ -54,7 +64,7 @@ export default function Bars({ data, label, max }) {
             {
                 label: label,
                 data: values,
-                backgroundColor: 'rgba(0, 220, 195, 0.5)'
+                backgroundColor: '#a4d4cc'
             }
         ]
     };
