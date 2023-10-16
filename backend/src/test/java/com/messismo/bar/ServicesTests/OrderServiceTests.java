@@ -65,14 +65,14 @@ public class OrderServiceTests {
         Date date1 = dateFormat.parse("2023-08-04 08:10:43");
         User user = User.builder().username("example").email("employee@example.com").password("password1").id(1L).role(Role.EMPLOYEE).build();
         Category category1 = Category.builder().categoryId(1L).name("Entrada").build();
-        Product product1 = Product.builder().productId(1L).name("Empanadas").stock(50).category(category1).unitPrice(50.00).description("Empanadas de carne").build();
-        Product product2 = Product.builder().productId(2L).name("Ensalada").stock(50).category(category1).unitPrice(50.00).description("Ensalada de pollo").build();
+        Product product1 = Product.builder().productId(1L).name("Empanadas").stock(50).category(category1).unitPrice(50.00).unitCost(20.00).description("Empanadas de carne").build();
+        Product product2 = Product.builder().productId(2L).name("Ensalada").stock(50).category(category1).unitPrice(50.00).unitCost(25.00).description("Ensalada de pollo").build();
         List<ProductOrderDTO> productOrders = new ArrayList<>();
         ProductOrderDTO productOrderDTO1 = ProductOrderDTO.builder().product(product1).quantity(2).build();
         productOrders.add(productOrderDTO1);
         ProductOrderDTO productOrderDTO2 = ProductOrderDTO.builder().product(product2).quantity(3).build();
         productOrders.add(productOrderDTO2);
-        OrderRequestDTO orderRequestDTO = OrderRequestDTO.builder().dateCreated(date1).totalPrice(250.00).registeredEmployeeEmail("employee@example.com").productOrders(productOrders).build();
+        OrderRequestDTO orderRequestDTO = OrderRequestDTO.builder().dateCreated(date1).registeredEmployeeEmail("employee@example.com").productOrders(productOrders).build();
 
         when(userRepository.findByEmail("employee@example.com")).thenReturn(Optional.ofNullable(user));
         Assertions.assertEquals(orderService.addNewOrder(orderRequestDTO), ResponseEntity.status(HttpStatus.CREATED).body("Order created successfully"));
@@ -83,14 +83,14 @@ public class OrderServiceTests {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date1 = dateFormat.parse("2023-08-04 08:10:43");
         Category category1 = Category.builder().categoryId(1L).name("Entrada").build();
-        Product product1 = Product.builder().productId(1L).name("Empanadas").stock(50).category(category1).unitPrice(50.00).description("Empanadas de carne").build();
-        Product product2 = Product.builder().productId(2L).name("Ensalada").stock(50).category(category1).unitPrice(50.00).description("Ensalada de pollo").build();
+        Product product1 = Product.builder().productId(1L).name("Empanadas").stock(50).category(category1).unitPrice(50.00).unitCost(20.00).description("Empanadas de carne").build();
+        Product product2 = Product.builder().productId(2L).name("Ensalada").stock(50).category(category1).unitPrice(50.00).unitCost(25.00).description("Ensalada de pollo").build();
         List<ProductOrderDTO> productOrders = new ArrayList<>();
         ProductOrderDTO productOrderDTO1 = ProductOrderDTO.builder().product(product1).quantity(2).build();
         productOrders.add(productOrderDTO1);
         ProductOrderDTO productOrderDTO2 = ProductOrderDTO.builder().product(product2).quantity(3).build();
         productOrders.add(productOrderDTO2);
-        OrderRequestDTO orderRequestDTO = OrderRequestDTO.builder().dateCreated(date1).totalPrice(250.00).registeredEmployeeEmail("employee@example.com").productOrders(productOrders).build();
+        OrderRequestDTO orderRequestDTO = OrderRequestDTO.builder().dateCreated(date1).registeredEmployeeEmail("employee@example.com").productOrders(productOrders).build();
 
         when(userRepository.findByEmail("nonexistent@example.com")).thenReturn(Optional.empty());
         Assertions.assertEquals(orderService.addNewOrder(orderRequestDTO), ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("CANNOT create an order at the moment."));
@@ -102,14 +102,14 @@ public class OrderServiceTests {
         Date date1 = dateFormat.parse("2023-08-04 08:10:43");
         User user = User.builder().username("example").email("nonexistent@example.com").password("password1").id(1L).role(Role.EMPLOYEE).build();
         Category category1 = Category.builder().categoryId(1L).name("Entrada").build();
-        Product product1 = Product.builder().productId(1L).name("Empanadas").stock(1).category(category1).unitPrice(50.00).description("Empanadas de carne").build();
-        Product product2 = Product.builder().productId(2L).name("Ensalada").stock(50).category(category1).unitPrice(50.00).description("Ensalada de pollo").build();
+        Product product1 = Product.builder().productId(1L).name("Empanadas").stock(1).category(category1).unitPrice(50.00).unitCost(25.00).description("Empanadas de carne").build();
+        Product product2 = Product.builder().productId(2L).name("Ensalada").stock(50).category(category1).unitPrice(50.00).unitCost(25.00).description("Ensalada de pollo").build();
         List<ProductOrderDTO> productOrders = new ArrayList<>();
         ProductOrderDTO productOrderDTO1 = ProductOrderDTO.builder().product(product1).quantity(2).build();
         productOrders.add(productOrderDTO1);
         ProductOrderDTO productOrderDTO2 = ProductOrderDTO.builder().product(product2).quantity(3).build();
         productOrders.add(productOrderDTO2);
-        OrderRequestDTO orderRequestDTO = OrderRequestDTO.builder().dateCreated(date1).totalPrice(250.00).registeredEmployeeEmail("employee@example.com").productOrders(productOrders).build();
+        OrderRequestDTO orderRequestDTO = OrderRequestDTO.builder().dateCreated(date1).registeredEmployeeEmail("employee@example.com").productOrders(productOrders).build();
 
         when(userRepository.findByEmail("employee@example.com")).thenReturn(Optional.ofNullable(user));
         Assertions.assertEquals(orderService.addNewOrder(orderRequestDTO), ResponseEntity.status(HttpStatus.CONFLICT).body("Not enough stock of a product"));

@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -86,13 +87,15 @@ public class DashboardService {
         try {
             HashMap<String, Object> response = new HashMap<>();
             if (dashboardRequestDTO.getDateRequested() == null || dashboardRequestDTO.getDateRequested().isEmpty()) {
-                response = getHistoricInformation();
+                response = getYearlyInformation();
             } else if (dashboardRequestDTO.getDateRequested().matches("\\d{4}")) {
                 response = getMonthlyInformation(dashboardRequestDTO.getDateRequested());
             } else if (dashboardRequestDTO.getDateRequested().matches("\\d{4}-\\d{2}-\\d{2}")) {
                 response = getWeeklyInformation(dashboardRequestDTO.getDateRequested());
             } else if (dashboardRequestDTO.getDateRequested().matches("\\d{4}-\\d{2}")) {
                 response = getDailyInformation(dashboardRequestDTO.getDateRequested());
+            } else if (dashboardRequestDTO.getDateRequested().equals("historic")) {
+                response = getHistoricInformation();
             } else {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body("Incorrect date format");
             }
@@ -100,6 +103,49 @@ public class DashboardService {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("CANNOT get information for dashboards right now.");
         }
+    }
+
+    private HashMap<String, Object> getYearlyInformation() { // DESDE AÑO INICIAL HASTA AÑO ACTUAL
+        List<Order> allOrders = orderRepository.findAll();
+        LocalDate minDate = allOrders.stream().map(order -> order.getDateCreated().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()).min(Comparator.naturalOrder()).orElse(LocalDate.now());
+        LocalDate maxDate = allOrders.stream().map(order -> order.getDateCreated().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()).max(Comparator.naturalOrder()).orElse(LocalDate.now());
+        List<Integer> years = new ArrayList<>();
+        LocalDate currentDate = minDate;
+        while (!currentDate.isAfter(maxDate)) {
+            years.add(currentDate.getYear());
+            currentDate = currentDate.plusYears(1);
+        }
+        TreeMap<Integer, Integer> ordersByYearQuantity = new TreeMap<>();
+        TreeMap<Integer, Double> ordersByYearEarnings = new TreeMap<>();
+        TreeMap<Integer, Double> averageByOrder = new TreeMap<>();
+        for (Integer year : years) {
+            ordersByYearQuantity.put(year, 0);
+            ordersByYearEarnings.put(year, 0.0);
+        }
+        for (Order order : allOrders) {
+            LocalDate orderDate = order.getDateCreated().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            int year = orderDate.getYear();
+            ordersByYearQuantity.put(year, ordersByYearQuantity.get(year) + 1);
+            double earnings = ordersByYearEarnings.get(year) + (order.getTotalPrice() - order.getTotalCost());
+            ordersByYearEarnings.put(year, earnings);
+        }
+        for (Integer year : years) {
+            int quantity = ordersByYearQuantity.get(year);
+            double earnings = ordersByYearEarnings.get(year);
+            double average = quantity > 0 ? earnings / quantity : 0.0;
+            average = (double) Math.round(average * 100.00) / 100.00;
+            averageByOrder.put(year, average);
+        }
+        HashMap<String, Object> response = new HashMap<>();
+        response.put("orderByQuantity", ordersByYearQuantity);
+        response.put("orderByEarnings", ordersByYearEarnings);
+        response.put("averageByOrder", averageByOrder);
+        response.put("quantityProductDonut", getQuantityProductDonut(allOrders));
+        response.put("earningProductDonut", getEarningProductDonut(allOrders));
+        response.put("quantityCategoryDonut", getQuantityCategoryDonut(allOrders));
+        response.put("earningCategoryDonut", getEarningCategoryDonut(allOrders));
+        response.put("labels", new ArrayList<>(years));
+        return response;
     }
 
     public HashMap<String, Object> getDailyInformation(String dateRequested) { // ESE MES DESDE DIA 1 HASTA UN MES MAS
@@ -133,6 +179,7 @@ public class DashboardService {
             double earnings = orderByDayEarnings.get(day);
             int quantity = orderByDayQuantity.get(day);
             double average = quantity > 0 ? earnings / quantity : 0.0;
+            average = (double) Math.round(average * 100.00) / 100.00;
             averageByOrder.put(day, average);
         }
         HashMap<String, Object> result = new HashMap<>();
@@ -178,6 +225,7 @@ public class DashboardService {
             double earnings = orderByDateEarnings.get(day);
             int quantity = orderByDateQuantity.get(day);
             double average = quantity > 0 ? earnings / quantity : 0.0;
+            average = (double) Math.round(average * 100.00) / 100.00;
             averageByOrder.put(day, average);
         }
         HashMap<String, Object> result = new HashMap<>();
@@ -219,6 +267,7 @@ public class DashboardService {
             int quantity = ordersByMonthQuantity.get(month);
             double earnings = ordersByMonthEarnings.get(month);
             double average = quantity > 0 ? earnings / quantity : 0.0;
+            average = (double) Math.round(average * 100.00) / 100.00;
             averageByOrder.put(month, average);
         }
         HashMap<String, Object> response = new HashMap<>();
@@ -263,6 +312,7 @@ public class DashboardService {
             int quantity = ordersByMonthQuantity.get(label);
             double earnings = ordersByMonthEarnings.get(label);
             double average = quantity > 0 ? earnings / quantity : 0.0;
+            average = (double) Math.round(average * 100.00) / 100.00;
             averageByOrder.put(label, average);
         }
         HashMap<String, Object> response = new HashMap<>();
