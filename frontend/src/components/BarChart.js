@@ -45,13 +45,16 @@ export default function Bars({ data, label, max, color }) {
                 min: 0,
                 max: max,
                 ticks: { color: 'white' },
+                grid: {
+                    color: 'rgb(157,187,191,0.4)'
+                }
 
             },
             x: {
                 ticks: { color: 'white' },
 
             }
-        }
+        },
     };
 
     var midata = {

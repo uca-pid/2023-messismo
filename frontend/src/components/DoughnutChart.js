@@ -27,9 +27,10 @@ ChartJS.register(
 
 export default function Doughnuts({ data, label }) {
 
-    const sortedData = Object.entries(data).sort(([a], [b]) => a - b);
-    const labels = sortedData.map(([key]) => key);
-    const values = sortedData.map(([_, value]) => value);
+    const sortedData = Object.entries(data).sort((a, b) => b[1] - a[1]);
+    const first5 = sortedData.slice(0, 5);
+    const labels = first5.map(([key]) => key);
+    const values = first5.map(([_, value]) => value);
 
     var misoptions = {
       responsive: true,
@@ -37,12 +38,20 @@ export default function Doughnuts({ data, label }) {
       animation: false,
       plugins: {
           legend: {
-              position: 'right',
+              position: 'bottom',
               display: true,
               labels: {
                   color: 'white'
               }
-          }
+          },
+          title: {
+            display: true,
+            text: label,
+            color: 'white',
+            font: {
+                size: 12
+            }
+           }
       },
       
     };

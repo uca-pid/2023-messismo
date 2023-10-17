@@ -19,6 +19,10 @@ import moment from 'moment';
 import dayjs from 'dayjs';
 import BarChart from "../components/BarChart";
 import Doughnut from "../components/DoughnutChart";
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
 
 const CustomizedDateTimePicker = styled(DatePicker)`
    
@@ -78,7 +82,6 @@ const DateButton = styled.button`
     color: black;
     text-transform: uppercase;
     cursor: pointer;
-    box-shadow: 0 3px #999;
     font-family: 'Roboto',serif;
     text-align: center;
     padding: 0.6rem;
@@ -105,7 +108,7 @@ const DatePick = styled.div`
 
 const DateFilter = styled.div`
     //background:white; 
-    width: 45%; 
+    width: 40%; 
     height: 12vh; 
     float:left;
 
@@ -115,7 +118,7 @@ const DateFilter = styled.div`
 
 const TotalStats = styled.div`
     //background:yellow; 
-    width: 55%; 
+    width: 60%; 
     height: 12vh; 
     float:right;
 
@@ -182,40 +185,34 @@ const StockList = styled.div`
 
 const RevenueBarChartDiv = styled.div`
     //background:red; 
-    width: 45%; 
+    width: 40%; 
     height: 35vh; 
     float:left;
 `;
 
 const SalesBarChartDiv = styled.div`
     //background:white; 
-    width: 45%; 
+    width: 40%; 
     height: 35vh; 
     float:left;
 `;
 
 const BarChartDiv = styled.div`
     max-height: 95%;
-    margin-left: 8rem;
+    margin-left: 7rem;
 `;
 
 const RevenueDoughnutDiv = styled.div`
     //background:purple; 
-    width: 30%; 
-    height: 35vh; 
-    float:left;
-`;
+    width: 35%; 
+    height: 70vh;
+    float:right;
 
-const SalesDoughnutDiv = styled.div`
-    //background:blue; 
-    width: 30%; 
-    height: 35vh; 
-    float:left;
 `;
 
 const DoughnutDiv = styled.div`
-    max-height: 100%;
-    margin-left: 7rem;
+    max-width: 50%;
+    display: flex;
 `;
 
 function abbreviateNumber(number) {
@@ -263,8 +260,10 @@ function Dashboard(){
             orderByEarnings: {}
         }
     });
-    
 
+    const [chartType, setChartType] = useState("product");
+
+    
     useEffect(() => {
         dashboardService.getDashboard({ dateRequested: "" }).then((response) => {
             console.log(response);
@@ -380,7 +379,12 @@ function Dashboard(){
             console.error(error);
         });        
         
-      };
+    };
+
+    const handleChange = (event) => {
+        setChartType(event.target.value);
+    };
+    
 
     let totalRevenue = 0;
     let abbreviatedRevenue = 0;
@@ -407,10 +411,10 @@ function Dashboard(){
 
                     <DateFilter>
                         <Buttons>
-                            <DateButton onClick={() => handleDateButtonClick('daily')}>Daily</DateButton>
-                            <DateButton onClick={() => handleDateButtonClick('weekly')}>Weekly</DateButton>
-                            <DateButton onClick={() => handleDateButtonClick('monthly')}>Monthly</DateButton>
-                            <DateButton onClick={() => handleOtherButtonClick('yearly')}>Yearly</DateButton>
+                            <DateButton onClick={() => handleDateButtonClick('daily')} style={{ backgroundColor: datePickerType === 'daily' ? '#82B7AE' : '#a4d4cc' }}>Daily</DateButton>
+                            <DateButton onClick={() => handleDateButtonClick('weekly')} style={{ backgroundColor: datePickerType === 'weekly' ? '#82B7AE' : '#a4d4cc' }}>Weekly</DateButton>
+                            <DateButton onClick={() => handleDateButtonClick('monthly')} style={{ backgroundColor: datePickerType === 'monthly' ? '#82B7AE' : '#a4d4cc' }}>Monthly</DateButton>
+                            <DateButton onClick={() => handleOtherButtonClick('yearly')} style={{ backgroundColor: datePickerType === 'yearly' ? '#82B7AE' : '#a4d4cc' }}>Yearly</DateButton>
                             {/* <br/>
                             <DateButton onClick={() => handleOtherButtonClick('lastweek')}>Last Week</DateButton>
                             <DateButton onClick={() => handleOtherButtonClick('lastmonth')}>Last Month</DateButton>
@@ -498,12 +502,64 @@ function Dashboard(){
                     </RevenueBarChartDiv>
 
                     <RevenueDoughnutDiv>
+
+                        <Box sx={{ maxWidth:'40%' }}>
+                            <FormControl fullWidth variant="outlined">
+                                <Select
+                                labelStyle={{ color: '#ff0000' }}
+                                sx={{ backgroundColor:'transparent', color:'white', fontSize:'1.5rem', margin:'2rem',
+                                color: "white",
+                                '.MuiOutlinedInput-notchedOutline': {
+                                  borderColor: 'rgba(228, 219, 233, 0.25)',
+                                },
+                                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                  borderColor: 'rgba(228, 219, 233, 0.25)',
+                                },
+                                '&:hover .MuiOutlinedInput-notchedOutline': {
+                                  borderColor: 'rgba(228, 219, 233, 0.25)',
+                                },
+                                '.MuiSvgIcon-root ': {
+                                  fill: "white !important",
+                                } }}
+                                labelId="demo-simple-select-label"
+                                id="demo-simple-select"
+                                label="By"
+                                value={chartType}
+                                defaultValue="product"
+                                onChange={handleChange}
+                                >
+                                    <MenuItem sx={{ fontSize:'1.2rem' }} value="product">By Product</MenuItem>
+                                    <MenuItem sx={{ fontSize:'1.2rem' }} value="category">By Category</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </Box>
+
                         <DoughnutDiv>
-                            <Doughnut  
-                            data={Object(dashboardData.data.earningProductDonut)} 
-                            label={'Revenue'} />
+                            {chartType === "product" ? (
+                                <>
+                                    <Doughnut  
+                                    data={Object(dashboardData.data.earningProductDonut)} 
+                                    label={'Revenue'} />
+
+                                    <Doughnut 
+                                    data={Object(dashboardData.data.quantityProductDonut)} 
+                                    label={'Sales'} />
+                                </>
+                            ) : (
+                                <>
+                                    <Doughnut  
+                                    data={Object(dashboardData.data.earningCategoryDonut)} 
+                                    label={'Revenue'} />
+
+                                    <Doughnut 
+                                    data={Object(dashboardData.data.quantityCategoryDonut)} 
+                                    label={'Sales'} />
+                                </>
+                            )}
                         </DoughnutDiv>
+
                     </RevenueDoughnutDiv> 
+
 
                     <SalesBarChartDiv>
                         <BarChartDiv>
@@ -515,13 +571,7 @@ function Dashboard(){
                         </BarChartDiv>
                     </SalesBarChartDiv>  
 
-                    <SalesDoughnutDiv>
-                        <DoughnutDiv>
-                            <Doughnut 
-                            data={Object(dashboardData.data.quantityProductDonut)} 
-                            label={'Sales'} />
-                        </DoughnutDiv>
-                    </SalesDoughnutDiv>  
+
 
                 </Graphs>
 
