@@ -1,0 +1,39 @@
+.range {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.slash {
+    font-size: '100%';
+}
+
+.range span {
+    margin: 0 10px; /* Añade espacio entre el guión y los TextField */
+    font-size: 20px; /* Aumenta el tamaño del guión */
+    display: flex; /* Permite centrar horizontalmente el guión */
+    align-items: center; /* Centra horizontalmente el guión */
+  }
+
+  .appliedFilters {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+  
+  .filterBoxes {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+  
+  /* Añade este estilo para alinear correctamente los botones "Clear All" */
+  .clearAllButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }

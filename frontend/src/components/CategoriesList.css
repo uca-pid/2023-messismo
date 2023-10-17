@@ -1,0 +1,22 @@
+.category-data {
+    width: 40%;
+  }
+  
+.categoryTitle {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 3%;
+  margin-top: 2%;
+}
+
+.title {
+  color: gray;
+  
+}
+@media (max-width: 768px) {
+    .category-data {
+      width: 90% !important;
+      
+    }
+  }
