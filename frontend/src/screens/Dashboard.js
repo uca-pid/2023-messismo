@@ -60,13 +60,11 @@ const Container = styled.div`
 
 const MainContent = styled.div`
     display: ${props => (props.visible ? 'flex' : 'none')};
-    justify-content: center;
-    align-items: center;
-    flex-grow: 1;
+
 `;
 
 const Graphs = styled.div`
-    #wrap { overflow:auto; }
+
 `;
 
 const Buttons = styled.div`
@@ -114,6 +112,7 @@ const DateFilter = styled.div`
 
     display: flex;
     align-items: center;
+    margin-top: 2rem;
 `;
 
 const TotalStats = styled.div`
@@ -125,6 +124,7 @@ const TotalStats = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
+    margin-top: 2rem;
 `;
 
 const Stat = styled.div`
@@ -185,26 +185,20 @@ const StockList = styled.div`
 
 const RevenueBarChartDiv = styled.div`
     //background:red; 
-    width: 40%; 
-    height: 35vh; 
-    float:left;
-`;
-
-const SalesBarChartDiv = styled.div`
-    //background:white; 
-    width: 40%; 
-    height: 35vh; 
+    width: 39%; 
+    height: 70vh; 
     float:left;
 `;
 
 const BarChartDiv = styled.div`
-    max-height: 95%;
-    margin-left: 7rem;
+    max-height: 45%;
+    margin-left: 6rem;
+    margin-top: 1rem;
 `;
 
 const RevenueDoughnutDiv = styled.div`
     //background:purple; 
-    width: 35%; 
+    width: 36%; 
     height: 70vh;
     float:right;
 
@@ -213,6 +207,7 @@ const RevenueDoughnutDiv = styled.div`
 const DoughnutDiv = styled.div`
     max-width: 50%;
     display: flex;
+
 `;
 
 function abbreviateNumber(number) {
@@ -439,7 +434,7 @@ function Dashboard(){
                             </DatePick>
                         )}
 
-                        <DateButton onClick={handleButtonClick} style={{marginLeft:'2rem'}}>Submit</DateButton>
+                        <DateButton onClick={handleButtonClick} style={{marginLeft:'2rem'}}>Apply</DateButton>
                     </DateFilter>
 
                     <TotalStats>
@@ -499,7 +494,15 @@ function Dashboard(){
                             max={Math.max(...Object.values(dashboardData.data.orderByEarnings))} 
                             color={'#b5a4e3'}/>
                         </BarChartDiv>
-                    </RevenueBarChartDiv>
+                    
+                        <BarChartDiv>
+                            <BarChart 
+                            data={Object(dashboardData.data.orderByQuantity)} 
+                            label={'Sales'} 
+                            max={Math.max(...Object.values(dashboardData.data.orderByQuantity))} 
+                            color={'#d496bb'}/>
+                        </BarChartDiv>
+                    </RevenueBarChartDiv> 
 
                     <RevenueDoughnutDiv>
 
@@ -559,19 +562,6 @@ function Dashboard(){
                         </DoughnutDiv>
 
                     </RevenueDoughnutDiv> 
-
-
-                    <SalesBarChartDiv>
-                        <BarChartDiv>
-                            <BarChart 
-                            data={Object(dashboardData.data.orderByQuantity)} 
-                            label={'Sales'} 
-                            max={Math.max(...Object.values(dashboardData.data.orderByQuantity))} 
-                            color={'#d496bb'}/>
-                        </BarChartDiv>
-                    </SalesBarChartDiv>  
-
-
 
                 </Graphs>
 
