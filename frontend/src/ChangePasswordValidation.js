@@ -25,6 +25,13 @@ function ChangePasswordValidation(values) {
         error.password = "Password must contain at least 8 characters, 1 uppercase and 1 number"
     }
 
+    if (values.repeatPassword === "") {
+        error.repeatPassword = "Field is empty"
+    }
+    else if (values.repeatPassword !== values.password) {
+        error.repeatPassword = "Passwords do not match"
+    }
+
 
     console.log(error)
 
