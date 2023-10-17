@@ -13,17 +13,12 @@ import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
 import Form from "./Form";
 import EditForm from "./EditForm";
-import Filter from "./Filter";
 import productsService from "../services/products.service";
 import { useSelector } from "react-redux";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import SearchIcon from "@mui/icons-material/Search";
-import TextField from "@mui/material/TextField";
-import InputAdornment from "@mui/material/InputAdornment";
-import InputBase from "@mui/material/InputBase";
 import Fab from "@mui/material/Fab";
-import Box from "@mui/material/Box";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import FilterRedux from "./FilterRedux";
 import Tooltip from "@mui/material/Tooltip";
@@ -153,6 +148,7 @@ const [sortOrder, setSortOrder] = useState("asc");
   const handleSaveProduct = async (newProductData) => {
     try {
       const response = await addProductAsync(newProductData);
+      console.log(response)
       setIsOperationSuccessful(true);
       setAlertText("Product added successfully!");
 
@@ -233,10 +229,6 @@ const [sortOrder, setSortOrder] = useState("asc");
   
   
   const handleSort = (field) => {
-
-    const fieldArray = field.split(".");
-  const firstField = fieldArray[0];
-  
   
     
     if (field === sortField) {

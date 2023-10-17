@@ -89,7 +89,7 @@ const updateProductPrice = (productId, updatedPrice) => {
 };
 
 
-const updateProductStock = (productId, updatedStock) => {
+const updateProductStock = (productId, operation, updatedStock) => {
   const newProductStock= {
     productId: productId,
     addStock: updatedStock,

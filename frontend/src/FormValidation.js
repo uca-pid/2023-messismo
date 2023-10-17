@@ -13,6 +13,10 @@ function FormValidation(values) {
         error.price = "Invalid price"
     }
     
+    else if (values.price < 0){
+        error.price = "Invalid price"
+    }
+    
     if(values.name === "" ) {
         error.name = "Field is empty"
     } 
@@ -26,6 +30,10 @@ function FormValidation(values) {
     }
 
     else if (!stockRegex.test(values.stock)) {
+        error.stock = "Invalid stock"
+    }
+
+    else if (values.stock < 0) {
         error.stock = "Invalid stock"
     }
     

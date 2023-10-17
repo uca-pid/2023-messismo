@@ -12,6 +12,10 @@ function EditFormValidation(values) {
     else if (!priceRegex.test(values.price)) {
         error.price = "Invalid price"
     }
+
+    else if (values.price <= 0) {
+        error.price = "Invalid price"
+    }
     
     if(values.stock === "" ) {
        
