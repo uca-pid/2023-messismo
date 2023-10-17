@@ -17,19 +17,6 @@ function EditFormValidation(values) {
         error.price = "Invalid price"
     }
     
-    if(values.stock === "" ) {
-       
-    } 
-
-    else if (!stockRegex.test(values.stock)) {
-        error.stock = "Invalid stock"
-    }
-
-    if (values.price === "" && values.stock === "") {
-        error.price = "At least one field is required"
-        error.stock = "At least one field is required"
-    }
-
     return error;
 }
 

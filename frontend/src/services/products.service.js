@@ -113,6 +113,26 @@ const updateProductStock = (productId, operation, updatedStock) => {
     });
 };
 
+const modifyProductStock = (modifiedProductStock) => {
+  console.log(modifiedProductStock);
+  return axios
+    .put(
+      "http://localhost:8080/api/v1/manager/product/modifyProductStock",
+      modifiedProductStock,
+      {
+        headers: authHeader(),
+        method: "PUT",
+        "Content-Type": "application/json",
+      }
+    )
+    .then((response) => {
+      console.log("Stock modificado con éxito:", response.data);
+    })
+    .catch((error) => {
+      console.error("Error al modificar el Stock del producto:", error);
+    });
+};
+
 const filterByName = (product) => {
 
   return axios
@@ -166,7 +186,8 @@ const productsService = {
   updateProductPrice,
   filterByName,
   filter,
-  updateProductStock
+  updateProductStock,
+  modifyProductStock
 
 };
 

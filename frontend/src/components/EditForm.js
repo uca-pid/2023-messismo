@@ -16,6 +16,7 @@ import { convertQuickFilterV7ToLegacy } from "@mui/x-data-grid/internals";
 import Fab from "@mui/material/Fab";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
+import modifyProductStock from "../services/products.service";
 const EditForm = (props) => {
   const [nombre, setNombre] = useState("");
   const [categoria, setCategoria] = useState("");
@@ -83,19 +84,20 @@ const EditForm = (props) => {
         }
       }
 
+      const stock = newProductStock();
+      if (stock !== "")
+      {
       try {
         console.log(stock);
-        await productsService.updateProductStock(
-          props.product.productId,
+        await productsService.modifyProductStock(
           stock
         );
         setIsOperationSuccessful(true);
-        setAlertText("Stock added successfully");
+        setAlertText("Stock modified successfully");
         setOpenSnackbar(true);
       } catch (error) {
-        console.error("Error al buscar productos", error);
         setIsOperationSuccessful(false);
-        setAlertText("Failed to add stock");
+        setAlertText("Failed to modify stock");
         setOpenSnackbar(true);
       }
 
@@ -107,6 +109,7 @@ const EditForm = (props) => {
       setPrecio("");
       setStock("");
     }
+  }
   };
 
   const addStock = () => {
@@ -122,8 +125,36 @@ const EditForm = (props) => {
   }
 
   const handleModifyStock = () => {
+    const productStock = newProductStock();
+    console.log(productStock)
 
   }
+
+  const newProductStock = () => {
+    if (newStock < props.product.stock)
+    {
+
+      const modifyProductStock = 
+    {
+      productId: props.product.productId,
+      operation: "substract",
+      modifyStock: props.product.stock - newStock,
+
+    }
+    return modifyProductStock
+    }
+    else {
+      const modifyProductStock = 
+      {
+        productId: props.product.productId,
+        operation: "add",
+        modifyStock: newStock - props.product.stock,
+  
+      }
+
+      return modifyProductStock
+  }
+}
 
 
   return (
@@ -212,10 +243,10 @@ const EditForm = (props) => {
           }}
         />
       )}
-      <p style={{ color: errors.price ? "red" : "black" }}>Add Stock</p>
+      <p style={{ color: errors.price ? "red" : "black" }}>Modify Stock</p>
       {role === "ADMIN" || role === "MANAGER" ? (
-        <div>
-          <TextField
+        <div style={{marginTop: "3%"}}>
+         { /*<TextField
             required
             id="filled-number"
             type="number"
@@ -241,7 +272,7 @@ const EditForm = (props) => {
                 fontSize: "1.1rem",
               },
             }}
-          />
+          />*/}
           <div className="priceChange">
             <Fab size="small" color="primary" aria-label="add" onClick={removeStock}>
               <RemoveIcon style={{fontSize: "1.1rem"}}/>
