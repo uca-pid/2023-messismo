@@ -36,8 +36,9 @@ public class OrderService {
     public ResponseEntity<?> addNewOrder(OrderRequestDTO orderRequestDTO) {
         try {
             User employee = userRepository.findByEmail(orderRequestDTO.getRegisteredEmployeeEmail()).orElseThrow(() -> new Exception("Employee not found"));
-
             List<ProductOrder> productOrderList = new ArrayList<>();
+            Double totalPrice = 0.00;
+            Double totalCost = 0.00;
             for (ProductOrderDTO productOrderDTO : orderRequestDTO.getProductOrders()) {
                 if (productOrderDTO.getProduct().getStock() < productOrderDTO.getQuantity()) {
                     return ResponseEntity.status(HttpStatus.CONFLICT).body("Not enough stock of a product");
@@ -45,12 +46,14 @@ public class OrderService {
                     Product product = productOrderDTO.getProduct();
                     product.setStock(product.getStock() - productOrderDTO.getQuantity());
                     productRepository.save(product);
+                    totalPrice +=  (product.getUnitPrice() * productOrderDTO.getQuantity());
+                    totalCost += (product.getUnitCost() * productOrderDTO.getQuantity());
                     ProductOrder productOrder = ProductOrder.builder().product(product).quantity(productOrderDTO.getQuantity()).build();
                     productOrderRepository.save(productOrder);
                     productOrderList.add(productOrder);
                 }
             }
-            Order newOrder = Order.builder().productOrders(productOrderList).user(employee).dateCreated(orderRequestDTO.getDateCreated()).totalPrice(orderRequestDTO.getTotalPrice()).totalCost(orderRequestDTO.getTotalCost()).status("Open").build();
+            Order newOrder = Order.builder().productOrders(productOrderList).user(employee).dateCreated(orderRequestDTO.getDateCreated()).totalPrice(totalPrice).totalCost(totalCost).status("Open").build();
             orderRepository.save(newOrder);
             return ResponseEntity.status(HttpStatus.CREATED).body("Order created successfully");
         } catch (Exception e) {
