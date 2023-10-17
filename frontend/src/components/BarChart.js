@@ -23,7 +23,7 @@ ChartJS.register(
     Filler
 );
 
-export default function Bars({ data, label, max }) {
+export default function Bars({ data, label, max, color }) {
 
     const sortedData = Object.entries(data).sort(([a], [b]) => a - b);
     const labels = sortedData.map(([key]) => key);
@@ -45,15 +45,11 @@ export default function Bars({ data, label, max }) {
                 min: 0,
                 max: max,
                 ticks: { color: 'white' },
-                gridlines: {
-                    color: "red"
-                  }
+
             },
             x: {
                 ticks: { color: 'white' },
-                gridlines: {
-                    color: "red"
-                  }
+
             }
         }
     };
@@ -64,7 +60,7 @@ export default function Bars({ data, label, max }) {
             {
                 label: label,
                 data: values,
-                backgroundColor: '#a4d4cc'
+                backgroundColor: color
             }
         ]
     };

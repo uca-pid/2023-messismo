@@ -18,6 +18,7 @@ import dashboardService from "../services/dashboard.service";
 import moment from 'moment';
 import dayjs from 'dayjs';
 import BarChart from "../components/BarChart";
+import Doughnut from "../components/DoughnutChart";
 
 const CustomizedDateTimePicker = styled(DatePicker)`
    
@@ -62,13 +63,11 @@ const MainContent = styled.div`
 
 const Graphs = styled.div`
     #wrap { overflow:auto; }
-    #div5{ background:blue; width: 30%; height: 35vh; float:left; }
-    #div6{ background:purple; width: 30%; height: 35vh; float:left; }
 `;
 
 const Buttons = styled.div`
     margin-right: 2rem;
-    margin-left: 2rem;
+    margin-left: 5rem;
 `;
 
 const DateButton = styled.button`
@@ -198,6 +197,25 @@ const SalesBarChartDiv = styled.div`
 const BarChartDiv = styled.div`
     max-height: 95%;
     margin-left: 8rem;
+`;
+
+const RevenueDoughnutDiv = styled.div`
+    //background:purple; 
+    width: 30%; 
+    height: 35vh; 
+    float:left;
+`;
+
+const SalesDoughnutDiv = styled.div`
+    //background:blue; 
+    width: 30%; 
+    height: 35vh; 
+    float:left;
+`;
+
+const DoughnutDiv = styled.div`
+    max-height: 100%;
+    margin-left: 7rem;
 `;
 
 function abbreviateNumber(number) {
@@ -417,7 +435,7 @@ function Dashboard(){
                             </DatePick>
                         )}
 
-                        <DateButton onClick={handleButtonClick}>Submit</DateButton>
+                        <DateButton onClick={handleButtonClick} style={{marginLeft:'2rem'}}>Submit</DateButton>
                     </DateFilter>
 
                     <TotalStats>
@@ -463,7 +481,7 @@ function Dashboard(){
                                 <p style={{color:'white', marginBottom:'2rem'}}>Products with {sliderValue} or less units</p>
 
                                 {products.map((producto, index) => (
-                                    <ProgressBar key={index} bgcolor={producto.stock !== 0 ? '#8CB9B1' : 'red'} name={producto.name} progress={producto.stock} sliderValue={sliderValue} />
+                                    <ProgressBar key={index} bgcolor={producto.stock !== 0 ? '#9fc16c' : '#d496bb'} name={producto.name} progress={producto.stock} sliderValue={sliderValue} />
                                 ))}
                             </Box>
                         </StockList>
@@ -474,26 +492,36 @@ function Dashboard(){
                             <BarChart 
                             data={Object(dashboardData.data.orderByEarnings)} 
                             label={'Revenue'} 
-                            max={Math.max(...Object.values(dashboardData.data.orderByEarnings))}/>
+                            max={Math.max(...Object.values(dashboardData.data.orderByEarnings))} 
+                            color={'#b5a4e3'}/>
                         </BarChartDiv>
                     </RevenueBarChartDiv>
 
-                    <div id="div6">
-                        
-                    </div> 
+                    <RevenueDoughnutDiv>
+                        <DoughnutDiv>
+                            <Doughnut  
+                            data={Object(dashboardData.data.earningProductDonut)} 
+                            label={'Revenue'} />
+                        </DoughnutDiv>
+                    </RevenueDoughnutDiv> 
 
                     <SalesBarChartDiv>
                         <BarChartDiv>
                             <BarChart 
                             data={Object(dashboardData.data.orderByQuantity)} 
                             label={'Sales'} 
-                            max={Math.max(...Object.values(dashboardData.data.orderByQuantity))}/>
+                            max={Math.max(...Object.values(dashboardData.data.orderByQuantity))} 
+                            color={'#d496bb'}/>
                         </BarChartDiv>
                     </SalesBarChartDiv>  
 
-                    <div id="div5">
-                        
-                    </div>  
+                    <SalesDoughnutDiv>
+                        <DoughnutDiv>
+                            <Doughnut 
+                            data={Object(dashboardData.data.quantityProductDonut)} 
+                            label={'Sales'} />
+                        </DoughnutDiv>
+                    </SalesDoughnutDiv>  
 
                 </Graphs>
 

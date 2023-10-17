@@ -10,7 +10,7 @@ const ProgressBar = ({bgcolor,name,progress,sliderValue }) => {
 	const Parentdiv = { 
 		height: "1rem", 
 		width: '100%', 
-		backgroundColor: bgcolor === '#8CB9B1' ? 'whitesmoke' : 'red',
+		backgroundColor: bgcolor === '#9fc16c' ? 'whitesmoke' : '#d496bb',
 		borderRadius: 40, 
 	} 
 	

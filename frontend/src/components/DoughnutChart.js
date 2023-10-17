@@ -1,0 +1,76 @@
+import React from 'react';
+import { Doughnut } from 'react-chartjs-2';
+import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend,
+    Filler,
+    ArcElement
+} from 'chart.js';
+
+ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    BarElement,
+    ArcElement,
+    Title,
+    Tooltip,
+    Legend,
+    Filler
+);
+
+export default function Doughnuts({ data, label }) {
+
+    const sortedData = Object.entries(data).sort(([a], [b]) => a - b);
+    const labels = sortedData.map(([key]) => key);
+    const values = sortedData.map(([_, value]) => value);
+
+    var misoptions = {
+      responsive: true,
+      maintainAspectRatio: true,
+      animation: false,
+      plugins: {
+          legend: {
+              position: 'right',
+              display: true,
+              labels: {
+                  color: 'white'
+              }
+          }
+      },
+      
+    };
+
+    var midata = {
+        labels: labels,
+        datasets: [
+            {
+                label: label,
+                data: values,
+                backgroundColor: [
+                  'rgba(164,200,233)',
+                  'rgba(159,193,108)',
+                  'rgba(212,150,187)',
+                  'rgba(239,202,102)',
+                  'rgba(181,164,227)',
+                ],
+                borderColor: [
+                  'rgba(164,200,233)',
+                  'rgba(159,193,108)',
+                  'rgba(212,150,187)',
+                  'rgba(239,202,102)',
+                  'rgba(181,164,227)',
+                ],
+                borderWidth: 1,
+            }
+        ]
+    };
+
+    return <Doughnut data={midata} options={misoptions} />;
+}
