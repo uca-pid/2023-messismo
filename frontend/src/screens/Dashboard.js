@@ -62,7 +62,8 @@ const Container = styled.div`
 
 const MainContent = styled.div`
     display: ${props => (props.visible ? 'flex' : 'none')};
-
+    justify-content: center;
+    align-items: center;
 `;
 
 const Graphs = styled.div`
@@ -135,10 +136,10 @@ const ApplyButton = styled.button`
     }
 
     @media (max-width: 1000px) {
-        margin: 0rem;
         margin-left: 0rem;
         margin-right: 0rem;
         margin-top: 0rem;
+        margin: 0.5rem;
     }
 `;
 
@@ -148,12 +149,12 @@ const DatePick = styled.div`
     }
 
     @media (max-width: 1000px) {
-
+        padding: 1rem;
     }
 `;
 
 const DateFilter = styled.div`
-    background:white; 
+    //background:white; 
     width: 40%; 
     height: 12vh; 
     float:left;
@@ -163,17 +164,14 @@ const DateFilter = styled.div`
     margin-top: 2rem;
 
     @media (max-width: 1000px) {
-        width: 390px;
+        width: 100%;
         height: auto;
         flex-direction: column;
-        display: flex;
-        justify-content: center;
-        align-items: center;
     }
 `;
 
 const TotalStats = styled.div`
-    background:yellow; 
+    //background:yellow; 
     width: 60%; 
     height: 12vh; 
     float:right;
@@ -185,9 +183,8 @@ const TotalStats = styled.div`
 
     @media (max-width: 1000px) {
         width: 390px;
-        height: 55vh;
-        flex-wrap: wrap;
-        display: block;
+        height: auto;
+        flex-direction: column;
         margin-top: 1rem;
     }
 `;
@@ -232,9 +229,12 @@ const Stat = styled.div`
 
     @media (max-width: 1000px) {
 
-        margin-left: 5.5rem;
+        margin-left: 0rem;
         width: 60%;
-
+        flex-direction: column;
+        margin: 0;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
 
         .statnumber{
             margin-left: 0rem;
@@ -247,7 +247,7 @@ const Stat = styled.div`
 `;
 
 const OutOfStock = styled.div`
-    background:orange; 
+    //background:orange; 
     width: 25%; 
     height: 70vh; 
     float:right;
@@ -266,10 +266,13 @@ const StockList = styled.div`
     width: 80%;
     margin: 3rem;
 
+    @media (max-width: 1000px) {
+        margin: 2rem;
+    }
 `;
 
 const RevenueBarChartDiv = styled.div`
-    background:red; 
+    //background:red; 
     width: 39%; 
     height: 70vh; 
     float:left;
@@ -277,6 +280,10 @@ const RevenueBarChartDiv = styled.div`
     @media (max-width: 1000px) {
         width: 390px;
         height: 50vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
     }
 `;
 
@@ -288,12 +295,12 @@ const BarChartDiv = styled.div`
     @media (max-width: 1000px) {
         max-width: 90%;
         width: 100%;
-        margin-left: 1.2rem;
+        margin-left: 0rem;
     }
 `;
 
 const RevenueDoughnutDiv = styled.div`
-    background:purple; 
+    //background:purple; 
     width: 36%; 
     height: 70vh;
     float:right;
@@ -301,6 +308,10 @@ const RevenueDoughnutDiv = styled.div`
     @media (max-width: 1000px) {
         width: 390px;
         height: auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
     }
 `;
 
@@ -310,11 +321,8 @@ const DoughnutDiv = styled.div`
 
     @media (max-width: 1000px) {
         max-width: 90%;
-        width: 100%;
         height: auto;
         flex-direction: column;
-        margin: 1rem;
-        margin-left: 1.5rem;
     }
 
 `;
