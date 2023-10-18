@@ -37,7 +37,18 @@ function FormValidation(values) {
         error.stock = "Invalid stock"
     }
     
+    if (values.cost === "") {
+        error.cost = "Field is empty"
+    }
 
+    else if (!priceRegex.test(values.cost)) {
+        error.cost = "Invalid cost"
+    }
+    
+    else if (values.cost < 0){
+        error.cost = "Invalid cost"
+    }
+    
     return error;
 }
 

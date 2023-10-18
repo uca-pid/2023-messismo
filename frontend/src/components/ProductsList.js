@@ -323,8 +323,7 @@ const [sortOrder, setSortOrder] = useState("asc");
       <div className="firstRow">
         <div className="add-product">
           {role === "ADMIN" ||
-          role === "MANAGER" ||
-          role === "VALIDATEDEMPLOYEE" ? (
+          role === "MANAGER" ? (
             <Button
               variant="contained"
               endIcon={<AddIcon />}
