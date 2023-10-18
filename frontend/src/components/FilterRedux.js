@@ -23,7 +23,7 @@ import {
   setMaxValue,
   setMaxStock,
   setMinStock,
-  setSelectedCategory,
+  setSelectedCategories,
 } from "../redux/filtersSlice";
 import PriceValidation from "../PriceValidation";
 import StockValidation from "../StockValidation";
@@ -40,8 +40,11 @@ const FilterRedux = (props) => {
   const [minStockTemp, setMinStockTemp] = useState("");
   const [maxStockTemp, setMaxStockTemp] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const selectedCategories = useSelector(
+    (state) => state.filters.selectedCategories
+  );
   const selectedCategory = useSelector(
-    (state) => state.filters.selectedCategory
+    (state) => state.filters.selectedCategories
   );
   const minValue = useSelector((state) => state.filters.minValue);
   const maxValue = useSelector((state) => state.filters.maxValue);
@@ -73,16 +76,12 @@ const FilterRedux = (props) => {
     setOpenMaxStock(!openMaxStock);
   };
 
-  const handleSelectedCategory = (value) => {
+  /*const handleSelectedCategory = (value) => {
     dispatch(setSelectedCategory(value));
-    /*setLoadingCategory(true);
-    const response = await setSelectedCategoryAsync(value);
-    setLoadingCategory(false);*/
-  };
 
-  /*const setSelectedCategoryAsync = async (value) => {
-    setSelectedCategory(value);
   };*/
+
+
 
   const handlePriceRange = (value) => {
     const validationErrors = PriceValidation({
@@ -94,15 +93,13 @@ const FilterRedux = (props) => {
       setErrors(validationErrors);
       console.log(validationErrors);
     } else {
-    setErrors({});
-    dispatch(setMinValue(minValueTemp));
-    dispatch(setMaxValue(maxValueTemp));
+      setErrors({});
+      dispatch(setMinValue(minValueTemp));
+      dispatch(setMaxValue(maxValueTemp));
     }
   };
- 
 
   const setPriceRange = async () => {
-    
     setMinValue(minValueTemp);
     setMaxValue(maxValueTemp);
   };
@@ -110,8 +107,6 @@ const FilterRedux = (props) => {
   const old = (value) => {
     dispatch(setMinStock(minStockTemp));
     dispatch(setMaxStock(maxStockTemp));
-    
-    
   };
 
   const handleStockRange = (value) => {
@@ -124,18 +119,18 @@ const FilterRedux = (props) => {
       setErrors(validationErrors);
       console.log(validationErrors);
     } else {
-    setAppliedFilters({...appliedFilters, minStock: true, maxStock: true});
+      setAppliedFilters({ ...appliedFilters, minStock: true, maxStock: true });
 
-    setErrors({});
-    dispatch(setMinStock(minStockTemp));
-    dispatch(setMaxStock(maxStockTemp));
+      setErrors({});
+      dispatch(setMinStock(minStockTemp));
+      dispatch(setMaxStock(maxStockTemp));
     }
   };
 
   const filterProduct = () => {
     const product = {
       productName: "",
-      categoryName: selectedCategory,
+      categories: selectedCategories,
       minUnitPrice: minValue === "" ? null : minValue,
       maxUnitPrice: maxValue === "" ? null : maxValue,
       minStock: minStock === "" ? null : minStock,
@@ -149,7 +144,6 @@ const FilterRedux = (props) => {
   };
 
   useEffect(() => {
-    console.log(selectedCategory);
     categoryService
       .getAllCategories()
       .then((response) => {
@@ -160,7 +154,7 @@ const FilterRedux = (props) => {
       });
   }, []);
 
-  const selectedCategoryBadge = selectedCategory && (
+  const selectedCategoryBadge = selectedCategories.map((category) => (
     <Box
       display="flex"
       justifyContent="center"
@@ -173,17 +167,24 @@ const FilterRedux = (props) => {
       <div
         className="badge"
         style={{ display: "flex", flexDirection: "row" }}
-      >{`${selectedCategory}`}</div>
+      >{`${category}`}</div>
       <IconButton
         aria-label="edit"
         size="large"
         color="red"
-        onClick={() => dispatch(setSelectedCategory(""))}
+        onClick={() => handleRemoveCategory(category)}
       >
         <ClearIcon style={{ justifyContent: "flex-end" }} />
       </IconButton>
     </Box>
-  );
+  ));
+
+  const handleRemoveCategory = (category) => {
+    const updatedCategories = selectedCategories.filter(
+      (selectedCategory) => selectedCategory !== category
+    );
+    dispatch(setSelectedCategories(updatedCategories));
+  };
 
   const priceRangeBadge = () => {
     if (minValue !== "" && maxValue !== "") {
@@ -225,7 +226,7 @@ const FilterRedux = (props) => {
   };
 
   const handleClearAll = () => {
-    dispatch(setSelectedCategory(""));
+    dispatch(setSelectedCategories([]));
     dispatch(setMinValue(""));
     dispatch(setMaxValue(""));
     dispatch(setMinStock(""));
@@ -243,61 +244,65 @@ const FilterRedux = (props) => {
     minStock !== "" ||
     maxStock !== "";
 
-    const resetCategoryValue = () => {
-      dispatch(setSelectedCategory(""));
+  const resetCategoryValue = () => {
+    dispatch(setSelectedCategories([]));
+  };
+
+  const handleSelectedCategories = (value) => {
+    if (selectedCategories.includes(value)) {
+      const updatedCategories = selectedCategories.filter(
+        (category) => category !== value
+      );
+      dispatch(setSelectedCategories(updatedCategories));
+    } else {
+      const updatedCategories = [...selectedCategories, value];
+      dispatch(setSelectedCategories(updatedCategories));
     }
+    
+  };
 
   return (
     <div>
       <h1 style={{ marginBottom: "5%", fontSize: "2 rem" }}>Filter Products</h1>
       <div className="appliedFilters">
         <div className="filterBoxes">
-          {selectedCategory != "" && (
-           
+          {selectedCategories.length > 0 &&
+            selectedCategories.map((category) => (
               <Fab
+                key={category} // Añade una clave única para cada categoría
                 variant="extended"
                 size="medium"
                 color="white"
-                style={{marginTop: "2%"}}
-                onClick={resetCategoryValue}
-            
+                style={{ marginTop: "2%" }}
+                onClick={() => handleRemoveCategory(category)}
               >
                 <ClearIcon sx={{ mr: 1 }} />
-                {selectedCategory}
+                {category}
               </Fab>
-           
-          )}
+            ))}
           {(maxValue != "" || minValue != "") && (
-            
-              
-              <Fab
-              style={{marginTop: "2%"}}
-                variant="extended"
-                size="medium"
-                color="white"
-                onClick={resetPriceValues}
-            
-              >
-                <ClearIcon sx={{ mr: 1 }} />
-                {priceRangeBadge()}
-              </Fab>
-                
-              
-            
+            <Fab
+              style={{ marginTop: "2%" }}
+              variant="extended"
+              size="medium"
+              color="white"
+              onClick={resetPriceValues}
+            >
+              <ClearIcon sx={{ mr: 1 }} />
+              {priceRangeBadge()}
+            </Fab>
           )}
           {(minStock != "" || maxStock != "") && (
-             <Fab
-             style={{marginTop: "2%"}}
-                variant="extended"
-                size="medium"
-                color="white"
-                onClick={resetStockValues}
-            
-              >
-                <ClearIcon sx={{ mr: 1 }} />
-                {stockRangeBadge()}
-              </Fab>
-            
+            <Fab
+              style={{ marginTop: "2%" }}
+              variant="extended"
+              size="medium"
+              color="white"
+              onClick={resetStockValues}
+            >
+              <ClearIcon sx={{ mr: 1 }} />
+              {stockRangeBadge()}
+            </Fab>
           )}
         </div>
         <div>
@@ -340,12 +345,11 @@ const FilterRedux = (props) => {
                 key={index}
                 sx={{
                   pl: 4,
-                  backgroundColor:
-                    selectedCategory === category.name
-                      ? "lightgray"
-                      : "inherit",
+                  backgroundColor: selectedCategories.includes(category.name)
+                    ? "lightgray"
+                    : "inherit",
                 }}
-                onClick={() => handleSelectedCategory(category.name)}
+                onClick={() => handleSelectedCategories(category.name)}
               >
                 <ListItemText primary={category.name} />
               </ListItemButton>
@@ -363,7 +367,7 @@ const FilterRedux = (props) => {
               label="Min"
               value={minValueTemp}
               error={errors.minPrice ? true : false}
-              helperText={errors.minPrice || ''}
+              helperText={errors.minPrice || ""}
               onChange={(e) => setMinValueTemp(e.target.value)}
             />
             <span className="slash">-</span>
@@ -372,7 +376,7 @@ const FilterRedux = (props) => {
               label="Max"
               value={maxValueTemp}
               error={errors.maxPrice ? true : false}
-              helperText={errors.maxPrice || ''}
+              helperText={errors.maxPrice || ""}
               onChange={(e) => setMaxValueTemp(e.target.value)}
             />
             <Box sx={{ "& > :not(style)": { m: 1 } }}>
@@ -398,7 +402,7 @@ const FilterRedux = (props) => {
               label="Min"
               value={minStockTemp}
               error={errors.minStock ? true : false}
-              helperText={errors.minStock || ''}
+              helperText={errors.minStock || ""}
               onChange={(e) => setMinStockTemp(e.target.value)}
             />
             <span className="slash">-</span>
@@ -407,7 +411,7 @@ const FilterRedux = (props) => {
               label="Max"
               value={maxStockTemp}
               error={errors.maxStock ? true : false}
-              helperText={errors.maxStock || ''}
+              helperText={errors.maxStock || ""}
               onChange={(e) => setMaxStockTemp(e.target.value)}
             />
             <Box sx={{ "& > :not(style)": { m: 1 } }}>
@@ -450,7 +454,6 @@ const FilterRedux = (props) => {
           Apply
         </Button>
       </div>
-      
     </div>
   );
 };

@@ -48,6 +48,7 @@ const Filter = (props) => {
   const [loadingStock, setLoadingStock] = useState(true);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [appliedFilters, setAppliedFilters] = useState({});
+  const [selectedCategories, setSelectedCategories] = useState([]);
 
   const handleChange = () => {};
 
@@ -182,29 +183,44 @@ const Filter = (props) => {
       handleStockRange();
     }
   }
-  const selectedCategoryBadge = selectedCategory && (
+
+  const handleRemoveSelectedCategory = (categoryName) => {
+    // Clona el arreglo de categorías seleccionadas y filtra la categoría a eliminar
+    const updatedSelectedCategories = selectedCategories.filter(
+      (category) => category !== categoryName
+    );
+  
+    // Actualiza el estado con el nuevo arreglo de categorías seleccionadas
+    setSelectedCategories(updatedSelectedCategories);
+  };
+  
+  const selectedCategoryBadges = selectedCategories.map((categoryName, index) => (
     <Box
+      key={index}
       display="flex"
       justifyContent="center"
       alignItems="center"
       backgroundColor="whitesmoke"
       width={"20%"}
       borderRadius="10px"
+      style={{ margin: "5px" }}
     >
       <div
         className="badge"
         style={{ display: "flex", flexDirection: "row" }}
-      >{`${selectedCategory}`}</div>
+      >{`${categoryName}`}</div>
       <IconButton
-        aria-label="edit"
+        aria-label="clear"
         size="large"
         color="red"
-        onClick={() => setSelectedCategory("")}
+        onClick={() => handleRemoveSelectedCategory(categoryName)}
       >
         <ClearIcon style={{ justifyContent: "flex-end" }} />
       </IconButton>
     </Box>
-  );
+  ));
+  
+
 
   const priceRangeBadge = () => {
     if (minValue !== "" && maxValue !== "") {
@@ -254,11 +270,26 @@ const Filter = (props) => {
     setLoadingCategory(false);
   }, [selectedCategory]);
 
+  const handleSelectedCategories = (categoryName) => {
+    
+    const newSelectedCategories = [...selectedCategories];
+
+    
+    const categoryIndex = newSelectedCategories.indexOf(categoryName);
+
+    if (categoryIndex === -1) {
+      newSelectedCategories.push(categoryName);
+    } else {
+      newSelectedCategories.splice(categoryIndex, 1);
+    }
+
+    setSelectedCategories(newSelectedCategories);
+  };
   return (
     <div>
       <h1 style={{ marginBottom: "5%", fontSize: "2 rem" }}>Filter Products</h1>
       {!loadingCategory && (
-        <div className="badges" style={{ display: "flex", width: "100%" }}>{selectedCategoryBadge}</div>
+        <div className="badges" style={{ display: "flex", width: "100%" }}>{selectedCategoryBadges}</div>
       )}
       {!loadingPrice && (
         <Box
@@ -330,11 +361,11 @@ const Filter = (props) => {
                 sx={{
                   pl: 4,
                   backgroundColor:
-                    selectedCategory === category.name
+                  selectedCategories.includes(category.name)
                       ? "lightgray"
                       : "inherit",
                 }}
-                onClick={() => handleSelectedCategory(category.name)}
+                onClick={() => handleSelectedCategories(category.name)}
               >
                 <ListItemText primary={category.name} />
               </ListItemButton>

@@ -3,15 +3,15 @@ import { createSlice } from '@reduxjs/toolkit';
 const filtersSlice = createSlice({
   name: 'filters',
   initialState: {
-    selectedCategory: '',
+    selectedCategories: [],
     minValue: '',
     maxValue: '',
     minStock: '',
     maxStock: '',
   },
   reducers: {
-    setSelectedCategory: (state, action) => {
-      state.selectedCategory = action.payload;
+    setSelectedCategories: (state, action) => {
+      state.selectedCategories = action.payload;
     },
     setMinValue: (state, action) => {
       state.minValue = action.payload;
@@ -28,6 +28,6 @@ const filtersSlice = createSlice({
   },
 });
 
-export const { setSelectedCategory, setMinValue, setMaxValue, setMinStock, setMaxStock } = filtersSlice.actions;
+export const { setSelectedCategories, setMinValue, setMaxValue, setMinStock, setMaxStock } = filtersSlice.actions;
 
 export default filtersSlice.reducer;
