@@ -23,6 +23,8 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
+import { useTheme } from '@mui/material/styles';
+
 
 const CustomizedDateTimePicker = styled(DatePicker)`
    
@@ -64,12 +66,20 @@ const MainContent = styled.div`
 `;
 
 const Graphs = styled.div`
-
+    @media (max-width: 1000px) {
+        display: flex;
+        flex-direction: column;
+    }
 `;
 
 const Buttons = styled.div`
     margin-right: 2rem;
     margin-left: 5rem;
+
+    @media (max-width: 1000px) {
+        margin-right: 0rem;
+        margin-left: 0rem;
+    }
 `;
 
 const DateButton = styled.button`
@@ -98,14 +108,52 @@ const DateButton = styled.button`
     }
 `;
 
+const ApplyButton = styled.button`
+    font-size: 1rem;
+    border-radius: 3px;
+    border: 1px solid black;
+    background-color: #a4d4cc;
+    color: black;
+    text-transform: uppercase;
+    cursor: pointer;
+    font-family: 'Roboto',serif;
+    text-align: center;
+    padding: 0.6rem;
+    margin: 0.3rem;
+    margin-left: 2rem;
+
+    &:hover{
+        background-color: #a7d0cd;
+    }
+    &:active{
+        background-color: #a4d4cc;
+        box-shadow: 0 3px #666;
+        transform: translateY(4px);
+    }
+    &:focus{
+        outline: none;
+    }
+
+    @media (max-width: 1000px) {
+        margin: 0rem;
+        margin-left: 0rem;
+        margin-right: 0rem;
+        margin-top: 0rem;
+    }
+`;
+
 const DatePick = styled.div`
     .datetext{
         color: white
     }
+
+    @media (max-width: 1000px) {
+
+    }
 `;
 
 const DateFilter = styled.div`
-    //background:white; 
+    background:white; 
     width: 40%; 
     height: 12vh; 
     float:left;
@@ -113,10 +161,19 @@ const DateFilter = styled.div`
     display: flex;
     align-items: center;
     margin-top: 2rem;
+
+    @media (max-width: 1000px) {
+        width: 390px;
+        height: auto;
+        flex-direction: column;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
 `;
 
 const TotalStats = styled.div`
-    //background:yellow; 
+    background:yellow; 
     width: 60%; 
     height: 12vh; 
     float:right;
@@ -125,6 +182,14 @@ const TotalStats = styled.div`
     justify-content: center;
     align-items: center;
     margin-top: 2rem;
+
+    @media (max-width: 1000px) {
+        width: 390px;
+        height: 55vh;
+        flex-wrap: wrap;
+        display: block;
+        margin-top: 1rem;
+    }
 `;
 
 const Stat = styled.div`
@@ -164,10 +229,25 @@ const Stat = styled.div`
     &.total-categories{
         background-color: rgb(157,187,191,0.3);
     }
+
+    @media (max-width: 1000px) {
+
+        margin-left: 5.5rem;
+        width: 60%;
+
+
+        .statnumber{
+            margin-left: 0rem;
+        }
+
+        .stattext{
+            margin-left: 0rem;
+        }
+    }
 `;
 
 const OutOfStock = styled.div`
-    //background:orange; 
+    background:orange; 
     width: 25%; 
     height: 70vh; 
     float:right;
@@ -175,6 +255,11 @@ const OutOfStock = styled.div`
     display: flex;
     justify-content: center;
     overflow-y: auto;
+
+    @media (max-width: 1000px) {
+        width: 390px;
+        height: auto; 
+    }
 `;
 
 const StockList = styled.div`
@@ -184,29 +269,53 @@ const StockList = styled.div`
 `;
 
 const RevenueBarChartDiv = styled.div`
-    //background:red; 
+    background:red; 
     width: 39%; 
     height: 70vh; 
     float:left;
+
+    @media (max-width: 1000px) {
+        width: 390px;
+        height: 50vh;
+    }
 `;
 
 const BarChartDiv = styled.div`
     max-height: 45%;
     margin-left: 6rem;
     margin-top: 1rem;
+
+    @media (max-width: 1000px) {
+        max-width: 90%;
+        width: 100%;
+        margin-left: 1.2rem;
+    }
 `;
 
 const RevenueDoughnutDiv = styled.div`
-    //background:purple; 
+    background:purple; 
     width: 36%; 
     height: 70vh;
     float:right;
 
+    @media (max-width: 1000px) {
+        width: 390px;
+        height: auto;
+    }
 `;
 
 const DoughnutDiv = styled.div`
     max-width: 50%;
     display: flex;
+
+    @media (max-width: 1000px) {
+        max-width: 90%;
+        width: 100%;
+        height: auto;
+        flex-direction: column;
+        margin: 1rem;
+        margin-left: 1.5rem;
+    }
 
 `;
 
@@ -235,7 +344,7 @@ function Dashboard(){
     const { user: currentUser } = useSelector((state) => state.auth);
     const clicked = useSelector((state) => state.navigation.clicked);
     const classes = useStyles();
-
+    const theme = useTheme();
     const [products, setProducts] = useState([]);
     const [totalproducts, setTotalProducts] = useState([]);
     const [categories, setCategories] = useState([]);
@@ -434,7 +543,7 @@ function Dashboard(){
                             </DatePick>
                         )}
 
-                        <DateButton onClick={handleButtonClick} style={{marginLeft:'2rem'}}>Apply</DateButton>
+                        <ApplyButton onClick={handleButtonClick}>Apply</ApplyButton>
                     </DateFilter>
 
                     <TotalStats>
@@ -506,7 +615,9 @@ function Dashboard(){
 
                     <RevenueDoughnutDiv>
 
-                        <Box sx={{ maxWidth:'40%' }}>
+                        <Box sx={{ width:'40%', [theme.breakpoints.down('sm')]: {
+                            width: '80%',
+                        }, }}>
                             <FormControl fullWidth variant="outlined">
                                 <Select
                                 labelStyle={{ color: '#ff0000' }}
