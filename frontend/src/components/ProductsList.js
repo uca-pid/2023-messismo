@@ -517,7 +517,7 @@ const [sortOrder, setSortOrder] = useState("asc");
                     </IconButton>
                   </Tooltip>
                 ) : (
-                  console.log("hola")
+                  <div></div>
                 )}
               </div>
             </div>
