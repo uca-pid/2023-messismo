@@ -130,7 +130,7 @@ const FilterRedux = (props) => {
   const filterProduct = () => {
     const product = {
       productName: "",
-      categories: selectedCategories,
+      categories: selectedCategories.length === 0 ? null : selectedCategories,
       minUnitPrice: minValue === "" ? null : minValue,
       maxUnitPrice: maxValue === "" ? null : maxValue,
       minStock: minStock === "" ? null : minStock,
@@ -238,7 +238,7 @@ const FilterRedux = (props) => {
   };
 
   const hasFiltersApplied =
-    selectedCategory !== "" ||
+    selectedCategories.length !== 0 ||
     minValue !== "" ||
     maxValue !== "" ||
     minStock !== "" ||
