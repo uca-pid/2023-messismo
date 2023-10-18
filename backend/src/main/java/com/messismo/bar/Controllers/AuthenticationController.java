@@ -1,11 +1,9 @@
 package com.messismo.bar.Controllers;
 
 import com.messismo.bar.DTOs.AuthenticationRequestDTO;
-import com.messismo.bar.DTOs.DashboardRequestDTO;
 import com.messismo.bar.DTOs.PasswordRecoveryDTO;
 import com.messismo.bar.DTOs.RegisterRequestDTO;
 import com.messismo.bar.Services.AuthenticationService;
-import com.messismo.bar.Services.DashboardService;
 import com.messismo.bar.Services.PasswordRecoveryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +18,6 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
 
     private final PasswordRecoveryService passwordRecoveryService;
-
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequestDTO request) {
@@ -47,6 +44,5 @@ public class AuthenticationController {
     public ResponseEntity<String> changeForgottenPassword(@RequestBody PasswordRecoveryDTO passwordRecoveryDTO) {
         return passwordRecoveryService.changeForgottenPassword(passwordRecoveryDTO);
     }
-
 
 }

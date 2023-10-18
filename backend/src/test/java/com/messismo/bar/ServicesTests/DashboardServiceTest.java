@@ -1,6 +1,5 @@
 package com.messismo.bar.ServicesTests;
 
-
 import com.messismo.bar.DTOs.DashboardRequestDTO;
 import com.messismo.bar.DTOs.ThresholdDTO;
 import com.messismo.bar.Entities.*;
@@ -19,8 +18,6 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.*;
 
 public class DashboardServiceTest {
@@ -162,7 +159,6 @@ public class DashboardServiceTest {
         Assertions.assertEquals(expectedMap, result);
     }
 
-
     @Test
     public void testGetQuantityCategoryDonut() {
 
@@ -209,6 +205,7 @@ public class DashboardServiceTest {
         ResponseEntity<?> response = dashboardService.getDashboardInformation(request);
         Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
     }
+
     @Test
     public void testGetDashboardInformationHistoric() {
 
@@ -265,6 +262,7 @@ public class DashboardServiceTest {
 
         Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
+
     @Test
     public void testGetDashboardInformationIncorrectDateFormat() {
 
@@ -275,6 +273,7 @@ public class DashboardServiceTest {
         Assertions.assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
         Assertions.assertEquals("Incorrect date format", response.getBody());
     }
+
     @Test
     public void testGetDailyInformation() {
 
@@ -315,18 +314,25 @@ public class DashboardServiceTest {
         Assertions.assertNotNull(result.get("orderByQuantity"));
         Assertions.assertNotNull(result.get("orderByEarnings"));
         Assertions.assertNotNull(result.get("averageByOrder"));
-        Assertions.assertEquals(Integer.valueOf(0), ((Map<String, Integer>) result.get("orderByQuantity")).get("10/05"));
-        Assertions.assertEquals(Integer.valueOf(1), ((Map<String, Integer>) result.get("orderByQuantity")).get("11/05"));
-        Assertions.assertEquals(Integer.valueOf(0), ((Map<String, Integer>) result.get("orderByQuantity")).get("12/05"));
-        Assertions.assertEquals(Double.valueOf(0.0), ((Map<String, Double>) result.get("orderByEarnings")).get("10/05"));
-        Assertions.assertEquals(Double.valueOf(19.0), ((Map<String, Double>) result.get("orderByEarnings")).get("11/05"));
-        Assertions.assertEquals(Double.valueOf(0.0), ((Map<String, Double>) result.get("orderByEarnings")).get("12/05"));
+        Assertions.assertEquals(Integer.valueOf(0),
+                ((Map<String, Integer>) result.get("orderByQuantity")).get("10/05"));
+        Assertions.assertEquals(Integer.valueOf(1),
+                ((Map<String, Integer>) result.get("orderByQuantity")).get("11/05"));
+        Assertions.assertEquals(Integer.valueOf(0),
+                ((Map<String, Integer>) result.get("orderByQuantity")).get("12/05"));
+        Assertions.assertEquals(Double.valueOf(0.0),
+                ((Map<String, Double>) result.get("orderByEarnings")).get("10/05"));
+        Assertions.assertEquals(Double.valueOf(19.0),
+                ((Map<String, Double>) result.get("orderByEarnings")).get("11/05"));
+        Assertions.assertEquals(Double.valueOf(0.0),
+                ((Map<String, Double>) result.get("orderByEarnings")).get("12/05"));
         Assertions.assertNotNull(result.get("labels"));
         List<String> labels = (List<String>) result.get("labels");
         Assertions.assertEquals("10/05", labels.get(0));
         Assertions.assertEquals("11/05", labels.get(1));
         Assertions.assertEquals("12/05", labels.get(2));
     }
+
     @Test
     public void testGetMonthlyInformation() {
 
@@ -395,25 +401,35 @@ public class DashboardServiceTest {
         orders.add(createFakeOrder(productOrders5, "dave", "dave@gmail.com", 22.00, 11.00, "Open", date5));
         return orders;
     }
+
     private Date createDate(int year, int month, int day) {
         Calendar calendar = Calendar.getInstance();
         calendar.set(year, month - 1, day); // Meses en Calendar van de 0 a 11, por lo que restamos 1.
         return calendar.getTime();
     }
-    private Order createFakeOrder(List<ProductOrder> productOrders, String username, String email, Double totalPrice, Double totalCost, String status, Date date) {
-        return Order.builder().productOrders(productOrders).user(createFakeUser(username, email)).dateCreated(date).totalPrice(totalPrice).totalCost(totalCost).status(status).build();
+
+    private Order createFakeOrder(List<ProductOrder> productOrders, String username, String email, Double totalPrice,
+            Double totalCost, String status, Date date) {
+        return Order.builder().productOrders(productOrders).user(createFakeUser(username, email)).dateCreated(date)
+                .totalPrice(totalPrice).totalCost(totalCost).status(status).build();
     }
 
     private User createFakeUser(String username, String email) {
-        return User.builder().username(username).email(email).role(Role.VALIDATEDEMPLOYEE).password("Password1").build();
+        return User.builder().username(username).email(email).role(Role.VALIDATEDEMPLOYEE).password("Password1")
+                .build();
     }
 
-    private ProductOrder createFakeProductOrder(String name, Double unitPrice, Double unitCost, String description, Integer stock, String category, int quantity) {
-        return ProductOrder.builder().product(createFakeProduct(name, unitPrice, unitCost, description, stock, category)).quantity(quantity).build();
+    private ProductOrder createFakeProductOrder(String name, Double unitPrice, Double unitCost, String description,
+            Integer stock, String category, int quantity) {
+        return ProductOrder.builder()
+                .product(createFakeProduct(name, unitPrice, unitCost, description, stock, category)).quantity(quantity)
+                .build();
     }
 
-    private Product createFakeProduct(String name, Double unitPrice, Double unitCost, String description, Integer stock, String category) {
-        return Product.builder().name(name).unitPrice(unitPrice).unitCost(unitCost).description(description).stock(stock).category(createFakeCategory(category)).build();
+    private Product createFakeProduct(String name, Double unitPrice, Double unitCost, String description, Integer stock,
+            String category) {
+        return Product.builder().name(name).unitPrice(unitPrice).unitCost(unitCost).description(description)
+                .stock(stock).category(createFakeCategory(category)).build();
     }
 
     private Category createFakeCategory(String categoryName) {
@@ -431,7 +447,8 @@ public class DashboardServiceTest {
         return categories;
     }
 
-    private Order createOrderWithProductsAndCategory(String productName, String categoryName, int quantity, double unitPrice, double unitCost) {
+    private Order createOrderWithProductsAndCategory(String productName, String categoryName, int quantity,
+            double unitPrice, double unitCost) {
         ProductOrder productOrder = new ProductOrder();
         Product product = new Product();
         product.setName(productName);

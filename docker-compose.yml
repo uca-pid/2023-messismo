@@ -19,9 +19,9 @@ services:
         "spring.sql.init.platform":"postgres",
         "spring.jpa.properties.hibernate.dialect":"org.hibernate.dialect.PostgreSQLDialect",
         "spring.datasource.driver-class-name":"org.postgresql.Driver",
-        "spring.datasource.url":"jdbc:postgresql://192.168.55.11:5432/postgres",
+        "spring.datasource.url":"jdbc:postgresql://containers-us-west-108.railway.app:6690/railway",
         "spring.datasource.username":"postgres",
-        "spring.datasource.password":"postgres",
+        "spring.datasource.password":"7oraVFWfLr1lTVrXdELi",
         "spring.jpa.generate-ddl":"true",
         "spring.jpa.hibernate.ddl-auto":"create-drop",
         "spring.jpa.properties.hibernate.format-sql":"true"

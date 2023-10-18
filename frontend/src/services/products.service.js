@@ -4,8 +4,6 @@ import { useSelector } from "react-redux";
 import apiUrl from "../deploy";
 
 
-const API_URL =
-  "http://localhost:8080//api/v1/validatedEmployee/getAllProducts";
 
 const getAllProducts = () => {
   return axios.get(
