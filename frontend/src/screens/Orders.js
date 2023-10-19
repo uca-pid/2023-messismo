@@ -13,6 +13,7 @@ import { MdFastfood } from 'react-icons/md';
 import moment from 'moment'
 import EditIcon from '@mui/icons-material/Edit';
 import EditOrderForm from '../components/EditOrderForm';
+import ModifyForm from '../components/modifyForm';
 
 
 const Container = styled.div`
@@ -244,6 +245,7 @@ function Orders() {
         setEditFormVisible(false);
         setOpenEditForm(false);
         setOpen(false);
+
     };
 
     const handleViewDetails = (orderId) => {
@@ -259,6 +261,8 @@ function Orders() {
     const handleEditOrderClick = (orderId) => {
         setEditFormVisible(true);
         setOrderIdToEdit(orderId);
+        const selectedOrder = orders.find(order => order.id === orderId);
+        setSelectedOrderDetails(selectedOrder.productOrders);
         setOpen(true);
     }
 
@@ -333,7 +337,7 @@ function Orders() {
                     </Modal>
                     <Modal open={isEditFormVisible}>
                         <ModalContent>
-                            {isEditFormVisible && <EditOrderForm onCancel={handleCloseEditOrderForm} orderId={orderIdToEdit}/>}
+                            {isEditFormVisible && <ModifyForm onCancel={handleCloseEditOrderForm} orderId={orderIdToEdit} orderDetails={selectedOrderDetails}/>}
                         </ModalContent>
                     </Modal>
 
