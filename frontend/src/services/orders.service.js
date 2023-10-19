@@ -3,6 +3,7 @@ import authHeader from "./auth-header";
 
 const API_URL_add = "http://localhost:8080/api/v1/validatedEmployee/addNewOrder";
 const API_URL_get = "http://localhost:8080/api/v1/validatedEmployee/orders/getAllOrders";
+const API_URL_modify = "http://localhost:8080/api/v1/validatedEmployee/modifyOrder";
 
 const getAllOrders = () => {
   return axios.get(API_URL_get, { headers: authHeader() });
@@ -12,9 +13,14 @@ const addOrders = (orderData) => {
   return axios.post(API_URL_add, orderData, { headers: authHeader() });
 };
 
+const modifyOrder = (orderData) => {
+  return axios.post(API_URL_modify, orderData, { headers: authHeader() });
+};
+
 const ordersService = {
     getAllOrders,
-    addOrders
+    addOrders,
+    modifyOrder
 };
 
 export default ordersService;

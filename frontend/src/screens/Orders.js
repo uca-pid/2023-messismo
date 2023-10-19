@@ -12,6 +12,7 @@ import { DataGrid } from '@mui/x-data-grid';
 import { MdFastfood } from 'react-icons/md';
 import moment from 'moment'
 import EditIcon from '@mui/icons-material/Edit';
+import EditOrderForm from '../components/EditOrderForm';
 
 
 const Container = styled.div`
@@ -200,6 +201,7 @@ function Orders() {
     const isAdminOrManager = currentUser && (currentUser.role === "MANAGER" || currentUser.role === "ADMIN");
     const [openEditForm, setOpenEditForm] = useState(false);
     const [isEditFormVisible, setEditFormVisible] = useState(false);
+    const [orderIdToEdit, setOrderIdToEdit] = useState(null);
 
     
     const theme = useTheme();
@@ -238,6 +240,12 @@ function Orders() {
         setOpen(false);
     };
 
+    const handleCloseEditOrderForm = () => {
+        setEditFormVisible(false);
+        setOpenEditForm(false);
+        setOpen(false);
+    };
+
     const handleViewDetails = (orderId) => {
         const selectedOrder = orders.find(order => order.id === orderId);
         setSelectedOrderDetails(selectedOrder.productOrders);
@@ -249,7 +257,9 @@ function Orders() {
     };
 
     const handleEditOrderClick = (orderId) => {
-        
+        setEditFormVisible(true);
+        setOrderIdToEdit(orderId);
+        setOpen(true);
     }
 
     const rows = orders.map((order) => ({
@@ -321,8 +331,13 @@ function Orders() {
                             {isOrderFormVisible && <OrderForm onCancel={handleCloseOrderForm} />}
                         </ModalContent>
                     </Modal>
+                    <Modal open={isEditFormVisible}>
+                        <ModalContent>
+                            {isEditFormVisible && <EditOrderForm onCancel={handleCloseEditOrderForm} orderId={orderIdToEdit}/>}
+                        </ModalContent>
+                    </Modal>
 
-                    {!isOrderFormVisible && (
+                    {!isOrderFormVisible && !isEditFormVisible && (
 
                         <div>
 
