@@ -221,8 +221,7 @@ const OrderForm = ({onCancel}) => {
                 unitPrice: product.unitPrice,
                 description: product.description,
                 stock: product.stock,
-                category: product.category,
-                unitCost: product.unitCost
+                category: product.category
             }));
             setProducts(formattedProducts);
             const productNames = formattedProducts.map(product => product.name);
@@ -257,8 +256,8 @@ const OrderForm = ({onCancel}) => {
             const productName = data[`product-${index}`];
             const product = products.find(product => product.name === productName);
             const amount = parseInt(data[`amount-${index}`]) || 0;
-            console.log(products);
-            if (product && !isNaN(product.unitPrice) && !isNaN(amount) && !isNaN(product.unitCost)) {
+
+            if (product && !isNaN(product.unitPrice) && !isNaN(amount)) {
                 return {
                     id: product.id,
                     name: product.name,
@@ -266,8 +265,7 @@ const OrderForm = ({onCancel}) => {
                     description: product.description,
                     stock: product.stock,
                     category: product.category,
-                    amount: amount,
-                    unitCost: parseFloat(product.unitCost)
+                    amount: amount
                 };
             } else {
                 return null;
@@ -277,14 +275,6 @@ const OrderForm = ({onCancel}) => {
         const totalPrice = orderedProducts.reduce((total, product) => {
             return total + product.unitPrice * product.amount;
         }, 0);
-
-        const totalCost = orderedProducts.reduce((total, product) => {
-            console.log(product);
-            return total + product.unitCost * product.amount;
-        }, 0);
-
-
-
 
         const orderData = {
             registeredEmployeeEmail: currentUser.email,
@@ -296,15 +286,11 @@ const OrderForm = ({onCancel}) => {
                 unitPrice: product.unitPrice,
                 description: product.description,
                 stock: product.stock,
-                category: product.category,
-                unitCost: product.unitCost,
+                category: product.category
               },
               quantity: product.amount
             })),
             totalPrice: totalPrice.toFixed(2),
-            totalCost: totalCost.toFixed(2),
-            
-
         };
 
         ordersService.addOrders(orderData)
@@ -329,8 +315,6 @@ const OrderForm = ({onCancel}) => {
         const amount = parseInt(watch(`amount-${index}`)) || 0;
         return total + (product?.unitPrice || 0) * amount;
     }, 0);
-
-  
 
     return(
         <>

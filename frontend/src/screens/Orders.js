@@ -11,6 +11,7 @@ import { Box, Typography, gridClasses, useMediaQuery } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import { MdFastfood } from 'react-icons/md';
 import moment from 'moment'
+import EditIcon from '@mui/icons-material/Edit';
 
 
 const Container = styled.div`
@@ -57,6 +58,7 @@ const MainContent = styled.div`
     display: ${(props) => (props.visible ? "" : "none")};
     width: 80%;
     margin: auto;
+
 `;
 
 const Modal = styled.div`
@@ -174,6 +176,7 @@ const MOBILE_COLUMNS = {
     dateCreated: true,
     totalPrice: true,
     details: false,
+    status: false,
 };
 const ALL_COLUMNS = {
     id: true,
@@ -181,6 +184,7 @@ const ALL_COLUMNS = {
     dateCreated: true,
     totalPrice: true,
     details: true,
+    status: true,
 };
 
 function Orders() {
@@ -194,6 +198,9 @@ function Orders() {
     const [selectedOrderDetails, setSelectedOrderDetails] = useState(null);
     const [pageSize, setPageSize] = useState(5);
     const isAdminOrManager = currentUser && (currentUser.role === "MANAGER" || currentUser.role === "ADMIN");
+    const [openEditForm, setOpenEditForm] = useState(false);
+    const [isEditFormVisible, setEditFormVisible] = useState(false);
+
     
     const theme = useTheme();
     const matches = useMediaQuery(theme.breakpoints.up("sm"));
@@ -241,11 +248,16 @@ function Orders() {
         setDetailsVisible(false);
     };
 
+    const handleEditOrderClick = (orderId) => {
+        
+    }
+
     const rows = orders.map((order) => ({
         id: order.id,
         username: order.user.username,
         dateCreated: order.dateCreated,
         totalPrice: order.totalPrice.toLocaleString('en-US', { style: 'currency', currency: 'USD' }),
+        status: order.status,
     }));
 
     const columns = [
@@ -265,6 +277,29 @@ function Orders() {
             <MoreDetails onClick={() => handleViewDetails(params.row.id)} />
           ),
         },
+        {
+            field: 'status',
+            headerName: 'Status',
+            flex: 1,
+            align: 'center',
+            headerAlign: 'center',
+            sortable: true,
+          },
+          {
+            field: 'actions',
+            headerName: 'Actions',
+            flex: 1,
+            align:'center',
+            headerAlign: 'center', 
+            sortable: false,
+            renderCell: (params) => (
+              <button onClick={() => handleEditOrderClick(params.row.id)}>
+                <EditIcon />
+              </button>
+            ),
+          },
+          
+        
     ];
 
     return (
@@ -303,6 +338,7 @@ function Orders() {
                                         sortModel: [{ field: 'dateCreated', sort: 'desc' }],
                                         },
                                     }}
+                                    sx={{fontSize: '2rem'}}
                                     autoHeight={true}
                                     columns={columns}
                                     columnVisibilityModel={columnVisible}
