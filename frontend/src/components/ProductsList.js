@@ -328,7 +328,8 @@ const [sortOrder, setSortOrder] = useState("asc");
               variant="contained"
               endIcon={<AddIcon />}
               style={{
-                color: "white",
+                backgroundColor: "#a4d4cc",
+                color: "black",
                 borderColor: "#007bff",
                 marginTop: "4%",
                 fontSize: "1rem",
@@ -348,7 +349,8 @@ const [sortOrder, setSortOrder] = useState("asc");
             onClick={handleOpenFilter}
             endIcon={<FilterListIcon />}
             style={{
-              color: "white",
+              backgroundColor: '#a4d4cc',
+              color: "black",
               borderColor: "#007bff",
               marginTop: "4%",
               fontSize: "1rem",
@@ -394,66 +396,66 @@ const [sortOrder, setSortOrder] = useState("asc");
       </div>
       <div className="titles">
         <div className="title">
-          <p>Product details</p>
+          <p style={{ color: "white", fontWeight: "bold" }}>Product details</p>
           <IconButton size="small" onClick={() => handleSort("name")}>
       {sortField === "name" ? (
         sortOrder === "asc" ? (
-          <ExpandLessIcon />
+          <ExpandLessIcon className="ExpandIcon" style={{ color: "white"}}/>
         ) : (
-          <ExpandMoreIcon />
+          <ExpandMoreIcon className="ExpandIcon" style={{ color: "white"}}/>
         )
       ) : (
-        <ExpandMoreIcon />
+        <ExpandMoreIcon className="ExpandIcon" style={{ color: "white"}}/>
       )}
     </IconButton>
         </div>
         <div className="title">
-          <p>Category</p>
+          <p style={{ color: "white", fontWeight: "bold" }}>Category</p>
           <IconButton size="small" onClick={() => handleSort("category")}>
       {sortField === "category" ? (
         sortOrder === "asc" ? (
-          <ExpandLessIcon />
+          <ExpandLessIcon className="ExpandIcon" style={{ color: "white"}}/>
         ) : (
-          <ExpandMoreIcon />
+          <ExpandMoreIcon className="ExpandIcon" style={{ color: "white"}}/>
         )
       ) : (
-        <ExpandMoreIcon />
+        <ExpandMoreIcon className="ExpandIcon" style={{ color: "white"}}/>
       )}
     </IconButton>
         </div>
        
         <div className="title">
-          <p>Stock</p>
+          <p style={{ color: "white", fontWeight: "bold" }}>Stock</p>
           <IconButton size="small" onClick={() => handleSort("stock")}>
       {sortField === "stock" ? (
         sortOrder === "asc" ? (
-          <ExpandLessIcon />
+          <ExpandLessIcon className="ExpandIcon" style={{ color: "white"}}/>
         ) : (
-          <ExpandMoreIcon />
+          <ExpandMoreIcon className="ExpandIcon" style={{ color: "white"}}/>
         )
       ) : (
-        <ExpandMoreIcon />
+        <ExpandMoreIcon className="ExpandIcon" style={{ color: "white"}}/>
       )}
     </IconButton>
         </div>
         
         <div className="title">
-          <p>Price</p>
+          <p style={{ color: "white", fontWeight: "bold" }}>Price</p>
           <IconButton size="small" onClick={() => handleSort("unitPrice")}>
       {sortField === "unitPrice" ? (
         sortOrder === "asc" ? (
-          <ExpandLessIcon />
+          <ExpandLessIcon className="ExpandIcon" style={{ color: "white"}}/>
         ) : (
-          <ExpandMoreIcon />
+          <ExpandMoreIcon className="ExpandIcon" style={{ color: "white"}}/>
         )
       ) : (
-        <ExpandMoreIcon />
+        <ExpandMoreIcon className="ExpandIcon" style={{ color: "white"}}/>
       )}
     </IconButton>
         </div>
         
         <div className="title">
-          <p>Actions</p>
+          <p style={{ color: "white", fontWeight: "bold" }}>Actions</p>
         </div>
         
       </div>

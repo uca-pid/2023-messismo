@@ -182,7 +182,7 @@ const CategoriesList = () => {
   return (
     <div style={{width: "100%", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center"}}>
       <div className="categoryTitle">
-      <h1 style={{ marginBottom: "3%", fontSize: "2.2rem", marginTop: "1%"}}>Categories</h1>
+      <h1 style={{ marginBottom: "3%", fontSize: "2.2rem", marginTop: "1%", color: "white"}}>Categories</h1>
       </div>
       <div style={{flex:1, display: "flex", width: "90%" , justifyContent: "flex-start"}}>
       {role === "ADMIN" || role === "MANAGER" ? (
@@ -190,7 +190,8 @@ const CategoriesList = () => {
         variant="contained"
         endIcon={<AddIcon />}
         style={{
-          color: "white",
+          color: "black",
+          backgroundColor: '#a4d4cc',
           borderColor: "#007bff",
           fontSize: "1rem",
           height: "40px",
@@ -246,9 +247,10 @@ const CategoriesList = () => {
         <Button
           variant="contained"
           style={{
-            backgroundColor: "green",
-            color: "White",
+            backgroundColor: '#a4d4cc',
+            color: "black",
             borderColor: "green",
+            
             width: "40%",
             fontSize: '1rem',
           }}
@@ -260,16 +262,16 @@ const CategoriesList = () => {
         </DialogContent>
       </Dialog>
       <div className="title">
-          <p>Name</p>
+          <p style={{ color : "white", fontWeight: "bold"}}>Name</p>
           <IconButton size="small" onClick={() => handleSort("name")}>
       {sortField === "name" ? (
         sortOrder === "asc" ? (
-          <ExpandLessIcon />
+          <ExpandLessIcon style={{ color: "white"}}/>
         ) : (
-          <ExpandMoreIcon />
+          <ExpandMoreIcon style={{ color: "white"}}/>
         )
       ) : (
-        <ExpandMoreIcon />
+        <ExpandMoreIcon style={{ color: "white"}}/>
       )}
     </IconButton>
         </div>
