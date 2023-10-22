@@ -14,6 +14,7 @@ import moment from 'moment'
 import EditIcon from '@mui/icons-material/Edit';
 import EditOrderForm from '../components/EditOrderForm';
 import ModifyForm from '../components/modifyForm';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
 
 const Container = styled.div`
@@ -22,7 +23,7 @@ const Container = styled.div`
 
 const Button = styled.button`
     display: block;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     border-radius: 3px;
     padding: 1rem 3.5rem;
     margin-top: 3rem;
@@ -203,6 +204,7 @@ function Orders() {
     const [openEditForm, setOpenEditForm] = useState(false);
     const [isEditFormVisible, setEditFormVisible] = useState(false);
     const [orderIdToEdit, setOrderIdToEdit] = useState(null);
+    const [selectedTotalPrice, setSelectedTotalPrice] = useState(null);
 
     
     const theme = useTheme();
@@ -263,6 +265,7 @@ function Orders() {
         setOrderIdToEdit(orderId);
         const selectedOrder = orders.find(order => order.id === orderId);
         setSelectedOrderDetails(selectedOrder.productOrders);
+        setSelectedTotalPrice(selectedOrder.totalPrice);
         setOpen(true);
     }
 
@@ -288,7 +291,8 @@ function Orders() {
           headerAlign: 'center', 
           sortable:false,
           renderCell: (params) => (
-            <MoreDetails onClick={() => handleViewDetails(params.row.id)} />
+            <VisibilityIcon onClick={() => handleViewDetails(params.row.id)} />
+            //<MoreDetails onClick={() => handleViewDetails(params.row.id)} />
           ),
         },
         {
@@ -300,20 +304,27 @@ function Orders() {
             sortable: true,
           },
           {
-            field: 'actions',
-            headerName: 'Actions',
+            field: 'edit',
+            headerName: 'Edit',
             flex: 1,
             align:'center',
             headerAlign: 'center', 
             sortable: false,
-            renderCell: (params) => (
-              <button onClick={() => handleEditOrderClick(params.row.id)}>
-                <EditIcon />
-              </button>
-            ),
-          },
+            renderCell: (params) => {
+                const status = params.row.status;
+                const isClosed = status === 'Closed';
           
-        
+                return (
+                  <button
+                    onClick={() => handleEditOrderClick(params.row.id)}
+                    disabled={isClosed}
+                  >
+                    <EditIcon />
+                  </button>
+                );
+              },
+            },
+ 
     ];
 
     return (
@@ -337,7 +348,7 @@ function Orders() {
                     </Modal>
                     <Modal open={isEditFormVisible}>
                         <ModalContent>
-                            {isEditFormVisible && <ModifyForm onCancel={handleCloseEditOrderForm} orderId={orderIdToEdit} orderDetails={selectedOrderDetails}/>}
+                            {isEditFormVisible && <ModifyForm onCancel={handleCloseEditOrderForm} orderId={orderIdToEdit} orderDetails={selectedOrderDetails} totalPrice={selectedTotalPrice}/>}
                         </ModalContent>
                     </Modal>
 
@@ -357,7 +368,7 @@ function Orders() {
                                         sortModel: [{ field: 'dateCreated', sort: 'desc' }],
                                         },
                                     }}
-                                    sx={{fontSize: '2rem'}}
+                                    sx={{fontSize: '1rem'}}
                                     autoHeight={true}
                                     columns={columns}
                                     columnVisibilityModel={columnVisible}
@@ -386,19 +397,19 @@ function Orders() {
                                         },
                                         color: 'white',
                                         fontFamily:'Roboto',
-                                        fontSize:'2rem',  
+                                        fontSize:'1.1rem',  
                                         ".MuiTablePagination-displayedRows": {
                                             color: "white",
-                                            fontSize:'1.5rem',
+                                            fontSize:'1.2rem',
                                         },
                                         ".MuiTablePagination-selectLabel": {
                                             color: "white",
-                                            fontSize:'1.5rem',
+                                            fontSize:'1.2rem',
                                         },
                                         '& .MuiSelect-select.MuiSelect-select': {
                                             color: 'white',
-                                            fontSize:'1.5rem',
-                                            marginTop: '1rem'
+                                            fontSize:'1.2rem',
+                                            marginTop: '0.7rem'
                                         },
                                         '.MuiDataGrid-sortIcon': {
                                             opacity: 'inherit !important',
@@ -408,13 +419,13 @@ function Orders() {
                                             outline: 'none',
                                         },
                                         '@media (max-width: 1000px)': {
-                                            fontSize: '1.5rem',
+                                            fontSize: '1rem',
                                         },
                                         '@media (max-width: 760px)': {
                                             fontSize: '1rem',
                                         },
                                         '@media (max-width: 600px)': {
-                                            fontSize: '1.5rem',
+                                            fontSize: '1rem',
                                         },
                                         '@media (max-width: 535px)': {
                                             fontSize: '1.2rem',

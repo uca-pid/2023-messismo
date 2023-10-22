@@ -453,7 +453,7 @@ const EditOrderForm = ({onCancel, orderId}) => {
         
                 <Buttons>
                     <Button type="submit" className="placeorder">Add Products</Button>
-                    <Button type="submit" className="cancel" onClick={handleCancelClick}>Cancel</Button>
+                    <Button type="button" className="cancel" onClick={handleCancelClick}>Cancel</Button>
                 </Buttons>
 
             </Form>

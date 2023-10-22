@@ -7,6 +7,7 @@ import productsService from "../services/products.service";
 import ordersService from "../services/orders.service";
 import { useSelector } from "react-redux";
 import { propsToClassKey } from "@mui/styles";
+import EditOrderForm from "./EditOrderForm";
 
 const Form = styled.form`
   padding: 2rem;
@@ -217,7 +218,15 @@ const DetailsContent = styled.div`
     strong{
         color: white;
         font-family: 'Roboto';
-        font-size: 2rem;
+        font-size: 1.5rem;
+    }
+    strong2{
+        color: white;
+        font-family: 'Roboto';
+        font-size: 1.7rem;
+        margin-top: 1rem;
+        align-self: center;
+        margin-bottom: 1rem;
     }
 
     @media (max-width: 1500px) {
@@ -234,7 +243,7 @@ const DetailsContent = styled.div`
 const DetailsButton = styled.button`
     display: block;
     width: 100%;
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     border-radius: 3px;
     padding: 1rem 3.5rem;
     border: 1px solid black;
@@ -260,8 +269,32 @@ const DetailsButton = styled.button`
     }
 `;
 
-const ModifyForm = ({ onCancel, orderId, orderDetails }) => {
+const Modal = styled.div`
+    display: ${(props) => (props.open ? "flex" : "none")};
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 9999;
+`;
+
+const ModalContent = styled.div`
+    padding: 20px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    max-height: 60vh;
+    overflow-y: auto;
+`;
+
+const ModifyForm = ({ onCancel, orderId, orderDetails, totalPrice }) => {
     const [closeOrderForm, setCloseOrderForm] = useState(false);
+    const [isEditFormVisible, setIsEditFormVisible] = useState(false);
+
 
     const handleCloseOrderDetails = () => {
         console.log("hola")
@@ -289,12 +322,22 @@ const handleCloseOrder = () => {
     setCloseOrderForm(false);
     onCancel();
 }
+
+    const handleAddProductsOrder = () => {
+        setIsEditFormVisible(true);
+    }
+
+    const handleCloseEditOrderForm = () => {
+        setIsEditFormVisible(false);
+    }
   return (
     <>
+     {!isEditFormVisible && (
       <Form className="form-react">
-        <h1 style={{ fontSize: "1.7rem", marginBottom: "3%" }}>Modify order {orderId}</h1>
+        
+        <h1 style={{ fontSize: "1.7rem", marginBottom: "3%" }}>Order {orderId}</h1>
         <Buttons>
-          <Button type="button" className="placeorder">
+          <Button type="button" className="placeorder" onClick={handleAddProductsOrder}>
             Add Products
           </Button>
           <Button type="button" className="cancel" onClick={handleCloseOrderDetails}>
@@ -304,6 +347,7 @@ const handleCloseOrder = () => {
             Cancel
           </Button>
         </Buttons>
+        
         {closeOrderForm ? (
                <Details>
                <DetailsContent>
@@ -314,6 +358,7 @@ const handleCloseOrder = () => {
                                <strong></strong><br />
                            </div>
                        ))}
+                    <strong2 style={{ color: "white" }}>Total price: ${totalPrice}</strong2>
                    <DetailsButton onClick={() => handleCloseOrder()}>
                        Close Order
                    </DetailsButton>
@@ -327,6 +372,12 @@ const handleCloseOrder = () => {
             null
         )}
       </Form>
+       )}
+       <Modal open={isEditFormVisible}>
+                <ModalContent>
+                    {isEditFormVisible && <EditOrderForm onCancel={handleCloseEditOrderForm} orderId={orderId}/>}
+                </ModalContent>
+        </Modal>
     </>
   );
 };
