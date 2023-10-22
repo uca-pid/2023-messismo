@@ -15,10 +15,10 @@ import EditIcon from '@mui/icons-material/Edit';
 import EditOrderForm from '../components/EditOrderForm';
 import ModifyForm from '../components/modifyForm';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import Fab from '@mui/material/Fab';
 
 
 const Container = styled.div`
-
 `;
 
 const Button = styled.button`
@@ -58,11 +58,17 @@ const Button = styled.button`
 `;
 
 const MainContent = styled.div`
-    display: ${(props) => (props.visible ? "" : "none")};
-    width: 80%;
-    margin: auto;
+display: ${(props) => (props.visible ? "" : "none")};
+width: 100%; 
+margin: auto;
 
+
+@media (min-width: 768px) {
+    width: 80%; 
+}
 `;
+
+
 
 const Modal = styled.div`
     display: ${(props) => (props.open ? "flex" : "none")};
@@ -175,11 +181,10 @@ const MoreDetails = styled(MdFastfood)`
 
 const MOBILE_COLUMNS = {
     id: true,
-    username: false,
     dateCreated: true,
     totalPrice: true,
     details: false,
-    status: false,
+    status: true,
 };
 const ALL_COLUMNS = {
     id: true,
@@ -221,6 +226,7 @@ function Orders() {
           .getAllOrders()
           .then((response) => {
             setOrders(response.data);
+            console.log("done");
           })
           .catch((error) => {
             console.error("Error al mostrar las ordenes", error);
@@ -278,11 +284,11 @@ function Orders() {
     }));
 
     const columns = [
-        { field: 'id', headerName: 'ID', flex:1, align:'center', headerAlign: 'center', sortable:false },
-        { field: 'username', headerName: 'Vendor', flex:1, align:'center', headerAlign: 'center', sortable:true },
-        { field: 'dateCreated', headerName: 'Date', flex:1, align:'center', headerAlign: 'center', sortable:true,
+        { field: 'id', headerName: 'ID', flex:1, align:'center', headerAlign: 'center', sortable:false, minWidth: 90, },
+        { field: 'username', headerName: 'Vendor', flex:2, align:'center', headerAlign: 'center', sortable:true, minWidth: 150  },
+        { field: 'dateCreated', headerName: 'Date', flex:1, align:'center', headerAlign: 'center', sortable:true, minWidth: 150,
         renderCell: params => moment(params.row.dateCreated).format('YYYY-MM-DD HH:MM:SS') },
-        { field: 'totalPrice', headerName: 'Total', flex:1, align:'center', headerAlign: 'center', sortable:true },
+        { field: 'totalPrice', headerName: 'Total', flex:1, align:'center', headerAlign: 'center', sortable:true, minWidth: 150, },
         {
           field: 'details',
           headerName: 'Products',
@@ -302,7 +308,47 @@ function Orders() {
             align: 'center',
             headerAlign: 'center',
             sortable: true,
+            minWidth: 150,
+            renderCell: (params) => {
+                
+          
+            const status = params.row.status;
+    const statusColors = {
+      Open: '#D5F2BF', 
+      Closed: '#FEBCBC', 
+    };
+
+    const fontColors = {
+        Open: 'green', 
+        Closed: 'red', 
+      };
+
+    const backgroundColor = statusColors[status] || 'white'; 
+    const fontColor = fontColors[status] || 'black';
+
+    const statusStyle = {
+      backgroundColor,
+      color: fontColor,
+      textAlign: 'center',
+      padding: '8px',
+      //borderRadius: '4px',
+      fontSize: '0.9rem',
+      textTransform: 'none',
+      width: '50%',
+      height: '50%',
+    };
+
+    return (
+      <Fab
+        variant="extended"
+        size="small"
+        color="primary"
+        style={statusStyle}
+        disabled={true}
+        >{status}</Fab>
+    );
           },
+        },
           {
             field: 'edit',
             headerName: 'Edit',
@@ -310,6 +356,7 @@ function Orders() {
             align:'center',
             headerAlign: 'center', 
             sortable: false,
+            minWidth: 100,
             renderCell: (params) => {
                 const status = params.row.status;
                 const isClosed = status === 'Closed';
@@ -356,7 +403,7 @@ function Orders() {
 
                         <div>
 
-                            <OrdersTable>
+                            <OrdersTable sx={{width:'100%', backgroundColor: 'blue'}}>
                                 <Box sx={{height:400, width:'100%'}}>
                                     <Typography variant='h3' component='h3' sx={{textAlign:'center', mt:3, mb:3, color:'white'}}>
                                         Orders
