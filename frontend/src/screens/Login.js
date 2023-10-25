@@ -338,12 +338,13 @@ function Login() {
               >
                 <DialogContent>
                   <div>
-                    <h1 style={{ marginBottom: "3%", fontSize: "2 rem" }}>
+  
+                    <h1 style={{ marginBottom: "3%", fontSize: "1.6rem"}}>
                       Password Recovery
                     </h1>
                     <hr
                       style={{
-                        borderTop: "1px solid lightgrey",
+                        borderTop: "1px solid grey",
                         marginBottom: "3%",
                         width: "100%",
                       }}
@@ -364,11 +365,11 @@ function Login() {
                         width: "80%",
                         marginTop: "3%",
                         marginBottom: "3%",
-                        fontSize: "1.5rem",
+                        fontSize: "1.1rem",
                       }}
                       InputProps={{
                         style: {
-                          fontSize: "1.5rem",
+                          fontSize: "1rem",
                         },
                       }}
                       FormHelperTextProps={{
@@ -392,7 +393,7 @@ function Login() {
                         style={{
                           color: "grey",
                           borderColor: "grey",
-                          fontSize: "1.2rem",
+                          fontSize: "1rem",
                         }}
                         onClick={handleCloseForm}
                       >
@@ -400,7 +401,7 @@ function Login() {
                       </Button>
                       <Button
                         variant="contained"
-                        style={{ marginLeft: "3%", fontSize: "1.2rem" }}
+                        style={{ marginLeft: "3%", fontSize: "1rem", backgroundColor: "#a4d4cc", color: "black" }}
                         onClick={handleSendEmail}
                       >
                         Send
@@ -420,7 +421,7 @@ function Login() {
               >
                 <DialogContent>
                   <div>
-                    <h1 style={{ marginBottom: "3%", fontSize: "2 rem" }}>
+                    <h1 style={{ marginBottom: "3%", fontSize: "1.6rem" }}>
                       Change Password
                     </h1>
                     <hr
@@ -445,11 +446,11 @@ function Login() {
                         width: "80%",
                         marginTop: "3%",
                         marginBottom: "3%",
-                        fontSize: "1.5rem",
+                        fontSize: "1.1rem",
                       }}
                       InputProps={{
                         style: {
-                          fontSize: "1.5rem",
+                          fontSize: "1.1rem",
                         },
                       }}
                       FormHelperTextProps={{
@@ -471,11 +472,11 @@ function Login() {
                         width: "80%",
                         marginTop: "3%",
                         marginBottom: "3%",
-                        fontSize: "1.5rem",
+                        fontSize: "1.1rem",
                       }}
                       InputProps={{
                         style: {
-                          fontSize: "1.5rem",
+                          fontSize: "1.1rem",
                         },
                       }}
                       FormHelperTextProps={{
@@ -500,11 +501,11 @@ function Login() {
                         width: "80%",
                         marginTop: "3%",
                         marginBottom: "3%",
-                        fontSize: "1.5rem",
+                        fontSize: "1.1rem",
                       }}
                       InputProps={{
                         style: {
-                          fontSize: "1.5rem",
+                          fontSize: "1.1rem",
                         },
                       }}
                       FormHelperTextProps={{
@@ -532,11 +533,11 @@ function Login() {
                         width: "80%",
                         marginTop: "3%",
                         marginBottom: "3%",
-                        fontSize: "1.5rem",
+                        fontSize: "1.1rem",
                       }}
                       InputProps={{
                         style: {
-                          fontSize: "1.5rem",
+                          fontSize: "1.1rem",
                         },
                       }}
                       FormHelperTextProps={{
@@ -559,7 +560,7 @@ function Login() {
                         style={{
                           color: "grey",
                           borderColor: "grey",
-                          fontSize: "1.2rem",
+                          fontSize: "1rem",
                         }}
                         onClick={handleCloseChangePasswordForm}
                       >
@@ -567,7 +568,7 @@ function Login() {
                       </Button>
                       <Button
                         variant="contained"
-                        style={{ marginLeft: "3%", fontSize: "1.2rem" }}
+                        style={{ marginLeft: "3%", fontSize: "1rem", backgroundColor: "#a4d4cc", color: "black" }}
                         onClick={handleChangePassword}
                       >
                         Change Password
@@ -632,6 +633,7 @@ function Login() {
       >
         <Alert
           onClose={() => setOpenSnackbar(false)}
+          variant="filled"
           severity={isOperationSuccessful ? "success" : "error"}
           sx={{ fontSize: "100%" }}
         >

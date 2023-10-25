@@ -52,13 +52,6 @@ const deleteProduct = (productId) => {
         "Content-Type": "application/json",
       }
     )
-    .then((response) => {
-
-      console.log("Producto eliminado con éxito:", response.data);
-    })
-    .catch((error) => {
-      console.error("Error al eliminar el producto:", error);
-    });
 
 
 };
@@ -80,12 +73,6 @@ const updateProductPrice = (productId, updatedPrice) => {
         "Content-Type": "application/json",
       }
     )
-    .then((response) => {
-      console.log("Precio modificado con éxito:", response.data);
-    })
-    .catch((error) => {
-      console.error("Error al modificar el precio del producto:", error);
-    });
 };
 
 

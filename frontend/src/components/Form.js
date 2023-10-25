@@ -77,6 +77,7 @@ const Form = (props) => {
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       console.log(validationErrors);
+      console.log(cost);
     } else {
       const selectedCategoryObj = categories.find(cat => cat.name === selectedCategory);
       console.log(selectedCategory);
@@ -115,7 +116,7 @@ const Form = (props) => {
 
   return (
     <div>
-      <h1 style={{marginBottom: '5%'}}>New Product</h1>
+      <h1 style={{marginBottom: '5%', fontSize: '1.8rem'}}>New Product</h1>
       <p style={{ color: errors.name ? "red" : "black" }}>Name *</p>
       <TextField
         required
@@ -279,7 +280,7 @@ const Form = (props) => {
         <Button
           variant="contained"
           style={{
-            backgroundColor: "green",
+            backgroundColor: "#a4d4cc",
             color: "black",
             borderColor: "green",
             width: "40%",

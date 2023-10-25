@@ -17,6 +17,7 @@ import Fab from "@mui/material/Fab";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import modifyProductStock from "../services/products.service";
+import { IconButton } from "@mui/material";
 const EditForm = (props) => {
   const [nombre, setNombre] = useState("");
   const [categoria, setCategoria] = useState("");
@@ -73,7 +74,7 @@ const EditForm = (props) => {
             .then((response) => {
               console.log(response);
               setIsOperationSuccessful(true);
-              setAlertText("Price modified successfully");
+              setAlertText("Product updated successfully");
               setOpenSnackbar(true);
             });
         } catch (error) {
@@ -85,7 +86,7 @@ const EditForm = (props) => {
       }
 
       const stock = newProductStock();
-      if (stock !== "")
+      if (stock !== 0)
       {
       try {
         console.log(stock);
@@ -93,7 +94,7 @@ const EditForm = (props) => {
           stock
         );
         setIsOperationSuccessful(true);
-        setAlertText("Stock modified successfully");
+        setAlertText("Product updated successfully");
         setOpenSnackbar(true);
       } catch (error) {
         setIsOperationSuccessful(false);
@@ -101,7 +102,7 @@ const EditForm = (props) => {
         setOpenSnackbar(true);
       }
 
-      props.onClose();
+
 
       setNombre("");
       setCategoria("");
@@ -110,17 +111,16 @@ const EditForm = (props) => {
       setStock("");
     }
   }
+
   };
 
   const addStock = () => {
     setNewStock(newStock + 1);
-    console.log(newStock)
   }
 
   const removeStock = () => {
     if (newStock - 1 >= 0){
     setNewStock(newStock - 1);
-    console.log(newStock)
     }
   }
 
@@ -131,6 +131,10 @@ const EditForm = (props) => {
   }
 
   const newProductStock = () => {
+   if (newStock !== props.product.stock){
+    
+    console.log(newStock)
+    console.log(props.productStock)
     if (newStock < props.product.stock)
     {
 
@@ -155,11 +159,15 @@ const EditForm = (props) => {
       return modifyProductStock
   }
 }
+else {
+  return 0;
+}
+}
 
 
   return (
     <div>
-      <h1 style={{ marginBottom: "5%", fontSize: "2 rem" }}>Edit Product</h1>
+      <h1 style={{ marginBottom: "5%", fontSize: "1.8rem" }}>Edit Product</h1>
 
       {/* <p>Name</p>
       <TextField
@@ -203,7 +211,7 @@ const EditForm = (props) => {
           },}}
       /> */}
 
-      <p style={{ color: errors.price ? "red" : "black" }}>Price</p>
+      <p>Price</p>
       {role === "ADMIN" || role === "MANAGER" ? (
         <div>
           <TextField
@@ -218,7 +226,7 @@ const EditForm = (props) => {
             defaultValue={props.product.unitPrice}
             InputProps={{
               style: {
-                fontSize: "1.5rem",
+                fontSize: "1.1rem",
                 inputMode: "numeric",
                 pattern: "[0-9]*",
               },
@@ -238,12 +246,12 @@ const EditForm = (props) => {
           defaultValue={props.product.unitPrice}
           InputProps={{
             style: {
-              fontSize: "1.5rem",
+              fontSize: "1.1rem",
             },
           }}
         />
       )}
-      <p style={{ color: errors.price ? "red" : "black" }}>Modify Stock</p>
+      <p>Modify Stock</p>
       {role === "ADMIN" || role === "MANAGER" ? (
         <div style={{marginTop: "3%"}}>
          { /*<TextField
@@ -274,9 +282,9 @@ const EditForm = (props) => {
             }}
           />*/}
           <div className="priceChange">
-            <Fab size="small" color="primary" aria-label="add" onClick={removeStock}>
+            <IconButton size="medium" style={{backgroundColor: "#a4d4cc", color: "black", alignItems: "center", alignSelf: "center",alignContent: "center"}} aria-label="add" onClick={removeStock}>
               <RemoveIcon style={{fontSize: "1.1rem"}}/>
-            </Fab>
+            </IconButton>
             <TextField
               required
               id="precio"
@@ -290,7 +298,7 @@ const EditForm = (props) => {
               size="small"
               InputProps={{
                 style: {
-                  fontSize: "1.5rem",
+                  fontSize: "1.1rem",
                   inputMode: "numeric",
                   pattern: "[0-9]*",
                   textAlign: "center",
@@ -302,9 +310,10 @@ const EditForm = (props) => {
                 },
               }}
             />
-            <Fab size="small" color="primary" aria-label="add" onClick={addStock}>
+           
+            <IconButton size="medium" style={{backgroundColor: "#a4d4cc", color: "black"}}  onClick={addStock}>
               <AddIcon style={{fontSize: "1.1rem"}}/>
-            </Fab>
+            </IconButton>
           </div>
         </div>
       ) : (
@@ -327,7 +336,7 @@ const EditForm = (props) => {
             color: "grey",
             borderColor: "grey",
             width: "40%",
-            fontSize: "1.3rem",
+            fontSize: "1rem",
           }}
           onClick={cancelarButton}
         >
@@ -336,11 +345,11 @@ const EditForm = (props) => {
         <Button
           variant="contained"
           style={{
-            backgroundColor: "green",
-            color: "white",
-            borderColor: "green",
+            backgroundColor: "#a4d4cc",
+            color: "black",
+            borderColor: "#a4d4cc",
             width: "40%",
-            fontSize: "1.3rem",
+            fontSize: "1rem",
           }}
           onClick={handleEditProduct}
         >
@@ -355,8 +364,9 @@ const EditForm = (props) => {
       >
         <Alert
           onClose={() => setOpenSnackbar(false)}
+          variant="filled"
           severity={isOperationSuccessful ? "success" : "error"}
-          sx={{ fontSize: "75%" }}
+          sx={{ fontSize: "100%" }}
         >
           {alertText}
         </Alert>

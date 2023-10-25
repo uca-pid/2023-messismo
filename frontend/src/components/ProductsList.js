@@ -108,8 +108,8 @@ const [sortOrder, setSortOrder] = useState("asc");
   const deleteProduct = async () => {
     if (selectedProduct) {
       try {
-        console.log(selectedProduct.id);
-        await deleteProductAsync(selectedProduct.productId);
+        const response = await productsService.deleteProduct(selectedProduct.productId);
+        console.log(response);
         setSelectedProduct(null);
         setIsOperationSuccessful(true);
         setAlertText("Product deleted successfully");
@@ -314,7 +314,7 @@ const [sortOrder, setSortOrder] = useState("asc");
           aria-label="edit"
           size="small"
           onClick={handleSearch}
-          style={{ backgroundColor: "grey" }}
+          style={{ backgroundColor: "#a4d4cc", color: "black" }}
         >
           <SearchIcon style={{ fontSize: "1.5rem" }} />
         </Fab>
@@ -520,23 +520,24 @@ const [sortOrder, setSortOrder] = useState("asc");
                   ? producto.description
                   : window.innerWidth <= 600
                     ? producto.description.substring(0, 15) + "..."
-                    : producto.description.substring(0, 50) +
-                    "..."}
+                    : producto.description.length <= 30
+                      ? producto.description
+                      : producto.description.substring(0, 30) + "..."}
 
               </p>
-              {producto.description.length > (window.innerWidth <= 600 ? 15 : 50) &&
+              {producto.description.length > (window.innerWidth <= 600 ? 15 : 30) &&
                 !showFullDescriptions[index] && (
                   <IconButton
-                    color="primary"
+                    color="black"
                     onClick={() => handleShowMoreClick(index)}
                   >
                     <ExpandMoreIcon fontSize="small"/>
                   </IconButton>
                 )}
-                {producto.description.length > (window.innerWidth <= 600 ? 15 : 50) &&
+                {producto.description.length > (window.innerWidth   <= 600 ? 15 : 30) &&
                 showFullDescriptions[index] && (
                   <IconButton
-                    color="primary"
+                    color="black"
                     onClick={() => handleShowLessClick(index)}
                   >
                     <ExpandLessIcon fontSize="small"/>
@@ -579,25 +580,27 @@ const [sortOrder, setSortOrder] = useState("asc");
             },
           }}
         >
-          <DialogTitle id="alert-dialog-title" style={{ fontSize: "1.8rem" }}>
+          <DialogTitle id="alert-dialog-title" style={{ fontSize: "1.5rem" }}>
             {selectedProduct &&
-              `Are you sure you want to delete the product ${selectedProduct.name}?`}
+              <p style={{ fontSize: "1.3rem" }}>
+              Are you sure you want to delete the product <strong>{selectedProduct.name}</strong>?
+            </p>}
           </DialogTitle>
           <DialogContent>
             <DialogContentText
               id="alert-dialog-description"
-              style={{ fontSize: "1.3rem" }}
+              style={{ fontSize: "1.2rem" }}
             >
               The product will be permanently deleted
             </DialogContentText>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleClose} style={{ fontSize: "1.3rem" }}>
+            <Button onClick={handleClose} style={{ fontSize: "1.1rem" }}>
               Cancel
             </Button>
             <Button
               onClick={deleteProduct}
-              style={{ color: "red", fontSize: "1.3rem" }}
+              style={{ color: "red", fontSize: "1.1rem" }}
               autoFocus
             >
               Delete
@@ -613,6 +616,7 @@ const [sortOrder, setSortOrder] = useState("asc");
       >
         <Alert
           onClose={() => setOpenSnackbar(false)}
+          variant="filled"
           severity={isOperationSuccessful ? "success" : "error"}
           sx={{ fontSize: "75%" }}
         >

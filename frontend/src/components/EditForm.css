@@ -91,5 +91,6 @@ input {
     justify-content: center;
     flex-direction: row;
     align-items: center;
+    align-content: center;
     margin-top: 5%;
   }

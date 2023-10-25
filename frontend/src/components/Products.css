@@ -122,8 +122,10 @@
 .final-line {
     margin-top: 0%;
     flex: 1;
-    flex-direction: column;
+    flex-direction: row;
+    display: flex;
     justify-content: flex-start;
+    align-items: center;
     margin-left: 1.2%;
     margin-bottom: 1%;
     width: 20%;
@@ -191,8 +193,8 @@
     font-size: 16px;
     padding: 8px;
     border-radius: 12px;
-    background-color: lightgray;
-    border-color: #999;
+    background-color: "white";
+    border-color: "white";
     border-width: 2px;
     width: 30%;
     
