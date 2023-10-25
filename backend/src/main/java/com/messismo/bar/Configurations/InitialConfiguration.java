@@ -211,15 +211,15 @@ public class InitialConfiguration {
     }
 
     private void addSampleProducts(ProductService productService) {
-        ProductDTO starter1 = ProductDTO.builder().name("Tomato Bruschetta").description("Toasted bread with fresh tomato, garlic, and basil").category("Starter").unitPrice(5500.00).stock(50).unitCost(1000.00).newCategory(false).build();
+        ProductDTO starter1 = ProductDTO.builder().name("Tomato Bruschetta").description("Toasted bread with fresh tomato, garlic, and basil").category("Starter").unitPrice(5500.00).stock(40).unitCost(1000.00).newCategory(false).build();
         productService.addProduct(starter1);
-        ProductDTO starter2 = ProductDTO.builder().name("Fried Calamari").description("Crispy calamari served with lemon sauce").category("Starter").unitPrice(6800.00).stock(55).unitCost(2500.00).newCategory(false).build();
+        ProductDTO starter2 = ProductDTO.builder().name("Fried Calamari").description("Crispy calamari served with lemon sauce").category("Starter").unitPrice(6800.00).stock(27).unitCost(2500.00).newCategory(false).build();
         productService.addProduct(starter2);
         ProductDTO starter3 = ProductDTO.builder().name("Spanish Omelette").description("Potato and onion omelette with eggs").category("Starter").unitPrice(6200.00).stock(48).unitCost(2000.00).newCategory(false).build();
         productService.addProduct(starter3);
-        ProductDTO starter4 = ProductDTO.builder().name("Shrimp Ceviche").description("Fresh shrimp ceviche with lime and cilantro").category("Starter").unitPrice(7500.00).stock(32).unitCost(3500.00).newCategory(false).build();
+        ProductDTO starter4 = ProductDTO.builder().name("Shrimp Ceviche").description("Fresh shrimp ceviche with lime and cilantro").category("Starter").unitPrice(7500.00).stock(26).unitCost(3500.00).newCategory(false).build();
         productService.addProduct(starter4);
-        ProductDTO starter5 = ProductDTO.builder().name("Italian Antipasto").description("Selection of cold cuts, cheeses, and olives").category("Starter").unitPrice(8900.00).stock(220).unitCost(5000.00).newCategory(false).build();
+        ProductDTO starter5 = ProductDTO.builder().name("Italian Antipasto").description("Selection of cold cuts, cheeses, and olives").category("Starter").unitPrice(8900.00).stock(20).unitCost(5000.00).newCategory(false).build();
         productService.addProduct(starter5);
         ProductDTO productDTO1 = ProductDTO.builder().name("Veal Milanese with Fries").description("Veal milanese with french fries").category("Main Course").unitPrice(4500.00).stock(45).unitCost(4000.00).newCategory(false).build();
         productService.addProduct(productDTO1);

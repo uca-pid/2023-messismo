@@ -1,10 +1,11 @@
 import axios from "axios";
 import authHeader from "./auth-header";
+import apiUrl from "../deploy";
 
-const API_URL_add = "http://localhost:8080/api/v1/validatedEmployee/addNewOrder";
-const API_URL_get = "http://localhost:8080/api/v1/validatedEmployee/orders/getAllOrders";
-const API_URL_modify = "http://localhost:8080/api/v1/validatedEmployee/modifyOrder";
-const API_URL_close = "http://localhost:8080/api/v1/validatedEmployee/closeOrder";
+const API_URL_modify = apiUrl + "/api/v1/validatedEmployee/modifyOrder";
+const API_URL_close = apiUrl = "/api/v1/validatedEmployee/closeOrder";
+const API_URL_add = apiUrl + "/api/v1/validatedEmployee/addNewOrder";
+const API_URL_get = apiUrl + "/api/v1/validatedEmployee/orders/getAllOrders";
 
 const getAllOrders = () => {
   return axios.get(API_URL_get, { headers: authHeader() });
