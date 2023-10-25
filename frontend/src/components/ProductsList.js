@@ -333,7 +333,7 @@ const [sortOrder, setSortOrder] = useState("asc");
                 borderColor: "#007bff",
                 marginTop: "4%",
                 fontSize: "1rem",
-                height: "40px",
+                height: "50px",
               }}
               onClick={handleOpenProductsModal}
             >
@@ -519,13 +519,13 @@ const [sortOrder, setSortOrder] = useState("asc");
                 {showFullDescriptions[index]
                   ? producto.description
                   : window.innerWidth <= 600
-                    ? producto.description.substring(0, 15) + "..."
+                    ? producto.description.substring(0, 7) + "..."
                     : producto.description.length <= 30
                       ? producto.description
                       : producto.description.substring(0, 30) + "..."}
 
               </p>
-              {producto.description.length > (window.innerWidth <= 600 ? 15 : 30) &&
+              {producto.description.length > (window.innerWidth <= 600 ? 7 : 30) &&
                 !showFullDescriptions[index] && (
                   <IconButton
                     color="black"
@@ -534,7 +534,7 @@ const [sortOrder, setSortOrder] = useState("asc");
                     <ExpandMoreIcon fontSize="small"/>
                   </IconButton>
                 )}
-                {producto.description.length > (window.innerWidth   <= 600 ? 15 : 30) &&
+                {producto.description.length > (window.innerWidth   <= 600 ? 7 : 30) &&
                 showFullDescriptions[index] && (
                   <IconButton
                     color="black"

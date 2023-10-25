@@ -13,6 +13,7 @@ import { toggleClicked } from '../redux/navSlice';
 import { Navigate } from 'react-router-dom';
 import { logout } from "../redux/auth";
 import CategoryIcon from '@mui/icons-material/Category';
+import logoImage from '../images/logo2.png'
 
 
 const NavLink = styled(Link)`
@@ -169,7 +170,7 @@ function Navbar() {
     return(
 
         <NavContainer clicked={clicked}>
-
+        
             <div className={`links ${clicked ? 'active' : ''}`}>
 
                 <NavLink to={'/homepage'} onClick={clicked ? handleClick : undefined}>
@@ -214,10 +215,10 @@ function Navbar() {
             <div className='burger'>
                 <BurgerIcon clicked={clicked} handleClick={handleClick} />
             </div>
-            <BgDiv className={ `initial ${clicked ? ' active' : ''}` }/>
-
+            <BgDiv className={ `initial ${clicked ? ' active' : ''}` }/>    
+            
         </NavContainer>
-
+    
 
     )
 }

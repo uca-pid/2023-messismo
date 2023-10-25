@@ -9,6 +9,7 @@ import { useSelector } from "react-redux";
 import { propsToClassKey } from "@mui/styles";
 import EditOrderForm from "./EditOrderForm";
 
+
 const Form = styled.form`
   padding: 2rem;
   background-color: rgb(164, 212, 204, 0.6);
@@ -230,22 +231,22 @@ const DetailsContent = styled.div`
     }
 
     @media (max-width: 1500px) {
-        width: 30%;
+        width: 100%;
     }
     @media (max-width: 1000px) {
-        width: 40%;
+        width: 100%;
     }
     @media (max-width: 800px) {
-        width: 50%;
+        width: 100%;
     }
 `;
 
 const DetailsButton = styled.button`
     display: block;
-    width: 100%;
-    font-size: 1.3rem;
+    width: 50%;
+    font-size: 1.2rem;
     border-radius: 3px;
-    padding: 1rem 3.5rem;
+    padding: 1rem 2rem;
     border: 1px solid black;
     background-color: #a4d4cc;
     color: black;
@@ -255,6 +256,37 @@ const DetailsButton = styled.button`
     box-shadow: 0 3px #999;
     font-family: 'Roboto',serif;
     text-align: center;
+    margin-left: 1rem;
+
+    &:hover{
+        background-color: #a7d0cd;
+    }
+    &:active{
+        background-color: #a4d4cc;
+        box-shadow: 0 3px #666;
+        transform: translateY(4px);
+    }
+    &:focus{
+        outline: none;
+    }
+`;
+
+const DetailsButtonCancel = styled.button`
+    display: block;
+    width: 50%;
+    font-size: 1.2rem;
+    border-radius: 3px;
+    padding: 1rem 2rem;
+    border: 1px solid black;
+    background-color: white;
+    color: black;
+    text-transform: uppercase;
+    cursor: pointer;
+    letter-spacing: 1px;
+    box-shadow: 0 3px #999;
+    font-family: 'Roboto',serif;
+    text-align: center;
+    margin-left: 1rem;
 
     &:hover{
         background-color: #a7d0cd;
@@ -297,7 +329,6 @@ const ModifyForm = ({ onCancel, orderId, orderDetails, totalPrice }) => {
 
 
     const handleCloseOrderDetails = () => {
-        console.log("hola")
         setCloseOrderForm(true);
     }
 
@@ -359,13 +390,16 @@ const handleCloseOrder = () => {
                            </div>
                        ))}
                     <strong2 style={{ color: "white" }}>Total price: ${totalPrice}</strong2>
+                    <div style={{ display: "flex", justifyContent: "speace-between" }}>
                    <DetailsButton onClick={() => handleCloseOrder()}>
                        Close Order
                    </DetailsButton>
-                   <DetailsButton onClick={() => handleCloseDetails()}>
+                   <DetailsButtonCancel onClick={() => handleCloseDetails()}>
                        Cancel
-                   </DetailsButton>
+                   </DetailsButtonCancel>
+               </div>
                </DetailsContent>
+                     
            </Details>
 
         ) : (

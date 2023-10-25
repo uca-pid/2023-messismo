@@ -215,7 +215,7 @@ const CategoriesList = () => {
         fullWidth
       >
         <DialogContent>
-        <h1 style={{ marginBottom: "5%", fontSize: "2 rem" }}>New Category</h1>
+        <h1 style={{ marginBottom: "5%", fontSize: "1.6 rem" }}>New Category</h1>
         <p>Name *</p>
       <TextField
         required
@@ -228,7 +228,7 @@ const CategoriesList = () => {
         style={{ width: '80%', marginTop: '3%', marginBottom: '3%', fontSize: '1.3rem'}}
         InputProps={{
           style: {
-            fontSize: '1.3rem', 
+            fontSize: '1.1rem', 
           },}}
           FormHelperTextProps={{
             style: {
@@ -348,7 +348,7 @@ const CategoriesList = () => {
      onClose={() => setOpenSnackbar(false)}
      anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
    >
-     <Alert onClose={() => setOpenSnackbar(false)} severity={isOperationSuccessful ? "success" : "error"} sx={{fontSize: '100%'}}>
+     <Alert onClose={() => setOpenSnackbar(false)} severity={isOperationSuccessful ? "success" : "error"} variant="filled" sx={{fontSize: '80%'}}>
        {alertText}
      </Alert>
    </Snackbar>

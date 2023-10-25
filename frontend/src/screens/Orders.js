@@ -16,6 +16,8 @@ import EditOrderForm from '../components/EditOrderForm';
 import ModifyForm from '../components/modifyForm';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import Fab from '@mui/material/Fab';
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
 
 
 const Container = styled.div`
@@ -210,6 +212,9 @@ function Orders() {
     const [isEditFormVisible, setEditFormVisible] = useState(false);
     const [orderIdToEdit, setOrderIdToEdit] = useState(null);
     const [selectedTotalPrice, setSelectedTotalPrice] = useState(null);
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [alertText, setAlertText] = useState("");
+    const [isOperationSuccessful, setIsOperationSuccessful] = useState(false);
 
     
     const theme = useTheme();
@@ -231,7 +236,7 @@ function Orders() {
           .catch((error) => {
             console.error("Error al mostrar las ordenes", error);
           });
-      }, [isOrderFormVisible, open]);
+      }, [isOrderFormVisible, open, isEditFormVisible, openEditForm]);
 
     if (!currentUser) {
         return <Navigate to="/" />;
@@ -515,8 +520,24 @@ function Orders() {
                     
                 </div>
             </MainContent>
+            <Snackbar
+         open={openSnackbar}
+         autoHideDuration={10000}
+         onClose={() => setOpenSnackbar(false)}
+         anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+       >
+         <Alert
+           onClose={() => setOpenSnackbar(false)}
+           variant="filled"
+           severity={isOperationSuccessful ? "success" : "error"}
+           sx={{ fontSize: "75%" }}
+         >
+           {alertText}
+         </Alert>
+       </Snackbar>
 
         </Container>
+       
 
     );
 }
