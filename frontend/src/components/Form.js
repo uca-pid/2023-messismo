@@ -6,6 +6,8 @@ import MenuItem from '@mui/material/MenuItem';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import FormValidation from "../FormValidation";
 import categoryService from "../services/category.service";
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
 
 const Form = (props) => {
   const [name, setName] = useState("");
@@ -18,6 +20,8 @@ const Form = (props) => {
   const maxCharacterLimit = 255;
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('');
+  const [createNewCategory, setCreateNewCategory] = useState(false);
+  const [cost, setCost] = useState('');
 
   useEffect(() => {
     categoryService.getAllCategories()
@@ -51,6 +55,10 @@ const Form = (props) => {
     setUnitPrice(event.target.value);
   };
 
+  const handleCostChange = (event) => {
+    setCost(event.target.value);
+  }
+
 
   const cancelarButton = (event) => {
     props.onClose();
@@ -62,12 +70,14 @@ const Form = (props) => {
       name,
       category: selectedCategory,
       price: unitPrice, 
+      cost: cost,
       stock,
     });
 
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       console.log(validationErrors);
+      console.log(cost);
     } else {
       const selectedCategoryObj = categories.find(cat => cat.name === selectedCategory);
       console.log(selectedCategory);
@@ -76,10 +86,12 @@ const Form = (props) => {
 
     const newProductData = {
       name,
+      newCategory: createNewCategory,
       category: selectedCategory, 
       description,
       unitPrice,
       stock,
+      unitCost: cost
     };
 
     console.log(newProductData);
@@ -96,10 +108,15 @@ const Form = (props) => {
   }
 
   }
+  const handleCreateNewCategoryChange = (event) => {
+    setCreateNewCategory(event.target.checked);
+    console.log(createNewCategory);
+    
+  };
 
   return (
     <div>
-      <h1 style={{marginBottom: '5%'}}>New Product</h1>
+      <h1 style={{marginBottom: '5%', fontSize: '1.8rem'}}>New Product</h1>
       <p style={{ color: errors.name ? "red" : "black" }}>Name *</p>
       <TextField
         required
@@ -121,6 +138,7 @@ const Form = (props) => {
           }}
       />
       <p style={{ color: errors.category ? "red" : "black" }}>Category *</p>
+      {!createNewCategory && (
       <Select
         labelId="demo-simple-select-label"
         id="demo-simple-select"
@@ -146,6 +164,29 @@ const Form = (props) => {
           </MenuItem>
         ))}
       </Select>
+      )}
+      <FormControlLabel control={<Checkbox checked={createNewCategory} onChange={handleCreateNewCategoryChange}/>} label="Create new category" />
+      {createNewCategory && (
+        <TextField
+        required
+        id="name"
+        value={selectedCategory}
+        onChange={handleCategoriaChange}
+        variant="outlined"
+        error={errors.category ? true : false}
+        helperText={errors.category || ''}
+        style={{ width: '80%', marginTop: '3%', marginBottom: '3%', fontSize: '1.5rem'}}
+        InputProps={{
+          style: {
+            fontSize: '1.1rem', 
+          },}}
+          FormHelperTextProps={{
+            style: {
+              fontSize: '1.1rem', 
+            },
+          }}
+      />
+      )}
       <p>Description</p>
       <TextField
         required
@@ -165,6 +206,27 @@ const Form = (props) => {
       <p style={{ fontSize: "1rem", color: characterCount > maxCharacterLimit ? "red" : "black" }}>
         {characterCount}/{maxCharacterLimit}
       </p>
+      <p style={{ color: errors.price ? "red" : "black" }}>Cost *</p>
+      <TextField
+        required
+        id="unitCost"
+        value={cost}
+        onChange={handleCostChange}
+        variant="outlined"
+        style={{ width: '80%', marginTop: '3%', marginBottom: '3%', fontSize: '1.3rem'}}
+        error={errors.cost ? true : false}
+        helperText={errors.cost || ''}
+        InputProps={{
+          style: {
+            fontSize: '1.1rem', 
+            inputMode: 'numeric', pattern: '[0-9]*'
+          },}}
+          FormHelperTextProps={{
+            style: {
+              fontSize: '1.1rem', 
+            },
+          }}
+      />
       <p style={{ color: errors.price ? "red" : "black" }}>Price *</p>
       <TextField
         required
@@ -218,7 +280,7 @@ const Form = (props) => {
         <Button
           variant="contained"
           style={{
-            backgroundColor: "green",
+            backgroundColor: "#a4d4cc",
             color: "black",
             borderColor: "green",
             width: "40%",

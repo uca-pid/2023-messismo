@@ -51,13 +51,6 @@ const deleteProduct = (productId) => {
         "Content-Type": "application/json",
       }
     )
-    .then((response) => {
-
-      console.log("Producto eliminado con éxito:", response.data);
-    })
-    .catch((error) => {
-      console.error("Error al eliminar el producto:", error);
-    });
 
 
 };
@@ -79,16 +72,10 @@ const updateProductPrice = (productId, updatedPrice) => {
         "Content-Type": "application/json",
       }
     )
-    .then((response) => {
-      console.log("Precio modificado con éxito:", response.data);
-    })
-    .catch((error) => {
-      console.error("Error al modificar el precio del producto:", error);
-    });
 };
 
 
-const updateProductStock = (productId, updatedStock) => {
+const updateProductStock = (productId, operation, updatedStock) => {
   const newProductStock= {
     productId: productId,
     addStock: updatedStock,
@@ -98,6 +85,26 @@ const updateProductStock = (productId, updatedStock) => {
     .put(
       apiUrl + "/api/v1/manager/product/addStock",
       newProductStock,
+      {
+        headers: authHeader(),
+        method: "PUT",
+        "Content-Type": "application/json",
+      }
+    )
+    .then((response) => {
+      console.log("Stock modificado con éxito:", response.data);
+    })
+    .catch((error) => {
+      console.error("Error al modificar el Stock del producto:", error);
+    });
+};
+
+const modifyProductStock = (modifiedProductStock) => {
+  console.log(modifiedProductStock);
+  return axios
+    .put(
+      "http://localhost:8080/api/v1/manager/product/modifyProductStock",
+      modifiedProductStock,
       {
         headers: authHeader(),
         method: "PUT",
@@ -165,7 +172,8 @@ const productsService = {
   updateProductPrice,
   filterByName,
   filter,
-  updateProductStock
+  updateProductStock,
+  modifyProductStock
 
 };
 

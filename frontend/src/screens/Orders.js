@@ -11,15 +11,21 @@ import { Box, Typography, gridClasses, useMediaQuery } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import { MdFastfood } from 'react-icons/md';
 import moment from 'moment'
+import EditIcon from '@mui/icons-material/Edit';
+import EditOrderForm from '../components/EditOrderForm';
+import ModifyForm from '../components/modifyForm';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import Fab from '@mui/material/Fab';
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
 
 
 const Container = styled.div`
-
 `;
 
 const Button = styled.button`
     display: block;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     border-radius: 3px;
     padding: 1rem 3.5rem;
     margin-top: 3rem;
@@ -54,10 +60,17 @@ const Button = styled.button`
 `;
 
 const MainContent = styled.div`
-    display: ${(props) => (props.visible ? "" : "none")};
-    width: 80%;
-    margin: auto;
+display: ${(props) => (props.visible ? "" : "none")};
+width: 100%; 
+margin: auto;
+
+
+@media (min-width: 768px) {
+    width: 80%; 
+}
 `;
+
+
 
 const Modal = styled.div`
     display: ${(props) => (props.open ? "flex" : "none")};
@@ -170,10 +183,10 @@ const MoreDetails = styled(MdFastfood)`
 
 const MOBILE_COLUMNS = {
     id: true,
-    username: false,
     dateCreated: true,
     totalPrice: true,
     details: false,
+    status: true,
 };
 const ALL_COLUMNS = {
     id: true,
@@ -181,6 +194,7 @@ const ALL_COLUMNS = {
     dateCreated: true,
     totalPrice: true,
     details: true,
+    status: true,
 };
 
 function Orders() {
@@ -194,6 +208,14 @@ function Orders() {
     const [selectedOrderDetails, setSelectedOrderDetails] = useState(null);
     const [pageSize, setPageSize] = useState(5);
     const isAdminOrManager = currentUser && (currentUser.role === "MANAGER" || currentUser.role === "ADMIN");
+    const [openEditForm, setOpenEditForm] = useState(false);
+    const [isEditFormVisible, setEditFormVisible] = useState(false);
+    const [orderIdToEdit, setOrderIdToEdit] = useState(null);
+    const [selectedTotalPrice, setSelectedTotalPrice] = useState(null);
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [alertText, setAlertText] = useState("");
+    const [isOperationSuccessful, setIsOperationSuccessful] = useState(false);
+
     
     const theme = useTheme();
     const matches = useMediaQuery(theme.breakpoints.up("sm"));
@@ -209,11 +231,12 @@ function Orders() {
           .getAllOrders()
           .then((response) => {
             setOrders(response.data);
+            console.log("done");
           })
           .catch((error) => {
             console.error("Error al mostrar las ordenes", error);
           });
-      }, [isOrderFormVisible, open]);
+      }, [isOrderFormVisible, open, isEditFormVisible, openEditForm]);
 
     if (!currentUser) {
         return <Navigate to="/" />;
@@ -231,6 +254,13 @@ function Orders() {
         setOpen(false);
     };
 
+    const handleCloseEditOrderForm = () => {
+        setEditFormVisible(false);
+        setOpenEditForm(false);
+        setOpen(false);
+
+    };
+
     const handleViewDetails = (orderId) => {
         const selectedOrder = orders.find(order => order.id === orderId);
         setSelectedOrderDetails(selectedOrder.productOrders);
@@ -241,19 +271,29 @@ function Orders() {
         setDetailsVisible(false);
     };
 
+    const handleEditOrderClick = (orderId) => {
+        setEditFormVisible(true);
+        setOrderIdToEdit(orderId);
+        const selectedOrder = orders.find(order => order.id === orderId);
+        setSelectedOrderDetails(selectedOrder.productOrders);
+        setSelectedTotalPrice(selectedOrder.totalPrice);
+        setOpen(true);
+    }
+
     const rows = orders.map((order) => ({
         id: order.id,
         username: order.user.username,
         dateCreated: order.dateCreated,
         totalPrice: order.totalPrice.toLocaleString('en-US', { style: 'currency', currency: 'USD' }),
+        status: order.status,
     }));
 
     const columns = [
-        { field: 'id', headerName: 'ID', flex:1, align:'center', headerAlign: 'center', sortable:false },
-        { field: 'username', headerName: 'Vendor', flex:1, align:'center', headerAlign: 'center', sortable:true },
-        { field: 'dateCreated', headerName: 'Date', flex:1, align:'center', headerAlign: 'center', sortable:true,
+        { field: 'id', headerName: 'ID', flex:1, align:'center', headerAlign: 'center', sortable:false, minWidth: 90, },
+        { field: 'username', headerName: 'Vendor', flex:2, align:'center', headerAlign: 'center', sortable:true, minWidth: 150  },
+        { field: 'dateCreated', headerName: 'Date', flex:1, align:'center', headerAlign: 'center', sortable:true, minWidth: 150,
         renderCell: params => moment(params.row.dateCreated).format('YYYY-MM-DD HH:MM:SS') },
-        { field: 'totalPrice', headerName: 'Total', flex:1, align:'center', headerAlign: 'center', sortable:true },
+        { field: 'totalPrice', headerName: 'Total', flex:1, align:'center', headerAlign: 'center', sortable:true, minWidth: 150, },
         {
           field: 'details',
           headerName: 'Products',
@@ -262,9 +302,81 @@ function Orders() {
           headerAlign: 'center', 
           sortable:false,
           renderCell: (params) => (
-            <MoreDetails onClick={() => handleViewDetails(params.row.id)} />
+            <VisibilityIcon onClick={() => handleViewDetails(params.row.id)} />
+            //<MoreDetails onClick={() => handleViewDetails(params.row.id)} />
           ),
         },
+        {
+            field: 'status',
+            headerName: 'Status',
+            flex: 1,
+            align: 'center',
+            headerAlign: 'center',
+            sortable: true,
+            minWidth: 150,
+            renderCell: (params) => {
+                
+          
+            const status = params.row.status;
+    const statusColors = {
+      Open: '#D5F2BF', 
+      Closed: '#FEBCBC', 
+    };
+
+    const fontColors = {
+        Open: 'green', 
+        Closed: 'red', 
+      };
+
+    const backgroundColor = statusColors[status] || 'white'; 
+    const fontColor = fontColors[status] || 'black';
+
+    const statusStyle = {
+      backgroundColor,
+      color: fontColor,
+      textAlign: 'center',
+      padding: '8px',
+      //borderRadius: '4px',
+      fontSize: '0.9rem',
+      textTransform: 'none',
+      width: '50%',
+      height: '50%',
+    };
+
+    return (
+      <Fab
+        variant="extended"
+        size="small"
+        color="primary"
+        style={statusStyle}
+        disabled={true}
+        >{status}</Fab>
+    );
+          },
+        },
+          {
+            field: 'edit',
+            headerName: 'Edit',
+            flex: 1,
+            align:'center',
+            headerAlign: 'center', 
+            sortable: false,
+            minWidth: 100,
+            renderCell: (params) => {
+                const status = params.row.status;
+                const isClosed = status === 'Closed';
+          
+                return (
+                  <button
+                    onClick={() => handleEditOrderClick(params.row.id)}
+                    disabled={isClosed}
+                  >
+                    <EditIcon />
+                  </button>
+                );
+              },
+            },
+ 
     ];
 
     return (
@@ -286,12 +398,17 @@ function Orders() {
                             {isOrderFormVisible && <OrderForm onCancel={handleCloseOrderForm} />}
                         </ModalContent>
                     </Modal>
+                    <Modal open={isEditFormVisible}>
+                        <ModalContent>
+                            {isEditFormVisible && <ModifyForm onCancel={handleCloseEditOrderForm} orderId={orderIdToEdit} orderDetails={selectedOrderDetails} totalPrice={selectedTotalPrice}/>}
+                        </ModalContent>
+                    </Modal>
 
-                    {!isOrderFormVisible && (
+                    {!isOrderFormVisible && !isEditFormVisible && (
 
                         <div>
 
-                            <OrdersTable>
+                            <OrdersTable sx={{width:'100%', backgroundColor: 'blue'}}>
                                 <Box sx={{height:400, width:'100%'}}>
                                     <Typography variant='h3' component='h3' sx={{textAlign:'center', mt:3, mb:3, color:'white'}}>
                                         Orders
@@ -303,6 +420,7 @@ function Orders() {
                                         sortModel: [{ field: 'dateCreated', sort: 'desc' }],
                                         },
                                     }}
+                                    sx={{fontSize: '1rem'}}
                                     autoHeight={true}
                                     columns={columns}
                                     columnVisibilityModel={columnVisible}
@@ -331,19 +449,19 @@ function Orders() {
                                         },
                                         color: 'white',
                                         fontFamily:'Roboto',
-                                        fontSize:'2rem',  
+                                        fontSize:'1.1rem',  
                                         ".MuiTablePagination-displayedRows": {
                                             color: "white",
-                                            fontSize:'1.5rem',
+                                            fontSize:'1.2rem',
                                         },
                                         ".MuiTablePagination-selectLabel": {
                                             color: "white",
-                                            fontSize:'1.5rem',
+                                            fontSize:'1.2rem',
                                         },
                                         '& .MuiSelect-select.MuiSelect-select': {
                                             color: 'white',
-                                            fontSize:'1.5rem',
-                                            marginTop: '1rem'
+                                            fontSize:'1.2rem',
+                                            marginTop: '0.7rem'
                                         },
                                         '.MuiDataGrid-sortIcon': {
                                             opacity: 'inherit !important',
@@ -353,13 +471,13 @@ function Orders() {
                                             outline: 'none',
                                         },
                                         '@media (max-width: 1000px)': {
-                                            fontSize: '1.5rem',
+                                            fontSize: '1rem',
                                         },
                                         '@media (max-width: 760px)': {
                                             fontSize: '1rem',
                                         },
                                         '@media (max-width: 600px)': {
-                                            fontSize: '1.5rem',
+                                            fontSize: '1rem',
                                         },
                                         '@media (max-width: 535px)': {
                                             fontSize: '1.2rem',
@@ -402,8 +520,24 @@ function Orders() {
                     
                 </div>
             </MainContent>
+            <Snackbar
+         open={openSnackbar}
+         autoHideDuration={10000}
+         onClose={() => setOpenSnackbar(false)}
+         anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+       >
+         <Alert
+           onClose={() => setOpenSnackbar(false)}
+           variant="filled"
+           severity={isOperationSuccessful ? "success" : "error"}
+           sx={{ fontSize: "75%" }}
+         >
+           {alertText}
+         </Alert>
+       </Snackbar>
 
         </Container>
+       
 
     );
 }
