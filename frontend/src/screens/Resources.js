@@ -15,6 +15,8 @@ import user4 from '../images/users2/user-4.png';
 import user5 from '../images/users2/user-5.png';
 import user6 from '../images/users2/user-6.png';
 import user7 from '../images/users2/user-7.png';
+import CircularProgress from '@mui/material/CircularProgress';
+import Box from '@mui/material/Box';
 
 const userimages = [user1,user2,user3,user4,user5,user6,user7];
 
@@ -190,6 +192,7 @@ function Resources() {
 
   const [allEmployees, setAllEmployees] = useState([]);
   const actualUserRole = currentUser.role;
+  const [isLoading, setIsLoading] = useState(true);
 
 
   useEffect(() => {
@@ -199,9 +202,11 @@ function Resources() {
         console.log(response.data);
         const employees = response.data;
         setAllEmployees(employees);
+        setIsLoading(false);
       })
       .catch((error) => {
         console.error("Error al obtener la lista de empleados:", error);
+        setIsLoading(false);
       });
   }, []);
 
@@ -306,6 +311,11 @@ function Resources() {
     <Container>
       <Navbar />
       <MainContent visible={contentVisible}>
+      {isLoading ? (
+  <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '20%' }}>
+    <CircularProgress style={{ color:"#a4d4cc"}}/>
+  </Box>
+) : (
         <UserContainer>
           {allEmployees.filter((user) => user.role === "EMPLOYEE").length >
             0 && (
@@ -351,6 +361,7 @@ function Resources() {
             </UserItem>
           )}
         </UserContainer>
+      )}
       </MainContent>
     </Container>
   );

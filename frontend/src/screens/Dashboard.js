@@ -24,6 +24,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import { useTheme } from '@mui/material/styles';
+import CircularProgress from '@mui/material/CircularProgress';
 
 
 const CustomizedDateTimePicker = styled(DatePicker)`
@@ -374,14 +375,17 @@ function Dashboard(){
     });
 
     const [chartType, setChartType] = useState("product");
+    const [isLoading, setIsLoading] = useState(true);
 
     
     useEffect(() => {
         dashboardService.getDashboard({ dateRequested: "" }).then((response) => {
             console.log(response);
             setDashboardData(response);
+            setIsLoading(false);
         }).catch((error) => {
             console.error(error);
+            setIsLoading(false);
         });
     },[]);
 
@@ -396,7 +400,7 @@ function Dashboard(){
           .catch((error) => {
             console.error("Error al mostrar los productos", error);
           });
-    },);
+    },[]);
 
     useEffect(() => {
         categoryService
@@ -518,6 +522,18 @@ function Dashboard(){
             <Navbar />
 
             <MainContent visible={contentVisible}>
+            {isLoading ? (
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    marginTop: "20%",
+                  }}
+                >
+                  <CircularProgress style={{ color:"#a4d4cc"}}/>
+                </Box>
+              ) : (
 
                 <Graphs id="wrap">
 
@@ -683,7 +699,7 @@ function Dashboard(){
                     </RevenueDoughnutDiv> 
 
                 </Graphs>
-
+              )}
             </MainContent>
 
         </Container>

@@ -85,12 +85,14 @@ const Register = () => {
     };
 
     const handleSignUpInput = (e) => {
+        setSignUpValues({ ...signupvalues, [e.target.name]: e.target.value });
+    }
+
+    const handleSignUpErrors = (e) => {
         setSignUpErrors((prevErrors) => ({
             ...prevErrors,
             [e.target.name]: '',
-
         }));
-        setSignUpValues({ ...signupvalues, [e.target.name]: e.target.value });
     }
 
     function handleSignUpValidation() {
@@ -123,21 +125,7 @@ const Register = () => {
             <div className='loginPage flx'>
                 <div className='cntainr flx'>
 
-                    <div className='imageDiv'>
-                        <img src={image} className='imag'></img>
-
-                        <div className='textDiv'>
-                            <h2 className='title'>Hi There</h2>
-                            <p className='subtitle'>Please note that admin verification is required to activate your account</p>
-                        </div>
-
-                        <div className='footerDiv flx'>
-                            <span className='text'>Already have an account?</span>
-                            <Link to={'/login'}>
-                                <button className='btn'>Sign In</button>
-                            </Link>
-                        </div>
-                    </div>
+                
 
                     <div className='formDiv flx'>
                     
@@ -151,7 +139,7 @@ const Register = () => {
                                 <label htmlFor='username' className='labl'>Username</label>
                                 <div className='inpt flx'>
                                     <FaUserShield className='icn' />
-                                    <input type='text' name='username' id='usernameId' placeholder='Enter your username' className='inpt' onChange={handleSignUpInput}/>
+                                    <input type='text' name='username' id='usernameId' placeholder='Enter your username' className='inpt' onChange={handleSignUpInput} onBlur={handleSignUpErrors}/>
                                 </div>
                                 {signuperrors.username && <ErrorMessage>{signuperrors.username}</ErrorMessage>}
                             </div>
@@ -160,7 +148,7 @@ const Register = () => {
                                 <label htmlFor='email' className='labl'>Email</label>
                                 <div className='inpt flx'>
                                     <MdEmail className='icn' />
-                                    <input type='email' name='email' id='emailSuId' placeholder='Enter your email' className='inpt' onChange={handleSignUpInput}/>
+                                    <input type='email' name='email' id='emailSuId' placeholder='Enter your email' className='inpt' onChange={handleSignUpInput} onBlur={handleSignUpErrors}/>
                                 </div>
                                 {signuperrors.email && <ErrorMessage>{signuperrors.email}</ErrorMessage>}
                             </div>
@@ -169,7 +157,7 @@ const Register = () => {
                                 <label htmlFor='password' className='labl'>Password</label>
                                 <div className='inpt flx'>
                                     <BsFillShieldLockFill className='icn' />
-                                    <input type='password' name='password' id='passwordSuId' placeholder='Enter your password' className='inpt' onChange={handleSignUpInput}/>
+                                    <input type='password' name='password' id='passwordSuId' placeholder='Enter your password' className='inpt' onChange={handleSignUpInput} onBlur={handleSignUpErrors}/>
                                 </div>
                                 {signuperrors.password && <ErrorMessage>{signuperrors.password}</ErrorMessage>}
                             </div>
@@ -191,6 +179,21 @@ const Register = () => {
                             </Link>
 
                         </form>
+                    </div>
+                    <div className='imageDiv'>
+                        <img src={image} className='imag'></img>
+
+                        <div className='textDiv'>
+                            <h2 className='title'>Hi There</h2>
+                            <p className='subtitle'>Please note that admin verification is required to activate your account</p>
+                        </div>
+
+                        <div className='footerDiv flx'>
+                            <span className='text'>Already have an account?</span>
+                            <Link to={'/login'}>
+                                <button className='btn'>Sign In</button>
+                            </Link>
+                        </div>
                     </div>
 
                 </div>

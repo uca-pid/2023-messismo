@@ -119,11 +119,14 @@ function Login() {
   }
 
   const handleSignInInput = (e) => {
+    setSignInValues({ ...signinvalues, [e.target.name]: e.target.value });
+  };
+
+  const handleSignInErrors = (e) => {
     setSignInErrors((prevErrors) => ({
       ...prevErrors,
       [e.target.name]: "",
     }));
-    setSignInValues({ ...signinvalues, [e.target.name]: e.target.value });
   };
 
   function handleSignInValidation() {
@@ -271,6 +274,7 @@ function Login() {
                     placeholder="Enter your email"
                     className="inpt"
                     onChange={handleSignInInput}
+                    onBlur={handleSignInErrors}
                   />
                 </div>
                 {signinerrors.email && (
@@ -291,6 +295,7 @@ function Login() {
                     placeholder="Enter your password"
                     className="inpt"
                     onChange={handleSignInInput}
+                    onBlur={handleSignInErrors}
                   />
                 </div>
                 {signinerrors.password && (

@@ -213,7 +213,7 @@ const DetailsContent = styled.div`
     flex-direction: column;
     max-height: 60vh;
     overflow-y: auto;
-    width: 20%;
+    width: 50% !important;
     margin: auto;
     background-color: black;
     strong{
@@ -231,13 +231,13 @@ const DetailsContent = styled.div`
     }
 
     @media (max-width: 1500px) {
-        width: 100%;
+        width: 50% !important;
     }
     @media (max-width: 1000px) {
-        width: 100%;
+        width: 100% !important;
     }
     @media (max-width: 800px) {
-        width: 100%;
+        width: 100% !important;
     }
 `;
 

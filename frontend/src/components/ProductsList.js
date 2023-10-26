@@ -24,6 +24,8 @@ import FilterRedux from "./FilterRedux";
 import Tooltip from "@mui/material/Tooltip";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import CircularProgress from '@mui/material/CircularProgress';
+import Box from '@mui/material/Box';
 
 const ProductsList = () => {
   const [openFormModal, setOpenFormModal] = useState(false);
@@ -50,16 +52,21 @@ const ProductsList = () => {
   const maxStock = useSelector((state) => state.filters.maxStock);
   const [sortField, setSortField] = useState(null);
 const [sortOrder, setSortOrder] = useState("asc");
+const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    if (!isEditFormOpen) {
     productsService
       .getAllProducts()
       .then((response) => {
         setProducts(response.data);
+        setIsLoading(false);
       })
       .catch((error) => {
         console.error("Error al mostrar los productos", error);
+        setIsLoading(false);
       });
+    }
   }, [openFormModal, open]);
 
   const handleClose = () => {
@@ -296,7 +303,9 @@ const [sortOrder, setSortOrder] = useState("asc");
   
 
   return (
+   
     <div className="container">
+     
       <div className="input-container">
         <input
           type="text"
@@ -459,6 +468,14 @@ const [sortOrder, setSortOrder] = useState("asc");
         </div>
         
       </div>
+      {isLoading ? ( 
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '10%' }}>
+          <CircularProgress style={{ color:"#a4d4cc"}}/>
+        </Box>
+      
+      ) : (
+        
+        <>
       {products.map((producto, index) => (
         <div className="entradas" key={index}>
           <div className="product">
@@ -545,8 +562,12 @@ const [sortOrder, setSortOrder] = useState("asc");
                 )}
             </div>
           </div>
+
         </div>
       ))}
+      </>
+      )}
+      
       {isEditFormOpen && (
         <Dialog
           open={isEditFormOpen}
@@ -623,8 +644,11 @@ const [sortOrder, setSortOrder] = useState("asc");
           {alertText}
         </Alert>
       </Snackbar>
+    
     </div>
+
   );
+
 };
 
 export default ProductsList;
