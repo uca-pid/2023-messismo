@@ -38,11 +38,17 @@ public class InitialConfiguration {
             User createdAdmin = userRepository.findByEmail(admin.getEmail()).get();
             createdAdmin.setRole(Role.ADMIN);
             userRepository.save(createdAdmin);
+            System.out.println("ADDED ADMIN");
             addSampleEmployees(authenticationService, userRepository);
+            System.out.println("ADDED EMPLOYEES");
             addSampleCategories(categoryService);
+            System.out.println("ADDED CATEGORIES");
             addSampleProducts(productService);
+            System.out.println("ADDED PRODUCTS");
             addSampleOrders(orderService, productRepository);
+            System.out.println("ADDED ORDERS");
             closeOrders(orderRepository);
+            System.out.println("CLOSED ORDERS");
         };
     }
 
@@ -84,6 +90,7 @@ public class InitialConfiguration {
         generateOrderRequestDTO(orderService, "sarah.jones@example.com", "2023-09-18 12:30:55", List.of(ProductOrderDTO.builder().product(productRepository.findByName("Margherita Pizza").get()).quantity(2).build(), ProductOrderDTO.builder().product(productRepository.findByName("Lemon Mojito").get()).quantity(1).build(), ProductOrderDTO.builder().product(productRepository.findByName("Tiramisu").get()).quantity(1).build()));
         generateOrderRequestDTO(orderService, "martinguido@gmail.com", "2023-10-22 17:10:30", List.of(ProductOrderDTO.builder().product(productRepository.findByName("Mango Mousse").get()).quantity(2).build(), ProductOrderDTO.builder().product(productRepository.findByName("Veal Milanese with Fries").get()).quantity(1).build(), ProductOrderDTO.builder().product(productRepository.findByName("Lemon Mojito").get()).quantity(2).build(), ProductOrderDTO.builder().product(productRepository.findByName("Raspberry Soda").get()).quantity(2).build()));
         generateOrderRequestDTO(orderService, "martinguido@gmail.com", "2023-01-15 08:45:20", List.of(ProductOrderDTO.builder().product(productRepository.findByName("Tomato Bruschetta").get()).quantity(1).build(), ProductOrderDTO.builder().product(productRepository.findByName("Lemon Mojito").get()).quantity(2).build()));
+        System.out.println("ADDED 25/100 ORDERS");
         generateOrderRequestDTO(orderService, "john.smith@example.com", "2023-01-25 19:30:10", List.of(ProductOrderDTO.builder().product(productRepository.findByName("Margherita Pizza").get()).quantity(2).build(), ProductOrderDTO.builder().product(productRepository.findByName("Chocolate Profiteroles").get()).quantity(1).build(), ProductOrderDTO.builder().product(productRepository.findByName("Fried Calamari").get()).quantity(1).build()));
         generateOrderRequestDTO(orderService, "sarah.jones@example.com", "2023-02-10 12:15:30", List.of(ProductOrderDTO.builder().product(productRepository.findByName("Caramel Flan").get()).quantity(1).build()));
         generateOrderRequestDTO(orderService, "admin@mail.com", "2023-03-08 16:45:40", List.of(ProductOrderDTO.builder().product(productRepository.findByName("Tiramisu").get()).quantity(1).build(), ProductOrderDTO.builder().product(productRepository.findByName("Assorted Sushi").get()).quantity(2).build(), ProductOrderDTO.builder().product(productRepository.findByName("Caesar Salad").get()).quantity(1).build()));
@@ -108,6 +115,7 @@ public class InitialConfiguration {
         generateOrderRequestDTO(orderService, "john.smith@example.com", "2022-06-20 20:45:25", List.of(ProductOrderDTO.builder().product(productRepository.findByName("Tomato Bruschetta").get()).quantity(1).build(), ProductOrderDTO.builder().product(productRepository.findByName("Fried Calamari").get()).quantity(2).build(), ProductOrderDTO.builder().product(productRepository.findByName("Cheeseburger").get()).quantity(1).build()));
         generateOrderRequestDTO(orderService, "sarah.jones@example.com", "2022-07-12 18:10:55", List.of(ProductOrderDTO.builder().product(productRepository.findByName("Margherita Pizza").get()).quantity(1).build(), ProductOrderDTO.builder().product(productRepository.findByName("Raspberry Soda").get()).quantity(2).build(), ProductOrderDTO.builder().product(productRepository.findByName("Espresso Coffee").get()).quantity(1).build()));
         generateOrderRequestDTO(orderService, "martinguido@gmail.com", "2022-08-10 17:30:15", List.of(ProductOrderDTO.builder().product(productRepository.findByName("Veal Milanese with Fries").get()).quantity(2).build(), ProductOrderDTO.builder().product(productRepository.findByName("Mango Mousse").get()).quantity(1).build()));
+        System.out.println("ADDED 50/100 ORDERS");
         generateOrderRequestDTO(orderService, "martinguido@gmail.com", "2022-09-02 13:20:30", List.of(ProductOrderDTO.builder().product(productRepository.findByName("Craft Beer").get()).quantity(2).build(), ProductOrderDTO.builder().product(productRepository.findByName("Green Tea").get()).quantity(1).build()));
         generateOrderRequestDTO(orderService, "john.smith@example.com", "2022-10-19 19:05:45", List.of(ProductOrderDTO.builder().product(productRepository.findByName("Fried Calamari").get()).quantity(1).build(), ProductOrderDTO.builder().product(productRepository.findByName("Chocolate Profiteroles").get()).quantity(2).build()));
         generateOrderRequestDTO(orderService, "martinguido@gmail.com", "2022-11-03 11:15:40", List.of(ProductOrderDTO.builder().product(productRepository.findByName("Caramel Flan").get()).quantity(2).build(), ProductOrderDTO.builder().product(productRepository.findByName("Lemon Mojito").get()).quantity(1).build()));
@@ -132,6 +140,7 @@ public class InitialConfiguration {
         generateOrderRequestDTO(orderService, "sarah.jones@example.com", "2022-12-30 22:30:30", List.of(ProductOrderDTO.builder().product(productRepository.findByName("Veal Milanese with Fries").get()).quantity(1).build(), ProductOrderDTO.builder().product(productRepository.findByName("Italian Antipasto").get()).quantity(2).build()));
         generateOrderRequestDTO(orderService, "martinguido@gmail.com", "2022-12-31 23:59:59", List.of(ProductOrderDTO.builder().product(productRepository.findByName("Red Berry Cheesecake").get()).quantity(3).build()));
         generateOrderRequestDTO(orderService, "john.smith@example.com", "2021-02-14 13:45:30", List.of(ProductOrderDTO.builder().product(productRepository.findByName("Mango Mousse").get()).quantity(1).build(), ProductOrderDTO.builder().product(productRepository.findByName("Lemon Mojito").get()).quantity(2).build(), ProductOrderDTO.builder().product(productRepository.findByName("Green Tea").get()).quantity(1).build()));
+        System.out.println("ADDED 75/100 ORDERS");
         generateOrderRequestDTO(orderService, "sarah.jones@example.com", "2021-05-20 16:30:15", List.of(ProductOrderDTO.builder().product(productRepository.findByName("Shrimp Ceviche").get()).quantity(1).build(), ProductOrderDTO.builder().product(productRepository.findByName("Tiramisu").get()).quantity(2).build()));
         generateOrderRequestDTO(orderService, "martinguido@gmail.com", "2021-08-11 10:15:22", List.of(ProductOrderDTO.builder().product(productRepository.findByName("Chocolate Profiteroles").get()).quantity(3).build(), ProductOrderDTO.builder().product(productRepository.findByName("Fried Calamari").get()).quantity(1).build()));
         generateOrderRequestDTO(orderService, "john.smith@example.com", "2021-11-25 20:55:45", List.of(ProductOrderDTO.builder().product(productRepository.findByName("Cheeseburger").get()).quantity(2).build(), ProductOrderDTO.builder().product(productRepository.findByName("Veal Milanese with Fries").get()).quantity(1).build()));

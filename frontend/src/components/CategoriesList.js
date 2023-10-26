@@ -20,6 +20,8 @@ import CategoryValidation from "../CategoryValidation";
 import './CategoriesList.css'
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import CircularProgress from '@mui/material/CircularProgress';
+import Box from '@mui/material/Box';
 
 
 
@@ -37,15 +39,18 @@ const CategoriesList = () => {
   const [errors, setErrors] = useState({});
   const [sortField, setSortField] = useState(null);
   const [sortOrder, setSortOrder] = useState("asc");
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     categoryService
       .getAllCategories()
       .then((response) => {
         setCategories(response.data);
+        setIsLoading(false);
       })
       .catch((error) => {
         console.error("Error al obtener categorías:", error);
+        setIsLoading(false);
       });
   }, []);
 
@@ -275,7 +280,13 @@ const CategoriesList = () => {
       )}
     </IconButton>
         </div>
-      
+
+        {isLoading ? (
+  <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '10%' }}>
+    <CircularProgress style={{ color:"#a4d4cc"}} />
+  </Box>
+) : (
+      <>
       {categories.map((category) => (
         <div key={category.id} className="category-data" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1rem", padding: "1rem", backgroundColor: "#f5f5f5", borderRadius: "5px", width: "20%" }}>
           <p className="text">
@@ -303,6 +314,8 @@ const CategoriesList = () => {
           </div>
         </div>
       ))}
+      </>
+      )}
       <Dialog
           open={open}
           onClose={handleClose}
