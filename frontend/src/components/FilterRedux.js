@@ -443,8 +443,8 @@ const FilterRedux = (props) => {
         <Button
           variant="contained"
           style={{
-            backgroundColor: "green",
-            color: "white",
+            backgroundColor: "#a7d0cd",
+            color: "black",
             borderColor: "green",
             width: "40%",
             fontSize: "1rem",

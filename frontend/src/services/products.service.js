@@ -103,7 +103,7 @@ const modifyProductStock = (modifiedProductStock) => {
   console.log(modifiedProductStock);
   return axios
     .put(
-      "http://localhost:8080/api/v1/manager/product/modifyProductStock",
+      apiUrl + "/api/v1/manager/product/modifyProductStock",
       modifiedProductStock,
       {
         headers: authHeader(),
