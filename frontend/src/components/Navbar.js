@@ -4,6 +4,7 @@ import { FaHome } from 'react-icons/fa'
 import { BsPersonCircle } from 'react-icons/bs'
 import { PiCoffeeFill } from 'react-icons/pi'
 import { ImExit } from 'react-icons/im'
+import { VscGraph } from 'react-icons/vsc'
 import { HiShoppingBag } from 'react-icons/hi2'
 import { styled } from 'styled-components'
 import { Link, useNavigate } from 'react-router-dom'
@@ -13,6 +14,7 @@ import { toggleClicked } from '../redux/navSlice';
 import { Navigate } from 'react-router-dom';
 import { logout } from "../redux/auth";
 import CategoryIcon from '@mui/icons-material/Category';
+import logoImage from '../images/logo2.png'
 
 
 const NavLink = styled(Link)`
@@ -91,7 +93,7 @@ const NavContainer = styled.nav`
         position: absolute;
         margin-left: auto;
         margin-right: auto;
-        top: 30%;
+        top: 15%;
         left: 0;
         right: 0;
         text-align: center;
@@ -169,13 +171,20 @@ function Navbar() {
     return(
 
         <NavContainer clicked={clicked}>
-
+        
             <div className={`links ${clicked ? 'active' : ''}`}>
 
                 <NavLink to={'/homepage'} onClick={clicked ? handleClick : undefined}>
                     <FaHome className='icon'/>
                     <span>Home</span>
                 </NavLink>
+
+                {(showManagerBoard || showAdminBoard) && (
+                    <NavLink to={'/dashboard'} onClick={clicked ? handleClick : undefined}>
+                        <VscGraph className='icon'/>
+                        <span>Dashboard</span>
+                    </NavLink>
+                )}
 
                 {(showManagerBoard || showAdminBoard || showValidatedEmployeeBoard) && (
                     <NavLink to={'/products'} onClick={clicked ? handleClick : undefined}>
@@ -197,7 +206,8 @@ function Navbar() {
                         <span>Resources</span>
                     </NavLink>
                 )}
-                   {(showManagerBoard || showAdminBoard || showValidatedEmployeeBoard) && (
+
+                {(showManagerBoard || showAdminBoard || showValidatedEmployeeBoard) && (
                     <NavLink to={'/categories'} onClick={clicked ? handleClick : undefined}>
                         <CategoryIcon className='icon'/>
                         <span>Categories</span>
@@ -214,10 +224,10 @@ function Navbar() {
             <div className='burger'>
                 <BurgerIcon clicked={clicked} handleClick={handleClick} />
             </div>
-            <BgDiv className={ `initial ${clicked ? ' active' : ''}` }/>
-
+            <BgDiv className={ `initial ${clicked ? ' active' : ''}` }/>    
+            
         </NavContainer>
-
+    
 
     )
 }

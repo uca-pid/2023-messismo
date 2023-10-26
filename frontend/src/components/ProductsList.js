@@ -13,17 +13,12 @@ import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
 import Form from "./Form";
 import EditForm from "./EditForm";
-import Filter from "./Filter";
 import productsService from "../services/products.service";
 import { useSelector } from "react-redux";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import SearchIcon from "@mui/icons-material/Search";
-import TextField from "@mui/material/TextField";
-import InputAdornment from "@mui/material/InputAdornment";
-import InputBase from "@mui/material/InputBase";
 import Fab from "@mui/material/Fab";
-import Box from "@mui/material/Box";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import FilterRedux from "./FilterRedux";
 import Tooltip from "@mui/material/Tooltip";
@@ -113,8 +108,8 @@ const [sortOrder, setSortOrder] = useState("asc");
   const deleteProduct = async () => {
     if (selectedProduct) {
       try {
-        console.log(selectedProduct.id);
-        await deleteProductAsync(selectedProduct.productId);
+        const response = await productsService.deleteProduct(selectedProduct.productId);
+        console.log(response);
         setSelectedProduct(null);
         setIsOperationSuccessful(true);
         setAlertText("Product deleted successfully");
@@ -153,6 +148,7 @@ const [sortOrder, setSortOrder] = useState("asc");
   const handleSaveProduct = async (newProductData) => {
     try {
       const response = await addProductAsync(newProductData);
+      console.log(response)
       setIsOperationSuccessful(true);
       setAlertText("Product added successfully!");
 
@@ -233,10 +229,6 @@ const [sortOrder, setSortOrder] = useState("asc");
   
   
   const handleSort = (field) => {
-
-    const fieldArray = field.split(".");
-  const firstField = fieldArray[0];
-  
   
     
     if (field === sortField) {
@@ -322,7 +314,7 @@ const [sortOrder, setSortOrder] = useState("asc");
           aria-label="edit"
           size="small"
           onClick={handleSearch}
-          style={{ backgroundColor: "grey" }}
+          style={{ backgroundColor: "#a4d4cc", color: "black" }}
         >
           <SearchIcon style={{ fontSize: "1.5rem" }} />
         </Fab>
@@ -331,17 +323,17 @@ const [sortOrder, setSortOrder] = useState("asc");
       <div className="firstRow">
         <div className="add-product">
           {role === "ADMIN" ||
-          role === "MANAGER" ||
-          role === "VALIDATEDEMPLOYEE" ? (
+          role === "MANAGER" ? (
             <Button
               variant="contained"
               endIcon={<AddIcon />}
               style={{
-                color: "white",
+                backgroundColor: "#a4d4cc",
+                color: "black",
                 borderColor: "#007bff",
                 marginTop: "4%",
                 fontSize: "1rem",
-                height: "40px",
+                height: "50px",
               }}
               onClick={handleOpenProductsModal}
             >
@@ -357,7 +349,8 @@ const [sortOrder, setSortOrder] = useState("asc");
             onClick={handleOpenFilter}
             endIcon={<FilterListIcon />}
             style={{
-              color: "white",
+              backgroundColor: '#a4d4cc',
+              color: "black",
               borderColor: "#007bff",
               marginTop: "4%",
               fontSize: "1rem",
@@ -403,66 +396,66 @@ const [sortOrder, setSortOrder] = useState("asc");
       </div>
       <div className="titles">
         <div className="title">
-          <p>Product details</p>
+          <p style={{ color: "white", fontWeight: "bold" }}>Product details</p>
           <IconButton size="small" onClick={() => handleSort("name")}>
       {sortField === "name" ? (
         sortOrder === "asc" ? (
-          <ExpandLessIcon />
+          <ExpandLessIcon className="ExpandIcon" style={{ color: "white"}}/>
         ) : (
-          <ExpandMoreIcon />
+          <ExpandMoreIcon className="ExpandIcon" style={{ color: "white"}}/>
         )
       ) : (
-        <ExpandMoreIcon />
+        <ExpandMoreIcon className="ExpandIcon" style={{ color: "white"}}/>
       )}
     </IconButton>
         </div>
         <div className="title">
-          <p>Category</p>
+          <p style={{ color: "white", fontWeight: "bold" }}>Category</p>
           <IconButton size="small" onClick={() => handleSort("category")}>
       {sortField === "category" ? (
         sortOrder === "asc" ? (
-          <ExpandLessIcon />
+          <ExpandLessIcon className="ExpandIcon" style={{ color: "white"}}/>
         ) : (
-          <ExpandMoreIcon />
+          <ExpandMoreIcon className="ExpandIcon" style={{ color: "white"}}/>
         )
       ) : (
-        <ExpandMoreIcon />
+        <ExpandMoreIcon className="ExpandIcon" style={{ color: "white"}}/>
       )}
     </IconButton>
         </div>
        
         <div className="title">
-          <p>Stock</p>
+          <p style={{ color: "white", fontWeight: "bold" }}>Stock</p>
           <IconButton size="small" onClick={() => handleSort("stock")}>
       {sortField === "stock" ? (
         sortOrder === "asc" ? (
-          <ExpandLessIcon />
+          <ExpandLessIcon className="ExpandIcon" style={{ color: "white"}}/>
         ) : (
-          <ExpandMoreIcon />
+          <ExpandMoreIcon className="ExpandIcon" style={{ color: "white"}}/>
         )
       ) : (
-        <ExpandMoreIcon />
+        <ExpandMoreIcon className="ExpandIcon" style={{ color: "white"}}/>
       )}
     </IconButton>
         </div>
         
         <div className="title">
-          <p>Price</p>
+          <p style={{ color: "white", fontWeight: "bold" }}>Price</p>
           <IconButton size="small" onClick={() => handleSort("unitPrice")}>
       {sortField === "unitPrice" ? (
         sortOrder === "asc" ? (
-          <ExpandLessIcon />
+          <ExpandLessIcon className="ExpandIcon" style={{ color: "white"}}/>
         ) : (
-          <ExpandMoreIcon />
+          <ExpandMoreIcon className="ExpandIcon" style={{ color: "white"}}/>
         )
       ) : (
-        <ExpandMoreIcon />
+        <ExpandMoreIcon className="ExpandIcon" style={{ color: "white"}}/>
       )}
     </IconButton>
         </div>
         
         <div className="title">
-          <p>Actions</p>
+          <p style={{ color: "white", fontWeight: "bold" }}>Actions</p>
         </div>
         
       </div>
@@ -517,7 +510,7 @@ const [sortOrder, setSortOrder] = useState("asc");
                     </IconButton>
                   </Tooltip>
                 ) : (
-                  console.log("hola")
+                  <div></div>
                 )}
               </div>
             </div>
@@ -526,24 +519,25 @@ const [sortOrder, setSortOrder] = useState("asc");
                 {showFullDescriptions[index]
                   ? producto.description
                   : window.innerWidth <= 600
-                    ? producto.description.substring(0, 15) + "..."
-                    : producto.description.substring(0, 50) +
-                    "..."}
+                    ? producto.description.substring(0, 7) + "..."
+                    : producto.description.length <= 30
+                      ? producto.description
+                      : producto.description.substring(0, 30) + "..."}
 
               </p>
-              {producto.description.length > (window.innerWidth <= 600 ? 15 : 50) &&
+              {producto.description.length > (window.innerWidth <= 600 ? 7 : 30) &&
                 !showFullDescriptions[index] && (
                   <IconButton
-                    color="primary"
+                    color="black"
                     onClick={() => handleShowMoreClick(index)}
                   >
                     <ExpandMoreIcon fontSize="small"/>
                   </IconButton>
                 )}
-                {producto.description.length > (window.innerWidth <= 600 ? 15 : 50) &&
+                {producto.description.length > (window.innerWidth   <= 600 ? 7 : 30) &&
                 showFullDescriptions[index] && (
                   <IconButton
-                    color="primary"
+                    color="black"
                     onClick={() => handleShowLessClick(index)}
                   >
                     <ExpandLessIcon fontSize="small"/>
@@ -586,25 +580,27 @@ const [sortOrder, setSortOrder] = useState("asc");
             },
           }}
         >
-          <DialogTitle id="alert-dialog-title" style={{ fontSize: "1.8rem" }}>
+          <DialogTitle id="alert-dialog-title" style={{ fontSize: "1.5rem" }}>
             {selectedProduct &&
-              `Are you sure you want to delete the product ${selectedProduct.name}?`}
+              <p style={{ fontSize: "1.3rem" }}>
+              Are you sure you want to delete the product <strong>{selectedProduct.name}</strong>?
+            </p>}
           </DialogTitle>
           <DialogContent>
             <DialogContentText
               id="alert-dialog-description"
-              style={{ fontSize: "1.3rem" }}
+              style={{ fontSize: "1.2rem" }}
             >
               The product will be permanently deleted
             </DialogContentText>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleClose} style={{ fontSize: "1.3rem" }}>
+            <Button onClick={handleClose} style={{ fontSize: "1.1rem" }}>
               Cancel
             </Button>
             <Button
               onClick={deleteProduct}
-              style={{ color: "red", fontSize: "1.3rem" }}
+              style={{ color: "red", fontSize: "1.1rem" }}
               autoFocus
             >
               Delete
@@ -620,6 +616,7 @@ const [sortOrder, setSortOrder] = useState("asc");
       >
         <Alert
           onClose={() => setOpenSnackbar(false)}
+          variant="filled"
           severity={isOperationSuccessful ? "success" : "error"}
           sx={{ fontSize: "75%" }}
         >

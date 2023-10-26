@@ -19,7 +19,7 @@ const MainContent = styled.div`
     align-items: center;
     flex-grow: 1;
     font-size:1.5rem;
-    background-color: lightgray;
+  
 `;
 
 function Products(){

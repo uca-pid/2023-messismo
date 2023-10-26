@@ -12,20 +12,11 @@ function EditFormValidation(values) {
     else if (!priceRegex.test(values.price)) {
         error.price = "Invalid price"
     }
+
+    else if (values.price <= 0) {
+        error.price = "Invalid price"
+    }
     
-    if(values.stock === "" ) {
-       
-    } 
-
-    else if (!stockRegex.test(values.stock)) {
-        error.stock = "Invalid stock"
-    }
-
-    if (values.price === "" && values.stock === "") {
-        error.price = "At least one field is required"
-        error.stock = "At least one field is required"
-    }
-
     return error;
 }
 

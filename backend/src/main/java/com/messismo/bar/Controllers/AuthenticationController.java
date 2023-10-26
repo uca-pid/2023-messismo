@@ -6,6 +6,7 @@ import com.messismo.bar.DTOs.RegisterRequestDTO;
 import com.messismo.bar.Services.AuthenticationService;
 import com.messismo.bar.Services.PasswordRecoveryService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,6 +44,11 @@ public class AuthenticationController {
     @PostMapping("/changeForgottenPassword")
     public ResponseEntity<String> changeForgottenPassword(@RequestBody PasswordRecoveryDTO passwordRecoveryDTO) {
         return passwordRecoveryService.changeForgottenPassword(passwordRecoveryDTO);
+    }
+
+    @GetMapping("/health")
+    public ResponseEntity<String> health() {
+        return ResponseEntity.status(HttpStatus.OK).body("Server is up!");
     }
 
 }

@@ -14,7 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -55,14 +54,16 @@ public class DashboardService {
             response.put("totalCategories", categoryRepository.findAll().size());
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("CANNOT get total information for dashboards right now.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("CANNOT get total information for dashboards right now.");
         }
     }
 
     public ResponseEntity<?> getProductStock(ThresholdDTO thresholdDTO) {
         try {
             if (thresholdDTO.getMinStock() == null || thresholdDTO.getMinStock() < 0) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body("Some values cannot be less than zero. Please check.");
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body("Some values cannot be less than zero. Please check.");
             }
             HashMap<String, List<Product>> response = new HashMap<>();
             List<Product> allProducts = productRepository.findAll();
@@ -79,7 +80,8 @@ public class DashboardService {
             response.put("aboveThreshold", productsWithStockAboveTreshold);
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("CANNOT get product stock information for dashboards right now.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("CANNOT get product stock information for dashboards right now.");
         }
     }
 
@@ -101,14 +103,19 @@ public class DashboardService {
             }
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("CANNOT get information for dashboards right now.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("CANNOT get information for dashboards right now.");
         }
     }
 
     private HashMap<String, Object> getYearlyInformation() { // DESDE AÑO INICIAL HASTA AÑO ACTUAL
         List<Order> allOrders = orderRepository.findAll();
-        LocalDate minDate = allOrders.stream().map(order -> order.getDateCreated().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()).min(Comparator.naturalOrder()).orElse(LocalDate.now());
-        LocalDate maxDate = allOrders.stream().map(order -> order.getDateCreated().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()).max(Comparator.naturalOrder()).orElse(LocalDate.now());
+        LocalDate minDate = allOrders.stream()
+                .map(order -> order.getDateCreated().toInstant().atZone(ZoneId.systemDefault()).toLocalDate())
+                .min(Comparator.naturalOrder()).orElse(LocalDate.now());
+        LocalDate maxDate = allOrders.stream()
+                .map(order -> order.getDateCreated().toInstant().atZone(ZoneId.systemDefault()).toLocalDate())
+                .max(Comparator.naturalOrder()).orElse(LocalDate.now());
         List<Integer> years = new ArrayList<>();
         LocalDate currentDate = minDate;
         while (!currentDate.isAfter(maxDate)) {
@@ -171,7 +178,8 @@ public class DashboardService {
                 filteredOrders.add(order);
                 String formattedDate = orderDate.format(DateTimeFormatter.ofPattern("dd"));
                 orderByDayQuantity.put(formattedDate, orderByDayQuantity.get(formattedDate) + 1);
-                double currentEarnings = orderByDayEarnings.get(formattedDate) + (order.getTotalPrice() - order.getTotalCost());
+                double currentEarnings = orderByDayEarnings.get(formattedDate)
+                        + (order.getTotalPrice() - order.getTotalCost());
                 orderByDayEarnings.put(formattedDate, currentEarnings);
             }
         }
@@ -193,7 +201,6 @@ public class DashboardService {
         result.put("labels", new ArrayList<>(orderByDayEarnings.keySet()));
         return result;
     }
-
 
     public HashMap<String, Object> getWeeklyInformation(String dateRequested) { // ESE DIA HASTA UNA SEMANA MAS
         List<Order> filteredOrders = new ArrayList<>();
@@ -217,7 +224,8 @@ public class DashboardService {
                 filteredOrders.add(order);
                 String formattedDate = orderDate.format(DateTimeFormatter.ofPattern("dd/MM"));
                 orderByDateQuantity.put(formattedDate, orderByDateQuantity.get(formattedDate) + 1);
-                double currentEarnings = orderByDateEarnings.get(formattedDate) + (order.getTotalPrice() - order.getTotalCost());
+                double currentEarnings = orderByDateEarnings.get(formattedDate)
+                        + (order.getTotalPrice() - order.getTotalCost());
                 orderByDateEarnings.put(formattedDate, currentEarnings);
             }
         }
@@ -260,7 +268,8 @@ public class DashboardService {
                 filteredOrders.add(order);
                 String month = String.format("%02d", orderDate.getMonthValue());
                 ordersByMonthQuantity.put(month, ordersByMonthQuantity.get(month) + 1);
-                ordersByMonthEarnings.put(month, ordersByMonthEarnings.get(month) + (order.getTotalPrice() - order.getTotalCost()));
+                ordersByMonthEarnings.put(month,
+                        ordersByMonthEarnings.get(month) + (order.getTotalPrice() - order.getTotalCost()));
             }
         }
         for (String month : labels) {
@@ -282,10 +291,14 @@ public class DashboardService {
         return response;
     }
 
-    public HashMap<String, Object> getHistoricInformation() {  // DESDE PRIMER ORDEN HASTA AHORA
+    public HashMap<String, Object> getHistoricInformation() { // DESDE PRIMER ORDEN HASTA AHORA
         List<Order> allOrders = orderRepository.findAll();
-        LocalDate minDate = allOrders.stream().map(order -> order.getDateCreated().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()).min(Comparator.naturalOrder()).orElse(LocalDate.now());
-        LocalDate maxDate = allOrders.stream().map(order -> order.getDateCreated().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()).max(Comparator.naturalOrder()).orElse(LocalDate.now());
+        LocalDate minDate = allOrders.stream()
+                .map(order -> order.getDateCreated().toInstant().atZone(ZoneId.systemDefault()).toLocalDate())
+                .min(Comparator.naturalOrder()).orElse(LocalDate.now());
+        LocalDate maxDate = allOrders.stream()
+                .map(order -> order.getDateCreated().toInstant().atZone(ZoneId.systemDefault()).toLocalDate())
+                .max(Comparator.naturalOrder()).orElse(LocalDate.now());
         List<String> labels = new ArrayList<>();
         LocalDate currentDate = minDate;
         while (!currentDate.isAfter(maxDate)) {
@@ -327,7 +340,6 @@ public class DashboardService {
         return response;
     }
 
-
     public HashMap<String, Object> getEarningCategoryDonut(List<Order> orders) {
         HashMap<String, Object> categoryEarningsMap = new HashMap<>();
         List<Category> categories = categoryRepository.findAll();
@@ -338,7 +350,8 @@ public class DashboardService {
                 for (ProductOrder productOrder : order.getProductOrders()) {
                     Product product = productOrder.getProduct();
                     if (product.getCategory().equals(category)) {
-                        categoryEarnings += productOrder.getQuantity() * (product.getUnitPrice() - product.getUnitCost());
+                        categoryEarnings += productOrder.getQuantity()
+                                * (product.getUnitPrice() - product.getUnitCost());
                     }
                 }
             }
@@ -353,7 +366,8 @@ public class DashboardService {
             for (ProductOrder productOrder : order.getProductOrders()) {
                 Product product = productOrder.getProduct();
                 Category category = product.getCategory();
-                categorySalesMap.put(category.getName(), categorySalesMap.getOrDefault(category.getName(), 0) + productOrder.getQuantity());
+                categorySalesMap.put(category.getName(),
+                        categorySalesMap.getOrDefault(category.getName(), 0) + productOrder.getQuantity());
             }
         }
         return new HashMap<>(categorySalesMap);
@@ -365,7 +379,8 @@ public class DashboardService {
             for (ProductOrder productOrder : order.getProductOrders()) {
                 Product product = productOrder.getProduct();
                 double productProfit = (product.getUnitPrice() - product.getUnitCost()) * productOrder.getQuantity();
-                productProfitsMap.put(product.getName(), productProfitsMap.getOrDefault(product.getName(), 0.0) + productProfit);
+                productProfitsMap.put(product.getName(),
+                        productProfitsMap.getOrDefault(product.getName(), 0.0) + productProfit);
             }
         }
         return productProfitsMap;
@@ -376,7 +391,8 @@ public class DashboardService {
         for (Order order : orders) {
             for (ProductOrder productOrder : order.getProductOrders()) {
                 Product product = productOrder.getProduct();
-                productSalesMap.put(product.getName(), productSalesMap.getOrDefault(product.getName(), 0) + productOrder.getQuantity());
+                productSalesMap.put(product.getName(),
+                        productSalesMap.getOrDefault(product.getName(), 0) + productOrder.getQuantity());
             }
         }
         return productSalesMap;

@@ -182,7 +182,7 @@ const CategoriesList = () => {
   return (
     <div style={{width: "100%", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center"}}>
       <div className="categoryTitle">
-      <h1 style={{ marginBottom: "3%", fontSize: "2.2rem", marginTop: "1%"}}>Categories</h1>
+      <h1 style={{ marginBottom: "3%", fontSize: "2.2rem", marginTop: "1%", color: "white"}}>Categories</h1>
       </div>
       <div style={{flex:1, display: "flex", width: "90%" , justifyContent: "flex-start"}}>
       {role === "ADMIN" || role === "MANAGER" ? (
@@ -190,7 +190,8 @@ const CategoriesList = () => {
         variant="contained"
         endIcon={<AddIcon />}
         style={{
-          color: "white",
+          color: "black",
+          backgroundColor: '#a4d4cc',
           borderColor: "#007bff",
           fontSize: "1rem",
           height: "40px",
@@ -214,7 +215,7 @@ const CategoriesList = () => {
         fullWidth
       >
         <DialogContent>
-        <h1 style={{ marginBottom: "5%", fontSize: "2 rem" }}>New Category</h1>
+        <h1 style={{ marginBottom: "5%", fontSize: "1.6 rem" }}>New Category</h1>
         <p>Name *</p>
       <TextField
         required
@@ -227,7 +228,7 @@ const CategoriesList = () => {
         style={{ width: '80%', marginTop: '3%', marginBottom: '3%', fontSize: '1.3rem'}}
         InputProps={{
           style: {
-            fontSize: '1.3rem', 
+            fontSize: '1.1rem', 
           },}}
           FormHelperTextProps={{
             style: {
@@ -246,9 +247,10 @@ const CategoriesList = () => {
         <Button
           variant="contained"
           style={{
-            backgroundColor: "green",
-            color: "White",
+            backgroundColor: '#a4d4cc',
+            color: "black",
             borderColor: "green",
+            
             width: "40%",
             fontSize: '1rem',
           }}
@@ -260,16 +262,16 @@ const CategoriesList = () => {
         </DialogContent>
       </Dialog>
       <div className="title">
-          <p>Name</p>
+          <p style={{ color : "white", fontWeight: "bold"}}>Name</p>
           <IconButton size="small" onClick={() => handleSort("name")}>
       {sortField === "name" ? (
         sortOrder === "asc" ? (
-          <ExpandLessIcon />
+          <ExpandLessIcon style={{ color: "white"}}/>
         ) : (
-          <ExpandMoreIcon />
+          <ExpandMoreIcon style={{ color: "white"}}/>
         )
       ) : (
-        <ExpandMoreIcon />
+        <ExpandMoreIcon style={{ color: "white"}}/>
       )}
     </IconButton>
         </div>
@@ -346,7 +348,7 @@ const CategoriesList = () => {
      onClose={() => setOpenSnackbar(false)}
      anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
    >
-     <Alert onClose={() => setOpenSnackbar(false)} severity={isOperationSuccessful ? "success" : "error"} sx={{fontSize: '100%'}}>
+     <Alert onClose={() => setOpenSnackbar(false)} severity={isOperationSuccessful ? "success" : "error"} variant="filled" sx={{fontSize: '80%'}}>
        {alertText}
      </Alert>
    </Snackbar>

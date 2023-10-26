@@ -6,6 +6,7 @@ import { RiDeleteBinLine } from 'react-icons/ri'
 import productsService from "../services/products.service";
 import ordersService from "../services/orders.service";
 import { useSelector } from 'react-redux';
+import { propsToClassKey } from "@mui/styles";
 
 const Form = styled.form`
     padding: 2rem;
@@ -194,7 +195,7 @@ const Buttons = styled.div`
     }
 `;
 
-const OrderForm = ({onCancel}) => {
+const EditOrderForm = ({onCancel, orderId}) => {
 
     const { control, register, handleSubmit, formState: {errors}, watch } = useForm()
     const { user: currentUser } = useSelector((state) => state.auth);
@@ -257,8 +258,8 @@ const OrderForm = ({onCancel}) => {
             const productName = data[`product-${index}`];
             const product = products.find(product => product.name === productName);
             const amount = parseInt(data[`amount-${index}`]) || 0;
-            console.log(products);
-            if (product && !isNaN(product.unitPrice) && !isNaN(amount) && !isNaN(product.unitCost)) {
+
+            if (product && !isNaN(product.unitPrice) && !isNaN(amount)) {
                 return {
                     id: product.id,
                     name: product.name,
@@ -267,7 +268,7 @@ const OrderForm = ({onCancel}) => {
                     stock: product.stock,
                     category: product.category,
                     amount: amount,
-                    unitCost: parseFloat(product.unitCost)
+                    unitCost: parseFloat(product.unitCost),
                 };
             } else {
                 return null;
@@ -279,16 +280,13 @@ const OrderForm = ({onCancel}) => {
         }, 0);
 
         const totalCost = orderedProducts.reduce((total, product) => {
-            console.log(product);
             return total + product.unitCost * product.amount;
         }, 0);
 
-
-
-
         const orderData = {
-            registeredEmployeeEmail: currentUser.email,
-            dateCreated: new Date().toISOString(),
+            //registeredEmployeeEmail: currentUser.email,
+            //dateCreated: new Date().toISOString(),
+            orderId: orderId,
             productOrders: orderedProducts.map(product => ({
               product: {
                 productId: product.id,
@@ -296,18 +294,15 @@ const OrderForm = ({onCancel}) => {
                 unitPrice: product.unitPrice,
                 description: product.description,
                 stock: product.stock,
-                category: product.category,
-                unitCost: product.unitCost,
+                category: product.category
               },
               quantity: product.amount
             })),
             totalPrice: totalPrice.toFixed(2),
             totalCost: totalCost.toFixed(2),
-            
-
         };
 
-        ordersService.addOrders(orderData)
+        ordersService.modifyOrder(orderData)
         .then(response => {
           console.log("Orden enviada con éxito:", response.data);
           onCancel();
@@ -330,12 +325,11 @@ const OrderForm = ({onCancel}) => {
         return total + (product?.unitPrice || 0) * amount;
     }, 0);
 
-  
-
     return(
         <>
+            
             <Form onSubmit={ handleSubmit(orderSubmit) } className="form-react">
-
+            <h1 style={{fontSize: '2rem', marginBottom: '3%'}}>Edit order</h1>
                 {formField.map((form, index) => {
                     return(
                         <ProductContainer key={index}>
@@ -458,8 +452,8 @@ const OrderForm = ({onCancel}) => {
                 </div>
         
                 <Buttons>
-                    <Button type="submit" className="placeorder">Place Order</Button>
-                    <Button type="submit" className="cancel" onClick={handleCancelClick}>Cancel</Button>
+                    <Button type="submit" className="placeorder">Add Products</Button>
+                    <Button type="button" className="cancel" onClick={handleCancelClick}>Cancel</Button>
                 </Buttons>
 
             </Form>
@@ -468,4 +462,4 @@ const OrderForm = ({onCancel}) => {
 
 }
 
-export default OrderForm;
+export default EditOrderForm;
