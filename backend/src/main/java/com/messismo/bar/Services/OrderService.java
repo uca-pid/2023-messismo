@@ -48,7 +48,7 @@ public class OrderService {
                     productRepository.save(product);
                     totalPrice += (product.getUnitPrice() * productOrderDTO.getQuantity());
                     totalCost += (product.getUnitCost() * productOrderDTO.getQuantity());
-                    ProductOrder productOrder = ProductOrder.builder().product(product)
+                    ProductOrder productOrder = ProductOrder.builder().productName(product.getName()).productUnitCost(product.getUnitCost()).productUnitPrice(product.getUnitPrice()).category(product.getCategory())
                             .quantity(productOrderDTO.getQuantity()).build();
                     productOrderRepository.save(productOrder);
                     productOrderList.add(productOrder);
@@ -93,7 +93,7 @@ public class OrderService {
                     Product product = productOrderDTO.getProduct();
                     product.setStock(product.getStock() - productOrderDTO.getQuantity());
                     productRepository.save(product);
-                    ProductOrder productOrder = ProductOrder.builder().product(product)
+                    ProductOrder productOrder = ProductOrder.builder().productName(product.getName()).productUnitCost(product.getUnitCost()).productUnitPrice(product.getUnitPrice()).category(product.getCategory())
                             .quantity(productOrderDTO.getQuantity()).build();
                     productOrderRepository.save(productOrder);
                     productOrderList.add(productOrder);

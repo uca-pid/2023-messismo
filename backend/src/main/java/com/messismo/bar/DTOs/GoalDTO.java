@@ -1,21 +1,23 @@
 package com.messismo.bar.DTOs;
 
-import com.messismo.bar.Entities.Category;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
+import java.util.Date;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class DashboardRequestDTO {
+public class GoalDTO {
 
-    private String dateRequested;
+    private String name;
+    private String type;
+    private String anObject;
+    private Date startingDate;
+    private Date endingDate;
 
-    private List<Category> categoryList;
-    
+
 }

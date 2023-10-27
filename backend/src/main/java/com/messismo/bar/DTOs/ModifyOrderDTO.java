@@ -11,7 +11,6 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-
 public class ModifyOrderDTO {
 
     private Long orderId;
