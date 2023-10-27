@@ -14,10 +14,15 @@ import java.util.Date;
 public class GoalDTO {
 
     private String name;
-    private String type;
-    private String anObject;
+
     private Date startingDate;
+
     private Date endingDate;
 
+    private String objectType; // CATEGORY, PRODUCT O TOTAL
+
+    private String goalObject; // SI ES TOTAL, ESTA VACIO, SI ES CATEGORY O PRODUCT TIENE UNA CATEGORY O PRODUCT
+
+    private Double goalObjective; // MONTO FINAL QUE DESEA ALCANZAR
 
 }

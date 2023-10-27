@@ -45,15 +45,13 @@ public class CategoryService {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Missing information to delete a category");
         }
         try {
-            Category category = categoryRepository.findByName(categoryRequestDTO.getCategoryName()).orElseThrow(
-                    () -> new CategoryNotFoundException("Provided category name DOES NOT match any category name"));
+            Category category = categoryRepository.findByName(categoryRequestDTO.getCategoryName()).orElseThrow(() -> new CategoryNotFoundException("Provided category name DOES NOT match any category name"));
             List<Product> productsByCategory = productRepository.findByCategory(category);
             if (productsByCategory.isEmpty()) {
                 categoryRepository.delete(category);
                 return ResponseEntity.status(HttpStatus.OK).body("Category deleted successfully");
             } else {
-                return ResponseEntity.status(HttpStatus.CONFLICT)
-                        .body("The provided category has associated one or more products. Please delete them first");
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("The provided category has associated one or more products. Please delete them first");
             }
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Category NOT deleted.");
@@ -64,4 +62,7 @@ public class CategoryService {
         return ResponseEntity.status(HttpStatus.OK).body(categoryRepository.findAll());
     }
 
+    public Category getCategoryByName(String categoryName) throws CategoryNotFoundException {
+        return categoryRepository.findByName(categoryName).orElseThrow(() -> new CategoryNotFoundException("CategoryName DOES NOT match any categoryName"));
+    }
 }

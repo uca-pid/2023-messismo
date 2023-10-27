@@ -30,18 +30,21 @@ public class Goal {
     @Column(name="endingDate")
     private Date endingDate;
 
-    @Column(name="objectType")
+    @Column(name="objectType")  // CATEGORY, PRODUCT O TOTAL
     private String objectType;
 
-    @Column(name="goalObject")
+    @Column(name="goalObject") // SI ES TOTAL, ESTA VACIO, SI ES CATEGORY O PRODUCT TIENE UNA CATEGORY O PRODUCT
     private String goalObject;
 
-    @Column(name="goalObjective")
+    @Column(name="goalObjective") // MONTO FINAL QUE DESEA ALCANZAR
     private Double goalObjective;
 
-    @Column(name="status")
+    @Column(name = "currentGoal") // MONTO ACTUAL
+    private Double currentGoal;
+
+    @Column(name="status")  // EXPIRED, IN PROGRESS O UPCOMING
     private String status;
 
-    @Column(name="achieved")
+    @Column(name="achieved")  // ACHIEVED O NOT ACHIEVED
     private String achieved;
 }

@@ -80,8 +80,24 @@ public class ManagerController {
         return dashboardService.getDashboardInformation(dashboardRequestDTO);
     }
 
-    @PostMapping("/goals/getAllGoals")
-    public ResponseEntity<?> getAllGoals(@RequestBody GoalFilterRequestDTO goalFilterRequestDTO){
-        return goalService.getAllGoals(goalFilterRequestDTO);
+    @PostMapping("/goal/addGoal")
+    public ResponseEntity<?> addGoal(@RequestBody GoalDTO goalDTO){
+        return goalService.addGoal(goalDTO);
     }
+
+    @DeleteMapping("/goal/deleteGoal")
+    public ResponseEntity<?> deleteGoal(@RequestBody GoalDeleteDTO goalDeleteDTO){
+        return goalService.deleteGoal(goalDeleteDTO);
+    }
+
+    @PutMapping("/goal/modifyeGoal")
+    public ResponseEntity<?> modifyGoal(@RequestBody GoalModifyDTO goalModifyDTO){
+        return goalService.modifyGoal(goalModifyDTO);
+    }
+
+    @PostMapping("/goal/getGoals")
+    public ResponseEntity<?> getGoals(@RequestBody GoalFilterRequestDTO goalFilterRequestDTO){
+        return goalService.getGoals(goalFilterRequestDTO);
+    }
+
 }

@@ -263,4 +263,8 @@ public class ProductService {
         }
         return response;
     }
+
+    public Product getProductByName(String productName) throws ProductNotFoundException {
+        return productRepository.findByName(productName).orElseThrow(() -> new ProductNotFoundException("ProductName DOES NOT match any productName"));
+    }
 }
