@@ -1,11 +1,12 @@
 package com.messismo.bar.Controllers;
 
 import com.messismo.bar.DTOs.AuthenticationRequestDTO;
-import com.messismo.bar.DTOs.GoalFilterRequestDTO;
+import com.messismo.bar.DTOs.DashboardRequestDTO;
 import com.messismo.bar.DTOs.PasswordRecoveryDTO;
 import com.messismo.bar.DTOs.RegisterRequestDTO;
 import com.messismo.bar.Services.AuthenticationService;
-import com.messismo.bar.Services.GoalService;
+import com.messismo.bar.Services.CategoryService;
+import com.messismo.bar.Services.DashboardService;
 import com.messismo.bar.Services.PasswordRecoveryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,7 +23,8 @@ public class AuthenticationController {
 
     private final PasswordRecoveryService passwordRecoveryService;
 
-    private final GoalService goalService;
+    private final DashboardService dashboardService;
+    private final CategoryService categoryService;
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequestDTO request) {
@@ -55,9 +57,12 @@ public class AuthenticationController {
         return ResponseEntity.status(HttpStatus.OK).body("Server is up!");
     }
 
-
-    @PostMapping("/goals/getGoals")
-    public ResponseEntity<?> getGoals(@RequestBody GoalFilterRequestDTO goalFilterRequestDTO){
-        return goalService.getGoals(goalFilterRequestDTO);
+    @GetMapping("/getAllCategories")
+    public ResponseEntity<?> getAllCategories() {
+        return categoryService.getAllCategories();
+    }
+    @PostMapping("/dashboard/getDashboard")
+    public ResponseEntity<?> getDashboardInformation(@RequestBody DashboardRequestDTO dashboardRequestDTO) {
+        return dashboardService.getDashboardInformation(dashboardRequestDTO);
     }
 }

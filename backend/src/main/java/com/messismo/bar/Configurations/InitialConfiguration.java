@@ -45,6 +45,7 @@ public class InitialConfiguration {
             System.out.println("CLOSED ORDERS");
             addSampleGoals(goalService);
             System.out.println("ADDED GOALS");
+            System.out.println("FINISH INITIAL LOADING");
         };
     }
 

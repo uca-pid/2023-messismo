@@ -39,9 +39,33 @@ public class DashboardServiceTest {
         MockitoAnnotations.openMocks(this);
         Category category1 = Category.builder().categoryId(1L).name("Pastries").build();
         Category category2 = Category.builder().categoryId(2L).name("Beverages").build();
+        Category category3 = Category.builder().categoryId(3L).name("TomatosVIP").build();
+        Category category4 = Category.builder().categoryId(4L).name("PotatoKing").build();
+        Category category5 = Category.builder().categoryId(5L).name("VeggieDelight").build();
+        Category category6 = Category.builder().categoryId(6L).name("SaladCentral").build();
+        Category category7 = Category.builder().categoryId(7L).name("Fruits").build();
+        Category category8 = Category.builder().categoryId(8L).name("Bananas").build();
+        Category category9 = Category.builder().categoryId(9L).name("Meat").build();
+        Category category10 = Category.builder().categoryId(10L).name("Pork").build();
+        Category category11 = Category.builder().categoryId(11L).name("Dairy").build();
+        Category category12 = Category.builder().categoryId(12L).name("Cheese").build();
+        Category category13 = Category.builder().categoryId(13L).name("Bakery").build();
+        Category category14 = Category.builder().categoryId(14L).name("Sweets").build();
         List<Category> categories = new ArrayList<>();
         categories.add(category1);
         categories.add(category2);
+        categories.add(category3);
+        categories.add(category4);
+        categories.add(category5);
+        categories.add(category6);
+        categories.add(category7);
+        categories.add(category8);
+        categories.add(category9);
+        categories.add(category10);
+        categories.add(category11);
+        categories.add(category12);
+        categories.add(category13);
+        categories.add(category14);
         when(categoryRepository.findAll()).thenReturn(categories);
     }
 
@@ -207,29 +231,28 @@ public class DashboardServiceTest {
 
         List<Order> fakeOrders = createFakeOrders();
         when(orderRepository.findAll()).thenReturn(fakeOrders);
-        DashboardRequestDTO request = DashboardRequestDTO.builder().build();
+        DashboardRequestDTO request = DashboardRequestDTO.builder().categoryList(new ArrayList<>()).build();
         ResponseEntity<?> response = dashboardService.getDashboardInformation(request);
         Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
-    @Test
-    public void testGetDashboardInformationHistoric() {
-
-        List<Order> fakeOrders = createFakeOrders();
-        when(orderRepository.findAll()).thenReturn(fakeOrders);
-        DashboardRequestDTO request = DashboardRequestDTO.builder().dateRequested("historic").build();
-        ResponseEntity<?> response = dashboardService.getDashboardInformation(request);
-
-        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
-    }
+//    @Test
+//    public void testGetDashboardInformationHistoric() {
+//
+//        List<Order> fakeOrders = createFakeOrders();
+//        when(orderRepository.findAll()).thenReturn(fakeOrders);
+//        DashboardRequestDTO request = DashboardRequestDTO.builder().dateRequested("historic").build();
+//        ResponseEntity<?> response = dashboardService.getDashboardInformation(request);
+//
+//        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
+//    }
 
     @Test
     public void testGetDashboardInformationMonthly() {
 
         List<Order> fakeOrders = createFakeOrders();
         when(orderRepository.findAll()).thenReturn(fakeOrders);
-        DashboardRequestDTO request = new DashboardRequestDTO();
-        request.setDateRequested("2023");
+        DashboardRequestDTO request = DashboardRequestDTO.builder().dateRequested("2023").categoryList(new ArrayList<>()).build();
         ResponseEntity<?> response = dashboardService.getDashboardInformation(request);
 
         Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -240,8 +263,7 @@ public class DashboardServiceTest {
 
         List<Order> fakeOrders = createFakeOrders();
         when(orderRepository.findAll()).thenReturn(fakeOrders);
-        DashboardRequestDTO request = new DashboardRequestDTO();
-        request.setDateRequested("2023-05-10");
+        DashboardRequestDTO request = DashboardRequestDTO.builder().dateRequested("2023-05-10").categoryList(new ArrayList<>()).build();
         ResponseEntity<?> response = dashboardService.getDashboardInformation(request);
 
         Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -252,8 +274,7 @@ public class DashboardServiceTest {
 
         List<Order> fakeOrders = createFakeOrders();
         when(orderRepository.findAll()).thenReturn(fakeOrders);
-        DashboardRequestDTO request = new DashboardRequestDTO();
-        request.setDateRequested("2023-05");
+        DashboardRequestDTO request = DashboardRequestDTO.builder().dateRequested("2023-05").categoryList(new ArrayList<>()).build();
         ResponseEntity<?> response = dashboardService.getDashboardInformation(request);
 
         Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -380,6 +401,7 @@ public class DashboardServiceTest {
 //    }
 
     private List<Order> createFakeOrders() {
+
         List<ProductOrder> productOrders1 = new ArrayList<>();
         productOrders1.add(createFakeProductOrder("Tomato", 10.00, 5.00, "Tomato description", 10, "TomatosVIP", 2));
         productOrders1.add(createFakeProductOrder("Potato", 20.00, 10.00, "Potato description", 20, "PotatoKing", 3));
@@ -431,8 +453,8 @@ public class DashboardServiceTest {
 
     private ProductOrder createFakeProductOrder(String name, Double unitPrice, Double unitCost, String description,
             Integer stock, String category, int quantity) {
-        createFakeProduct(name, unitPrice, unitCost, description, stock, category);
-        return ProductOrder.builder().productName(name).productUnitPrice(unitPrice).productUnitCost(unitCost).quantity(quantity).build();
+        Product product = createFakeProduct(name, unitPrice, unitCost, description, stock, category);
+        return ProductOrder.builder().productName(name).productUnitPrice(unitPrice).productUnitCost(unitCost).category(product.getCategory()).quantity(quantity).build();
     }
 
     private Product createFakeProduct(String name, Double unitPrice, Double unitCost, String description, Integer stock,
@@ -459,14 +481,12 @@ public class DashboardServiceTest {
     private Order createOrderWithProductsAndCategory(String productName, String categoryName, int quantity,
             double unitPrice, double unitCost) {
         ProductOrder productOrder = new ProductOrder();
-        Product product = new Product();
-        product.setName(productName);
-        Category category = new Category();
-        category.setName(categoryName);
-        product.setCategory(category);
-        product.setUnitPrice(unitPrice);
-        product.setUnitCost(unitCost);
+        Category category = Category.builder().name(categoryName).build();
+        Product product = Product.builder().name(productName).unitPrice(unitPrice).unitCost(unitCost).category(category).build();
         productOrder.setProductName(productName);
+        productOrder.setCategory(category);
+        productOrder.setProductUnitPrice(unitPrice);
+        productOrder.setProductUnitCost(unitCost);
         productOrder.setQuantity(quantity);
         Order order = new Order();
         order.setProductOrders(List.of(productOrder));
