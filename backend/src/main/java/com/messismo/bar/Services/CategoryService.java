@@ -62,7 +62,7 @@ public class CategoryService {
         return ResponseEntity.status(HttpStatus.OK).body(categoryRepository.findAll());
     }
 
-    public Category getCategoryByName(String categoryName) throws CategoryNotFoundException {
-        return categoryRepository.findByName(categoryName).orElseThrow(() -> new CategoryNotFoundException("CategoryName DOES NOT match any categoryName"));
+    public Category getCategoryByName(String categoryName) throws Exception {
+        return categoryRepository.findByName(categoryName).orElseThrow(() -> new Exception("CategoryName DOES NOT match any categoryName"));
     }
 }

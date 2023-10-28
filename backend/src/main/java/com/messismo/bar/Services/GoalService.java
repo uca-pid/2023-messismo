@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -58,32 +59,48 @@ public class GoalService {
     }
 
     public ResponseEntity<?> getGoals(GoalFilterRequestDTO goalFilterRequestDTO) {
-        List<Goal> allGoals = updateGoals();
-        List<Goal> filteredGoals = new ArrayList<>();
-        if (!goalFilterRequestDTO.getStatus().isEmpty()) {
-            for (String status : goalFilterRequestDTO.getStatus()) {
-                for (Goal goal : allGoals) {
-                    if (Objects.equals(goal.getStatus(), status)) {
-                        filteredGoals.add(goal);
-                    }
-                }
+        try {
+            if (goalFilterRequestDTO.getAchieved() == null || goalFilterRequestDTO.getStatus() == null) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("Lists must not be null");
             }
-        } else {
-            filteredGoals = allGoals;
+            List<Goal> allGoals = updateGoals();
+            List<Goal> filteredGoals = allGoals.stream()
+                    .filter(goal -> goalFilterRequestDTO.getStatus().isEmpty() || goalFilterRequestDTO.getStatus().contains(goal.getStatus()))
+                    .filter(goal -> goalFilterRequestDTO.getAchieved().isEmpty() || goalFilterRequestDTO.getAchieved().contains(goal.getAchieved()))
+                    .collect(Collectors.toList());
+
+            return ResponseEntity.status(HttpStatus.OK).body(filteredGoals);
+
+//            List<Goal> allGoals = updateGoals();
+//            List<Goal> filteredGoals = new ArrayList<>();
+//            if (!goalFilterRequestDTO.getStatus().isEmpty()) {
+//                for (String status : goalFilterRequestDTO.getStatus()) {
+//                    for (Goal goal : allGoals) {
+//                        if (Objects.equals(goal.getStatus(), status)) {
+//                            filteredGoals.add(goal);
+//                        }
+//                    }
+//                }
+//            } else {
+//                filteredGoals = allGoals;
+//            }
+//            List<Goal> filteredGoalsByAchieved = new ArrayList<>();
+//            if (!goalFilterRequestDTO.getAchieved().isEmpty()) {
+//                for (String achieved : goalFilterRequestDTO.getAchieved()) {
+//                    for (Goal goal : filteredGoals) {
+//                        if (Objects.equals(goal.getAchieved(), achieved)) {
+//                            filteredGoalsByAchieved.add(goal);
+//                        }
+//                    }
+//                }
+//            } else {
+//                filteredGoalsByAchieved = filteredGoals;
+//            }
+//            return ResponseEntity.status(HttpStatus.OK).body(filteredGoalsByAchieved);
         }
-        List<Goal> filteredGoalsByAchieved = new ArrayList<>();
-        if (!goalFilterRequestDTO.getAchieved().isEmpty()) {
-            for (String achieved : goalFilterRequestDTO.getAchieved()) {
-                for (Goal goal : filteredGoals) {
-                    if (Objects.equals(goal.getAchieved(), achieved)) {
-                        filteredGoalsByAchieved.add(goal);
-                    }
-                }
-            }
-        } else {
-            filteredGoalsByAchieved = filteredGoals;
+        catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("CANNOT get goals at the moment.");
         }
-        return ResponseEntity.status(HttpStatus.OK).body(filteredGoalsByAchieved);
     }
 
     public ResponseEntity<?> deleteGoal(GoalDeleteDTO goalDeleteDTO) {
@@ -123,7 +140,7 @@ public class GoalService {
         }
     }
 
-    private List<Goal> updateGoals() {
+    public List<Goal> updateGoals() {
         Date actualDate = new Date();
         List<Goal> allGoals = goalRepository.findAll();
         for (Goal goal : allGoals) {
@@ -151,7 +168,7 @@ public class GoalService {
     }
 
 
-    private Double goalAchieved(Goal goal) {
+    public Double goalAchieved(Goal goal) {
         List<Order> orderList = orderService.getAllOrdersBetweenTwoDates(goal.getStartingDate(), goal.getEndingDate());
         double earnings = 0.00;
         if (Objects.equals(goal.getObjectType(), "Total")) {

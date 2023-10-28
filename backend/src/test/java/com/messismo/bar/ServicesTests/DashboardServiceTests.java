@@ -1,7 +1,6 @@
 package com.messismo.bar.ServicesTests;
 
 import com.messismo.bar.DTOs.DashboardRequestDTO;
-import com.messismo.bar.DTOs.ThresholdDTO;
 import com.messismo.bar.Entities.*;
 import com.messismo.bar.Repositories.CategoryRepository;
 import com.messismo.bar.Repositories.OrderRepository;
@@ -20,7 +19,7 @@ import java.util.*;
 
 import static org.mockito.Mockito.*;
 
-public class DashboardServiceTest {
+public class DashboardServiceTests {
 
     @InjectMocks
     private DashboardService dashboardService;
