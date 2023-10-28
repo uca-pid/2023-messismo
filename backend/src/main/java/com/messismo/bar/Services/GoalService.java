@@ -40,11 +40,10 @@ public class GoalService {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body("Ending date must be after Starting date");
             }
             for (Goal goal : goalList) {
-                if ((goalDTO.getStartingDate().after(goal.getStartingDate()) && goalDTO.getStartingDate().before(goal.getEndingDate())) || (goalDTO.getEndingDate().after(goal.getStartingDate()) && goalDTO.getEndingDate().before(goal.getEndingDate()))) {
+                if ((goalDTO.getStartingDate().after(goal.getStartingDate()) && goalDTO.getStartingDate().before(goal.getEndingDate())) || (goalDTO.getEndingDate().after(goal.getStartingDate()) && goalDTO.getEndingDate().before(goal.getEndingDate())) || (goalDTO.getStartingDate().equals(goal.getStartingDate()) || goalDTO.getStartingDate().equals(goal.getEndingDate())) || (goalDTO.getEndingDate().equals(goal.getStartingDate()) || goalDTO.getEndingDate().equals(goal.getEndingDate()))) {
                     return ResponseEntity.status(HttpStatus.CONFLICT).body("Ending date and Starting date must not collide with another goal dates");
                 }
-            }
-            if (goalDTO.getObjectType().equals("Product")) {
+            } if (goalDTO.getObjectType().equals("Product")) {
                 Product product = productService.getProductByName(goalDTO.getGoalObject());
             } else if (goalDTO.getObjectType().equals("Category")) {
                 Category category = categoryService.getCategoryByName(goalDTO.getGoalObject());
@@ -155,11 +154,11 @@ public class GoalService {
     private Double goalAchieved(Goal goal) {
         List<Order> orderList = orderService.getAllOrdersBetweenTwoDates(goal.getStartingDate(), goal.getEndingDate());
         double earnings = 0.00;
-        if (Objects.equals(goal.getObjectType(), "total")) {
+        if (Objects.equals(goal.getObjectType(), "Total")) {
             for (Order order : orderList) {
                 earnings += (order.getTotalPrice() - order.getTotalCost());
             }
-        } else if (Objects.equals(goal.getObjectType(), "product")) {
+        } else if (Objects.equals(goal.getObjectType(), "Product")) {
             for (Order order : orderList) {
                 for (ProductOrder productOrder : order.getProductOrders()) {
                     if (Objects.equals(productOrder.getProductName(), goal.getGoalObject())) {
@@ -167,7 +166,7 @@ public class GoalService {
                     }
                 }
             }
-        } else if (Objects.equals(goal.getObjectType(), "category")) {
+        } else if (Objects.equals(goal.getObjectType(), "Category")) {
             for (Order order : orderList) {
                 for (ProductOrder productOrder : order.getProductOrders()) {
                     if (Objects.equals(productOrder.getCategory().getName(), goal.getGoalObject())) {
