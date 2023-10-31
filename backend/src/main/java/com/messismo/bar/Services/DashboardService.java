@@ -50,48 +50,70 @@ public class DashboardService {
         }
     }
 
-    private List<Order> filterByCategory(List<Order> allOrders, List<Category> categoryList) {
+//    private List<Order> filterByCategory1111(List<Order> allOrders, List<Category> categoryList) {
+//        if (categoryList.isEmpty() || categoryList == null) {
+//            return allOrders;
+//        } else {
+//            List<Order> filteredOrders = new ArrayList<>();
+//            for (Category category : categoryList) {
+//                for (Order order : allOrders) {
+//                    for (ProductOrder productOrder : order.getProductOrders()) {
+//                        if (productOrder.getCategory().getName().equals(category.getName())) {
+//                            if (!filteredOrders.contains(order)) {
+//                                filteredOrders.add(order);
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//            return filteredOrders;
+//        }
+//    }
+
+    private List<Order> filterByCategory2(List<Order> allOrders, List<Category> categoryList) {
         if (categoryList.isEmpty() || categoryList == null) {
             return allOrders;
         } else {
             List<Order> filteredOrders = new ArrayList<>();
-            for (Category category : categoryList) {
-                for (Order order : allOrders) {
-                    for (ProductOrder productOrder : order.getProductOrders()) {
-                        if (productOrder.getCategory().getName().equals(category.getName())) {
-                            if (!filteredOrders.contains(order)) {
-                                filteredOrders.add(order);
-                            }
-                        }
+            for (Order order : allOrders) {
+                System.out.println(order);
+                Order newOrder = Order.builder().status(order.getStatus()).dateCreated(order.getDateCreated()).id(order.getId()).user(order.getUser()).build();
+                List<ProductOrder> productOrderList = new ArrayList<>();
+                double orderPrice = 0.00;
+                double orderCost = 0.00;
+                for (ProductOrder productOrder : order.getProductOrders()) {
+//                    if( categoryList.stream().anyMatch(cat -> cat.equals(productOrder.getCategory()))){
+                    if( productOrderHasAnyCategory(categoryList,productOrder.getCategory())){
+                        orderPrice+=(productOrder.getProductUnitPrice()*productOrder.getQuantity());
+                        orderCost+=(productOrder.getProductUnitCost()*productOrder.getQuantity());
+                        productOrderList.add(productOrder);
                     }
                 }
+                if(orderPrice>0.00 && orderCost>0.00 && !productOrderList.isEmpty()){
+                    newOrder.setProductOrders(productOrderList);
+                    newOrder.setTotalPrice(orderPrice);
+                    newOrder.setTotalCost(orderCost);
+                    filteredOrders.add(newOrder);
+                }
             }
+            System.out.println(filteredOrders);
             return filteredOrders;
         }
     }
-//    private HashMap<String, Object> dataByCategories(List<Order> allOrders, List<Category> categoryList){
-//        HashMap<String, Object> perCategory = new HashMap<>();
-//        for(Category category: categoryList){
-//            Double totalPerCategory =0.00;
-//            for(Order order: allOrders){
-//                Double totalPerOrder = 0.00;
-//                for(ProductOrder productOrder : order.getProductOrders()) {
-//                    if (productOrder.getProduct().getCategory() == category) {
-//                        Double totalEarningPerProduct = (productOrder.getProduct().getUnitPrice() - productOrder.getProduct().getUnitCost()) * productOrder.getQuantity();
-//                        totalPerOrder += totalEarningPerProduct;
-//                    }
-//                }
-//                totalPerCategory+=totalPerOrder;
-//            }
-//            perCategory.put(category.getName(),totalPerCategory);
-//        }
-//       return perCategory;
-//    }
+
+    private boolean productOrderHasAnyCategory(List<Category> categoryList, Category category) {
+        for(Category category1 : categoryList){
+            if(Objects.equals(category.getName(), category1.getName())){
+                return true;
+            }
+        }
+        return false;
+    }
 
 
     private HashMap<String, Object> getYearlyInformation(List<Category> categoryList) { // DESDE AÑO INICIAL HASTA AÑO ACTUAL
         List<Order> allOrderList = orderRepository.findAll();
-        List<Order> filteredOrdersByCategories = filterByCategory(allOrderList, categoryList);
+        List<Order> filteredOrdersByCategories = filterByCategory2(allOrderList, categoryList);
         LocalDate minDate = filteredOrdersByCategories.stream().map(order -> order.getDateCreated().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()).min(Comparator.naturalOrder()).orElse(LocalDate.now());
         LocalDate maxDate = filteredOrdersByCategories.stream().map(order -> order.getDateCreated().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()).max(Comparator.naturalOrder()).orElse(LocalDate.now());
         List<Integer> years = new ArrayList<>();
@@ -136,7 +158,7 @@ public class DashboardService {
 
     public HashMap<String, Object> getDailyInformation(String dateRequested, List<Category> categoryList) { // ESE MES DESDE DIA 1 HASTA UN MES MAS
         List<Order> allOrderList = orderRepository.findAll();
-        List<Order> filteredOrdersByCategories = filterByCategory(allOrderList, categoryList);
+        List<Order> filteredOrdersByCategories = filterByCategory2(allOrderList, categoryList);
         List<Order> filteredOrders = new ArrayList<>();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate requestedDate = LocalDate.parse(dateRequested + "-01", formatter);
@@ -198,7 +220,7 @@ public class DashboardService {
         }
 //        List<Order> allOrders = orderRepository.findAll();
         List<Order> allOrderList = orderRepository.findAll();
-        List<Order> filteredOrdersByCategories = filterByCategory(allOrderList, categoryList);
+        List<Order> filteredOrdersByCategories = filterByCategory2(allOrderList, categoryList);
         for (Order order : filteredOrdersByCategories) {
             LocalDate orderDate = order.getDateCreated().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
             if (!orderDate.isBefore(requestedDate) && !orderDate.isAfter(endDate)) {
@@ -231,7 +253,7 @@ public class DashboardService {
     public HashMap<String, Object> getMonthlyInformation(String yearRequested, List<Category> categoryList) { // ESE AÑO HASTA UN AÑO MAS
         List<Order> filteredOrders = new ArrayList<>();
         List<Order> allOrderList = orderRepository.findAll();
-        List<Order> filteredOrdersByCategories = filterByCategory(allOrderList, categoryList);
+        List<Order> filteredOrdersByCategories = filterByCategory2(allOrderList, categoryList);
         List<String> labels = List.of("01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12");
         int year = Integer.parseInt(yearRequested);
         LocalDate startDate = LocalDate.of(year, 1, 1);

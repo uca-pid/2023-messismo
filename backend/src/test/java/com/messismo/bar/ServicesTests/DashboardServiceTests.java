@@ -304,6 +304,7 @@ public class DashboardServiceTests {
     public void testGetDailyInformation() {
 
         List<Category> allCategories = categoryRepository.findAll();
+        System.out.println(allCategories);
         String dateRequested = "2023-05";
         List<Order> fakeOrders = createFakeOrders();
         when(orderRepository.findAll()).thenReturn(fakeOrders);
