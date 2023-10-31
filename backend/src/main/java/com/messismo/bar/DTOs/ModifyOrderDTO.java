@@ -11,14 +11,13 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-
 public class ModifyOrderDTO {
 
     private Long orderId;
 
     private List<ProductOrderDTO> productOrders;
 
-    private Double totalPrice;
-
-    private Double totalCost;
+//    private Double totalPrice;
+//
+//    private Double totalCost;
 }

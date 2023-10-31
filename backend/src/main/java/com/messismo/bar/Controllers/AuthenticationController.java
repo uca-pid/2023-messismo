@@ -1,10 +1,7 @@
 package com.messismo.bar.Controllers;
 
-import com.messismo.bar.DTOs.AuthenticationRequestDTO;
-import com.messismo.bar.DTOs.PasswordRecoveryDTO;
-import com.messismo.bar.DTOs.RegisterRequestDTO;
-import com.messismo.bar.Services.AuthenticationService;
-import com.messismo.bar.Services.PasswordRecoveryService;
+import com.messismo.bar.DTOs.*;
+import com.messismo.bar.Services.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +16,11 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
 
     private final PasswordRecoveryService passwordRecoveryService;
+
+    private final OrderService orderService;
+    private final ProductService productService;
+    private final DashboardService dashboardService;
+    private final CategoryService categoryService;
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequestDTO request) {
@@ -51,4 +53,36 @@ public class AuthenticationController {
         return ResponseEntity.status(HttpStatus.OK).body("Server is up!");
     }
 
+
+    @GetMapping("/getAllProducts")
+    public ResponseEntity<?> getAllProducts() {
+        return productService.getAllProducts();
+    }
+
+    @PostMapping("/addNewOrder")
+    public ResponseEntity<?> addNewOrder(@RequestBody OrderRequestDTO orderRequestDTO) {
+        return orderService.addNewOrder(orderRequestDTO);
+    }
+
+    @PostMapping("/modifyOrder")
+    public ResponseEntity<?> modifyOrder(@RequestBody ModifyOrderDTO modifyOrderDTO) {
+        return orderService.modifyOrder(modifyOrderDTO);
+    }
+    @PostMapping("/product/addProduct")
+    public ResponseEntity<?> addProduct(@RequestBody ProductDTO productDTO) {
+        return productService.addProduct(productDTO);
+    }
+    @GetMapping("orders/getAllOrders")
+    public ResponseEntity<?> getAllOrders(){
+        return orderService.getAllOrders();
+    }
+
+    @PostMapping("/dashboard/getDashboard")
+    public ResponseEntity<?> getDashboardInformation(@RequestBody DashboardRequestDTO dashboardRequestDTO) {
+        return dashboardService.getDashboardInformation(dashboardRequestDTO);
+    }
+    @GetMapping("/getAllCategories")
+    public ResponseEntity<?> getAllCategories() {
+        return categoryService.getAllCategories();
+    }
 }

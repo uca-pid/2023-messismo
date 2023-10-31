@@ -1,21 +1,19 @@
 package com.messismo.bar.DTOs;
 
-import com.messismo.bar.Entities.Category;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class DashboardRequestDTO {
+public class GoalModifyDTO {
 
-    private String dateRequested;
+    private Long goalId;
 
-    private List<Category> categoryList;
-    
+    private String modifyObjective;
+
+    private Double newGoalObjective; // MONTO NUEVO
 }
