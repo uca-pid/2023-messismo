@@ -85,7 +85,7 @@ const ModalContent = styled.div`
   border-radius: 8px;
   display: flex;
   flex-direction: column;
-  max-height: 60vh;
+  max-height: 100vh;
   overflow-y: auto;
 `;
 
@@ -110,7 +110,7 @@ const DetailsContent = styled.div`
   border-radius: 8px;
   display: flex;
   flex-direction: column;
-  max-height: 60vh;
+  max-height: 100vh;
   overflow-y: auto;
   width: 20%;
   margin: auto;
@@ -118,8 +118,16 @@ const DetailsContent = styled.div`
   strong {
     color: white;
     font-family: "Roboto";
-    font-size: 2rem;
+    font-size: 1.5rem;
   }
+  strong2{
+    color: white;
+    font-family: 'Roboto';
+    font-size: 1.7rem;
+    margin-top: 1rem;
+    align-self: center;
+    margin-bottom: 1rem;
+}
 
   @media (max-width: 1500px) {
     width: 30%;
@@ -128,8 +136,12 @@ const DetailsContent = styled.div`
     width: 40%;
   }
   @media (max-width: 800px) {
-    width: 50%;
+    width: 100%;
+    
   }
+
+ 
+ 
 `;
 
 const DetailsButton = styled.button`
@@ -178,7 +190,7 @@ const MOBILE_COLUMNS = {
   id: true,
   dateCreated: true,
   totalPrice: true,
-  details: false,
+  details: true,
   status: true,
 };
 const ALL_COLUMNS = {
@@ -221,6 +233,10 @@ function Orders() {
   }, [matches]);
 
   useEffect(() => {
+    console.log("holis",selectedOrderDetails);
+  }, [selectedOrderDetails])
+
+  useEffect(() => {
     ordersService
       .getAllOrders()
       .then((response) => {
@@ -233,6 +249,7 @@ function Orders() {
         setIsLoading(false);
       });
   }, [isOrderFormVisible, open, isEditFormVisible, openEditForm]);
+
 
   if (!currentUser) {
     return <Navigate to="/" />;
@@ -259,6 +276,7 @@ function Orders() {
   const handleViewDetails = (orderId) => {
     const selectedOrder = orders.find((order) => order.id === orderId);
     setSelectedOrderDetails(selectedOrder.productOrders);
+    setSelectedTotalPrice(selectedOrder.totalPrice);
     setDetailsVisible(true);
   };
 
@@ -414,13 +432,13 @@ function Orders() {
       <Navbar />
     
       <MainContent visible={contentVisible}>
-        {currentUser.role === "ADMIN" ||
+      {!isOrderFormVisible && !isEditFormVisible && (currentUser.role === "ADMIN" ||
         currentUser.role === "MANAGER" ||
-        currentUser.role === "VALIDATEDEMPLOYEE" ? (
+        currentUser.role === "VALIDATEDEMPLOYEE") && (
           <Button variant="contained" onClick={handleAddOrderClick}>
             Add Order
           </Button>
-        ) : null}
+        )}
 
         <div visible={contentVisible}>
           <Modal open={isOrderFormVisible}>
@@ -556,15 +574,16 @@ function Orders() {
                     {selectedOrderDetails.map((productOrder) => (
                       <div key={productOrder.productOrderId}>
                         <strong>
-                          {productOrder.quantity}x {productOrder.product.name}
+                          {productOrder.quantity}x {productOrder.productName}
                         </strong>
                         <br />
-                        <strong>${productOrder.product.unitPrice} ea.</strong>
+                        <strong>${productOrder.productUnitPrice} ea.</strong>
                         <br />
                         <strong></strong>
                         <br />
                       </div>
                     ))}
+                    <strong2 style={{ color: "white" }}>Total price: ${selectedTotalPrice}</strong2>
 
                     <DetailsButton onClick={() => handleCloseDetails()}>
                       Close

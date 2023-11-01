@@ -9,7 +9,9 @@ import { useSelector } from 'react-redux';
 
 const Form = styled.form`
     padding: 2rem;
-    background-color: rgb(164, 212, 204, 0.6);
+    background-color: rgb(164, 212, 204, 0.8);
+  
+    
 
     .fail {
         color: red;
@@ -36,11 +38,13 @@ const Form = styled.form`
 
         @media (max-width: 350px) {
             font-size: 7px;
+            
         }
     }
 
     @media (max-width: 250px) {
         min-width: 250px;
+        
     }
 
 `;
@@ -301,8 +305,8 @@ const OrderForm = ({onCancel}) => {
               },
               quantity: product.amount
             })),
-            totalPrice: totalPrice.toFixed(2),
-            totalCost: totalCost.toFixed(2),
+            //totalPrice: totalPrice.toFixed(2),
+            //totalCost: totalCost.toFixed(2),
             
 
         };
