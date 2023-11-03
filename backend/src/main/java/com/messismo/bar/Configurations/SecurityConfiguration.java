@@ -48,8 +48,8 @@ public class SecurityConfiguration {
                     MANAGER.name());
             auth.requestMatchers(new AntPathRequestMatcher("/api/v1/validatedEmployee/**")).hasAnyRole(ADMIN.name(),
                     MANAGER.name(), VALIDATEDEMPLOYEE.name());
-            auth.requestMatchers(new AntPathRequestMatcher("/api/v1/employee/**")).hasAnyRole(ADMIN.name(),
-                    MANAGER.name(), VALIDATEDEMPLOYEE.name(), EMPLOYEE.name());
+//            auth.requestMatchers(new AntPathRequestMatcher("/api/v1/employee/**")).hasAnyRole(ADMIN.name(),
+//                    MANAGER.name(), VALIDATEDEMPLOYEE.name(), EMPLOYEE.name());
             if (Objects.equals(env, "test")) {
                 auth.requestMatchers(PathRequest.toH2Console()).permitAll();
             }

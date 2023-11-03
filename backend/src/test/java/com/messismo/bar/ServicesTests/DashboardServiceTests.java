@@ -1,6 +1,7 @@
 package com.messismo.bar.ServicesTests;
 
 import com.messismo.bar.DTOs.DashboardRequestDTO;
+import com.messismo.bar.DTOs.ThresholdDTO;
 import com.messismo.bar.Entities.*;
 import com.messismo.bar.Repositories.CategoryRepository;
 import com.messismo.bar.Repositories.OrderRepository;
@@ -152,6 +153,93 @@ public class DashboardServiceTests {
 //        Assertions.assertEquals("CANNOT get product stock information for dashboards right now.", response.getBody());
 //    }
 
+    }
+
+    @Test
+    public void testGetTotalInfo_PositiveCase() {
+
+        HashMap<String, Object> responses = new HashMap<>();
+        responses.put("totalSalesInEarnings", 90.0);
+        responses.put("openSalesInEarnings", 40.0);
+        responses.put("closedSalesInEarnings", 50.0);
+        responses.put("totalOrdersQuantity", 2);
+        responses.put("openOrdersQuantity", 1);
+        responses.put("closedOrdersQuantity", 1);
+        responses.put("totalProducts", 0);
+        responses.put("totalCategories", 0);
+        Order closedOrder = new Order();
+        closedOrder.setStatus("Closed");
+        closedOrder.setTotalPrice(100.0);
+        closedOrder.setTotalCost(50.0);
+        Order openOrder = new Order();
+        openOrder.setStatus("Open");
+        openOrder.setTotalPrice(80.0);
+        openOrder.setTotalCost(40.0);
+        List<Order> allOrders = new ArrayList<>();
+        allOrders.add(closedOrder);
+        allOrders.add(openOrder);
+        List<Product> products = new ArrayList<>();
+        List<Category> categories = new ArrayList<>();
+        when(orderRepository.findAll()).thenReturn(allOrders);
+        when(orderRepository.findByStatus("Open")).thenReturn(List.of(openOrder));
+        when(orderRepository.findByStatus("Closed")).thenReturn(List.of(closedOrder));
+        when(productRepository.findAll()).thenReturn(products);
+        when(categoryRepository.findAll()).thenReturn(categories);
+        ResponseEntity<?> response = dashboardService.getTotalInfo();
+
+        Assertions.assertEquals(ResponseEntity.status(HttpStatus.OK).body(responses), response);
+    }
+
+    @Test
+    public void testGetTotalInfo_ExceptionCase() {
+
+        when(orderRepository.findAll()).thenThrow(new RuntimeException("Simulated exception"));
+        ResponseEntity<?> response = dashboardService.getTotalInfo();
+
+        Assertions.assertEquals(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("CANNOT get total information for dashboards right now."), response);
+    }
+
+    @Test
+    public void testGetProductStock_NegativeMinStock() {
+
+        ThresholdDTO thresholdDTO = ThresholdDTO.builder().minStock(-10).build();
+        ResponseEntity<?> response = dashboardService.getProductStock(thresholdDTO);
+
+        Assertions.assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+        Assertions.assertEquals("Some values cannot be less than zero. Please check.", response.getBody());
+    }
+
+    @Test
+    public void testGetProductStock_NullMinStock() {
+
+        ThresholdDTO thresholdDTO = ThresholdDTO.builder().build();
+        ResponseEntity<?> response = dashboardService.getProductStock(thresholdDTO);
+
+        Assertions.assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+        Assertions.assertEquals("Some values cannot be less than zero. Please check.", response.getBody());
+    }
+
+    @Test
+    public void testGetProductStock_ValidMinStock() {
+
+        ThresholdDTO thresholdDTO = ThresholdDTO.builder().minStock(10).build();
+        ResponseEntity<?> response = dashboardService.getProductStock(thresholdDTO);
+
+        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    public void testGetProductStock_ExceptionCase() {
+
+        doThrow(new RuntimeException("Simulated exception")).when(productRepository).findAll();
+        ThresholdDTO thresholdDTO = ThresholdDTO.builder().minStock(10).build();
+        ResponseEntity<?> response = dashboardService.getProductStock(thresholdDTO);
+
+        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        Assertions.assertEquals("CANNOT get product stock information for dashboards right now.", response.getBody());
+    }
+
+
     @Test
     public void testGetQuantityProductDonut() {
 
@@ -230,10 +318,13 @@ public class DashboardServiceTests {
 
         List<Order> fakeOrders = createFakeOrders();
         when(orderRepository.findAll()).thenReturn(fakeOrders);
+
         DashboardRequestDTO request = DashboardRequestDTO.builder().categoryList(new ArrayList<>()).build();
+      
         ResponseEntity<?> response = dashboardService.getDashboardInformation(request);
         Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
     }
+
 
 //    @Test
 //    public void testGetDashboardInformationHistoric() {
@@ -245,6 +336,7 @@ public class DashboardServiceTests {
 //
 //        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
 //    }
+
 
     @Test
     public void testGetDashboardInformationMonthly() {
@@ -262,7 +354,9 @@ public class DashboardServiceTests {
 
         List<Order> fakeOrders = createFakeOrders();
         when(orderRepository.findAll()).thenReturn(fakeOrders);
+
         DashboardRequestDTO request = DashboardRequestDTO.builder().dateRequested("2023-05-10").categoryList(new ArrayList<>()).build();
+
         ResponseEntity<?> response = dashboardService.getDashboardInformation(request);
 
         Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -302,6 +396,7 @@ public class DashboardServiceTests {
 
     @Test
     public void testGetDailyInformation() {
+
 
         List<Category> allCategories = categoryRepository.findAll();
         System.out.println(allCategories);
@@ -376,6 +471,7 @@ public class DashboardServiceTests {
         Assertions.assertNotNull(result.get("averageByOrder"));
     }
 
+
 //    @Test
 //    public void testGetHistoricInformation() {
 //
@@ -401,7 +497,6 @@ public class DashboardServiceTests {
 //    }
 
     private List<Order> createFakeOrders() {
-
         List<ProductOrder> productOrders1 = new ArrayList<>();
         productOrders1.add(createFakeProductOrder("Tomato", 10.00, 5.00, "Tomato description", 10, "TomatosVIP", 2));
         productOrders1.add(createFakeProductOrder("Potato", 20.00, 10.00, "Potato description", 20, "PotatoKing", 3));
@@ -442,6 +537,7 @@ public class DashboardServiceTests {
 
     private Order createFakeOrder(List<ProductOrder> productOrders, String username, String email, Double totalPrice,
             Double totalCost, String status, Date date) {
+
         return Order.builder().productOrders(productOrders).user(createFakeUser(username, email)).dateCreated(date)
                 .totalPrice(totalPrice).totalCost(totalCost).status(status).build();
     }

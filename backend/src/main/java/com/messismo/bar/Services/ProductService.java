@@ -44,7 +44,8 @@ public class ProductService {
                     ResponseEntity<?> response = categoryService.addCategory(categoryRequestDTO);
                 }
                 Category category = categoryRepository.findByName(productDTO.getCategory()).orElseThrow(() -> new CategoryNotFoundException("Provided category name DOES NOT match any category name"));
-                Product newProduct = Product.builder().name(productDTO.getName()).unitPrice(productDTO.getUnitPrice()).category(category).description(productDTO.getDescription()).stock(productDTO.getStock()).unitCost(productDTO.getUnitCost()).build();
+                Product newProduct = new Product(productDTO.getName(), productDTO.getUnitPrice(),productDTO.getUnitCost() , productDTO.getDescription(), productDTO.getStock(), category);
+//                Product newProduct = Product.builder().name(productDTO.getName()).unitPrice(productDTO.getUnitPrice()).category(category).description(productDTO.getDescription()).stock(productDTO.getStock()).unitCost(productDTO.getUnitCost()).build();
                 productRepository.save(newProduct);
                 return ResponseEntity.status(HttpStatus.CREATED).body("Product created successfully");
             }
@@ -72,7 +73,8 @@ public class ProductService {
         }
         try {
             Product product = productRepository.findByProductId(productPriceDTO.getProductId()).orElseThrow(() -> new ProductNotFoundException("ProductId DOES NOT match any productId"));
-            product.setUnitPrice(productPriceDTO.getUnitPrice());
+            product.updateUnitPrice(productPriceDTO.getUnitPrice());
+//            product.setUnitPrice(productPriceDTO.getUnitPrice());
             productRepository.save(product);
             return ResponseEntity.status(HttpStatus.OK).body("Product price updated successfully");
         } catch (Exception e) {
@@ -89,7 +91,8 @@ public class ProductService {
         }
         try {
             Product product = productRepository.findByProductId(productPriceDTO.getProductId()).orElseThrow(() -> new ProductNotFoundException("ProductId DOES NOT match any productId"));
-            product.setUnitCost(productPriceDTO.getUnitPrice());
+            product.updateUnitCost(productPriceDTO.getUnitPrice());
+//            product.setUnitCost(productPriceDTO.getUnitPrice());
             productRepository.save(product);
             return ResponseEntity.status(HttpStatus.OK).body("Product cost updated successfully");
         } catch (Exception e) {
@@ -110,13 +113,14 @@ public class ProductService {
         }
         try {
             Product product = productRepository.findByProductId(productStockDTO.getProductId()).orElseThrow(() -> new ProductNotFoundException("ProductId DOES NOT match any productId"));
-            if (Objects.equals(productStockDTO.getOperation(), "add")) {
-                product.setStock(product.getStock() + productStockDTO.getModifyStock());
-            } else if (Objects.equals(productStockDTO.getOperation(), "substract")) {
-                product.setStock(product.getStock() - productStockDTO.getModifyStock());
-            } else {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body("Incorrect type of operation");
-            }
+            product.updateStock(productStockDTO.getOperation(),productStockDTO.getModifyStock());
+//            if (Objects.equals(productStockDTO.getOperation(), "add")) {
+//                product.setStock(product.getStock() + productStockDTO.getModifyStock());
+//            } else if (Objects.equals(productStockDTO.getOperation(), "substract")) {
+//                product.setStock(product.getStock() - productStockDTO.getModifyStock());
+//            } else {
+//                return ResponseEntity.status(HttpStatus.CONFLICT).body("Incorrect type of operation");
+//            }
             productRepository.save(product);
             return ResponseEntity.status(HttpStatus.OK).body("Product stock updated successfully");
         } catch (Exception e) {

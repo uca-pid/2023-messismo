@@ -12,9 +12,9 @@ import java.util.Date;
 import java.util.List;
 
 @Data
-@Builder
+//@Builder
 @NoArgsConstructor
-@AllArgsConstructor
+//@AllArgsConstructor
 @Entity
 @Table(name = "orders")
 public class Order {
@@ -41,7 +41,6 @@ public class Order {
 
     @Column(name = "total_cost")
     private Double totalCost;
-
     @Column(name = "status")
     private String status;
 
@@ -50,4 +49,45 @@ public class Order {
         return "Order{" + "id=" + id + ", user=" + user.getEmail() + ", dateCreated=" + dateCreated + ", productOrder=" + productOrders + ", totalPrice=" + totalPrice + ", totalCost=" + totalCost + ", status=" + status + '}';
     }
 
+    public Order(User user, Date dateCreated, List<ProductOrder> productOrders, Double totalPrice, Double totalCost){
+        if(totalPrice<0.00){
+            throw new IllegalArgumentException("Total price must be greater than 0");
+        } else if (totalCost<0.00) {
+            throw new IllegalArgumentException("Total cost must be greater than 0");
+        }
+        else {
+            this.user = user;
+            this.dateCreated = dateCreated;
+            this.productOrders = productOrders;
+            this.totalPrice= totalPrice;
+            this.totalCost=totalCost;
+            this.status="Open";
+        }
+    }
+
+    public void close() {
+        this.status="Closed";
+    }
+
+    public void updateProductOrders(List<ProductOrder> productOrderList) {
+        this.productOrders.addAll(productOrderList);
+    }
+
+    public void updateTotalPrice(Double totalPrice) {
+        if(totalPrice<=0.00){
+            throw new IllegalArgumentException("Updated total price must be greater than 0");
+        }
+        else {
+            this.totalPrice+=totalPrice;
+        }
+    }
+
+    public void updateTotalCost(Double totalCost) {
+        if(totalCost<=0.00){
+            throw new IllegalArgumentException("Updated total cost must be greater than 0");
+        }
+        else {
+            this.totalCost+=totalCost;
+        }
+    }
 }

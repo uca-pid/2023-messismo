@@ -38,5 +38,24 @@ public class ProductOrder {
 
     @Column(name = "quantity")
     private Integer quantity;
-    
+
+
+    @Override
+    public String toString() {
+        return "ProductOrder{" +
+                "productOrderId=" + productOrderId +
+                ", product=" + product +
+                ", quantity=" + quantity +
+                '}';
+    }
+
+    public ProductOrder(Product product, Integer quantity){
+        if(quantity<=0){
+            throw new IllegalArgumentException("Product quantity must be greater than 0");
+        }
+        else {
+            this.product=product;
+            this.quantity=quantity;
+        }
+    }
 }

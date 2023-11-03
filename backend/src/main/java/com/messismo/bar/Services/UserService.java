@@ -43,16 +43,18 @@ public class UserService implements UserDetailsService {
     public ResponseEntity<?> validateEmployee(Long userId) {
         try {
             User user = userRepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("User DOES NOT exist"));
-            Collection<? extends GrantedAuthority> authorities = user.getAuthorities();
-            boolean isEmployee = false;
-            for (GrantedAuthority authority : authorities) {
-                if ("ROLE_VALIDATEDEMPLOYEE".equals(authority.getAuthority()) || "ROLE_MANAGER".equals(authority.getAuthority()) || "ROLE_ADMIN".equals(authority.getAuthority())) {
-                    isEmployee = true;
-                    break;
-                }
-            }
-            if (!isEmployee) {
-                user.setRole(Role.VALIDATEDEMPLOYEE);
+//            Collection<? extends GrantedAuthority> authorities = user.getAuthorities();
+//            boolean isEmployee = false;
+//            boolean isValidEmployee= user.isValidatedEmployeeOrGreater();
+//            for (GrantedAuthority authority : authorities) {
+//                if ("ROLE_VALIDATEDEMPLOYEE".equals(authority.getAuthority()) || "ROLE_MANAGER".equals(authority.getAuthority()) || "ROLE_ADMIN".equals(authority.getAuthority())) {
+//                    isEmployee = true;
+//                    break;
+//                }
+//            }
+            if (user.isEmployee()) {
+                user.upgradeToValidateEmployee();
+//                user.setRole(Role.VALIDATEDEMPLOYEE);
                 userRepository.save(user);
                 return ResponseEntity.status(HttpStatus.OK).body("User IS NOW a VALIDATED_EMPLOYEE");
             } else {
@@ -66,16 +68,18 @@ public class UserService implements UserDetailsService {
     public ResponseEntity<?> validateManager(Long userId) {
         try {
             User user = userRepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("User DOES NOT exist"));
-            Collection<? extends GrantedAuthority> authorities = user.getAuthorities();
-            boolean isValidatedEmployee = false;
-            for (GrantedAuthority authority : authorities) {
-                if ("ROLE_VALIDATEDEMPLOYEE".equals(authority.getAuthority())) {
-                    isValidatedEmployee = true;
-                    break;
-                }
-            }
-            if (isValidatedEmployee) {
-                user.setRole(Role.MANAGER);
+//            Collection<? extends GrantedAuthority> authorities = user.getAuthorities();
+//            boolean isValidatedEmployee = false;
+//            for (GrantedAuthority authority : authorities) {
+//                if ("ROLE_VALIDATEDEMPLOYEE".equals(authority.getAuthority())) {
+//                    isValidatedEmployee = true;
+//                    break;
+//                }
+//            }
+//            boolean isValidatedEmployee = user.isValidatedEmployee();
+            if (user.isValidatedEmployee()) {
+                user.upgradeToManager();
+//                user.setRole(Role.MANAGER);
                 userRepository.save(user);
                 return ResponseEntity.status(HttpStatus.OK).body("User IS NOW a MANAGER");
             } else {

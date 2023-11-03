@@ -44,22 +44,46 @@ public class OrderService {
                     return ResponseEntity.status(HttpStatus.CONFLICT).body("Not enough stock of a product");
                 } else {
                     Product product = productOrderDTO.getProduct();
-                    product.setStock(product.getStock() - productOrderDTO.getQuantity());
+                    product.removeStock(productOrderDTO.getQuantity());
+//                    product.setStock(product.getStock() - productOrderDTO.getQuantity());
                     productRepository.save(product);
                     totalPrice += (product.getUnitPrice() * productOrderDTO.getQuantity());
                     totalCost += (product.getUnitCost() * productOrderDTO.getQuantity());
-                    ProductOrder productOrder = ProductOrder.builder().productName(product.getName()).productUnitCost(product.getUnitCost()).productUnitPrice(product.getUnitPrice()).category(product.getCategory()).quantity(productOrderDTO.getQuantity()).build();
+                    ProductOrder productOrder = new ProductOrder(product, productOrderDTO.getQuantity());
+//                    ProductOrder productOrder = ProductOrder.builder().product(product)
+//                            .quantity(productOrderDTO.getQuantity()).build();
+
                     productOrderRepository.save(productOrder);
                     productOrderList.add(productOrder);
                 }
             }
-            Order newOrder = Order.builder().productOrders(productOrderList).user(employee).dateCreated(orderRequestDTO.getDateCreated()).totalPrice(totalPrice).totalCost(totalCost).status("Open").build();
+            Order newOrder= new Order(employee,orderRequestDTO.getDateCreated(),productOrderList,totalPrice,totalCost);
+//            Order newOrder = Order.builder().productOrders(productOrderList).user(employee)
+//                    .dateCreated(orderRequestDTO.getDateCreated()).totalPrice(totalPrice).totalCost(totalCost)
+//                    .status("Open").build();
+
             orderRepository.save(newOrder);
             return ResponseEntity.status(HttpStatus.CREATED).body("Order created successfully");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("CANNOT create an order at the moment.");
         }
     }
+
+    public ResponseEntity<?> closeOrder(OrderIdDTO orderIdDTO) {
+        try {
+            Order order = orderRepository.findById(orderIdDTO.getOrderId())
+                    .orElseThrow(() -> new Exception("Order not found"));
+//            order.setStatus("Closed");
+            order.close();
+            orderRepository.save(order);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Order closed successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("CANNOT close an order at the moment.");
+        }
+    }
+
+    public ResponseEntity<?> getAllOrders() {
+        return ResponseEntity.status(HttpStatus.OK).body(orderRepository.findAll());
 
 
     public ResponseEntity<?> modifyOrder(ModifyOrderDTO modifyOrderDTO) {
@@ -74,21 +98,24 @@ public class OrderService {
                 } else {
 
                     Product product = productOrderDTO.getProduct();
-                    product.setStock(product.getStock() - productOrderDTO.getQuantity());
+                    product.removeStock( productOrderDTO.getQuantity());
                     productRepository.save(product);
                     totalPrice += (product.getUnitPrice() * productOrderDTO.getQuantity());
                     totalCost += (product.getUnitCost() * productOrderDTO.getQuantity());
-                    ProductOrder productOrder = ProductOrder.builder().productName(product.getName()).productUnitCost(product.getUnitCost()).productUnitPrice(product.getUnitPrice()).category(product.getCategory()).quantity(productOrderDTO.getQuantity()).build();
+                    ProductOrder productOrder= new ProductOrder(product, productOrderDTO.getQuantity());
+//                    ProductOrder productOrder = ProductOrder.builder().product(product)
+//                            .quantity(productOrderDTO.getQuantity()).build();
+
                     productOrderRepository.save(productOrder);
                     productOrderList.add(productOrder);
                 }
             }
-            List<ProductOrder> productOrdersToUpdate = order.getProductOrders();
-            productOrdersToUpdate.addAll(productOrderList);
-            order.setProductOrders(productOrdersToUpdate);
-
-            order.setTotalPrice(order.getTotalPrice() + totalPrice);
-            order.setTotalCost(order.getTotalCost() + totalCost);
+//            List<ProductOrder> productOrdersToUpdate = order.getProductOrders();
+//            productOrdersToUpdate.addAll(productOrderList);
+//            order.setProductOrders(productOrdersToUpdate);
+            order.updateProductOrders(productOrderList);
+            order.updateTotalPrice(modifyOrderDTO.getTotalPrice());
+            order.updateTotalCost(modifyOrderDTO.getTotalCost());
             orderRepository.save(order);
             return ResponseEntity.status(HttpStatus.CREATED).body("Order modified successfully");
         } catch (Exception e) {
