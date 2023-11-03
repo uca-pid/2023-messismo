@@ -40,11 +40,11 @@ public class Product {
     private Category category;
 
     public Product(String name, Double unitPrice, Double unitCost, String description, Integer stock, Category category){
-        if(unitPrice<=0.00){
+        if(unitPrice<0.00){
             throw new IllegalArgumentException("Unit price must be greater than 0");
-        } else if (unitCost<=0.00) {
+        } else if (unitCost<0.00) {
             throw new IllegalArgumentException("Unit cost must be greater than 0");
-        } else if (stock<=0) {
+        } else if (stock<0) {
             throw new IllegalArgumentException("Stock must be greather than 0");
         }
         else {

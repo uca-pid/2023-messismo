@@ -12,9 +12,9 @@ import java.util.Date;
 import java.util.List;
 
 @Data
-//@Builder
+@Builder
 @NoArgsConstructor
-//@AllArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "orders")
 public class Order {

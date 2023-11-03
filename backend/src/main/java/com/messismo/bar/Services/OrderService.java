@@ -49,7 +49,7 @@ public class OrderService {
                     productRepository.save(product);
                     totalPrice += (product.getUnitPrice() * productOrderDTO.getQuantity());
                     totalCost += (product.getUnitCost() * productOrderDTO.getQuantity());
-                    ProductOrder productOrder = new ProductOrder(product, productOrderDTO.getQuantity());
+                    ProductOrder productOrder = new ProductOrder(product.getName(),product.getUnitPrice(),product.getUnitCost(),product.getCategory(), productOrderDTO.getQuantity());
 //                    ProductOrder productOrder = ProductOrder.builder().product(product)
 //                            .quantity(productOrderDTO.getQuantity()).build();
 
@@ -82,10 +82,10 @@ public class OrderService {
         }
     }
 
-    public ResponseEntity<?> getAllOrders() {
-        return ResponseEntity.status(HttpStatus.OK).body(orderRepository.findAll());
-
-
+//    public ResponseEntity<?> getAllOrders() {
+//        return ResponseEntity.status(HttpStatus.OK).body(orderRepository.findAll());
+//
+//    }
     public ResponseEntity<?> modifyOrder(ModifyOrderDTO modifyOrderDTO) {
         try {
             Order order = orderRepository.findById(modifyOrderDTO.getOrderId()).orElseThrow(() -> new Exception("Order not found"));
@@ -102,7 +102,7 @@ public class OrderService {
                     productRepository.save(product);
                     totalPrice += (product.getUnitPrice() * productOrderDTO.getQuantity());
                     totalCost += (product.getUnitCost() * productOrderDTO.getQuantity());
-                    ProductOrder productOrder= new ProductOrder(product, productOrderDTO.getQuantity());
+                    ProductOrder productOrder = new ProductOrder(product.getName(),product.getUnitPrice(),product.getUnitCost(),product.getCategory(), productOrderDTO.getQuantity());
 //                    ProductOrder productOrder = ProductOrder.builder().product(product)
 //                            .quantity(productOrderDTO.getQuantity()).build();
 
@@ -114,8 +114,8 @@ public class OrderService {
 //            productOrdersToUpdate.addAll(productOrderList);
 //            order.setProductOrders(productOrdersToUpdate);
             order.updateProductOrders(productOrderList);
-            order.updateTotalPrice(modifyOrderDTO.getTotalPrice());
-            order.updateTotalCost(modifyOrderDTO.getTotalCost());
+            order.updateTotalPrice(totalPrice);
+            order.updateTotalCost(totalCost);
             orderRepository.save(order);
             return ResponseEntity.status(HttpStatus.CREATED).body("Order modified successfully");
         } catch (Exception e) {
@@ -123,16 +123,16 @@ public class OrderService {
         }
     }
 
-    public ResponseEntity<?> closeOrder(OrderIdDTO orderIdDTO) {
-        try {
-            Order order = orderRepository.findById(orderIdDTO.getOrderId()).orElseThrow(() -> new Exception("Order not found"));
-            order.setStatus("Closed");
-            orderRepository.save(order);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Order closed successfully");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("CANNOT close an order at the moment.");
-        }
-    }
+//    public ResponseEntity<?> closeOrder(OrderIdDTO orderIdDTO) {
+//        try {
+//            Order order = orderRepository.findById(orderIdDTO.getOrderId()).orElseThrow(() -> new Exception("Order not found"));
+//            order.setStatus("Closed");
+//            orderRepository.save(order);
+//            return ResponseEntity.status(HttpStatus.CREATED).body("Order closed successfully");
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("CANNOT close an order at the moment.");
+//        }
+//    }
 
     public ResponseEntity<?> getAllOrders() {
         return ResponseEntity.status(HttpStatus.OK).body(orderRepository.findAll());

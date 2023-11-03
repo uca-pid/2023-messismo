@@ -19,7 +19,7 @@ public class ProductOrder {
     @Column(name = "productOrderId")
     private Long productOrderId;
 
-//    @ManyToOne(fetch = FetchType.EAGER)
+    //    @ManyToOne(fetch = FetchType.EAGER)
 //    @JoinColumn(name = "product", referencedColumnName = "product_id")
 //    private Product product;
     @Column(name = "productName")
@@ -30,8 +30,8 @@ public class ProductOrder {
 
     @Column(name = "productUnitPrice")
     private Double productUnitPrice;
-    
-    @ManyToOne(fetch = FetchType.EAGER) 
+
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "category", referencedColumnName = "category_id")
     private Category category;
 
@@ -40,22 +40,20 @@ public class ProductOrder {
     private Integer quantity;
 
 
-    @Override
-    public String toString() {
-        return "ProductOrder{" +
-                "productOrderId=" + productOrderId +
-                ", product=" + product +
-                ", quantity=" + quantity +
-                '}';
+    public ProductOrder(String productName, Double productUnitPrice, Double productUnitCost, Category category, Integer quantity) {
+        if (quantity < 0) {
+            throw new IllegalArgumentException("Product quantity must be greater than 0");
+        } else {
+            this.productName = productName;
+            this.productUnitPrice = productUnitPrice;
+            this.productUnitCost = productUnitCost;
+            this.category = category;
+            this.quantity = quantity;
+        }
     }
 
-    public ProductOrder(Product product, Integer quantity){
-        if(quantity<=0){
-            throw new IllegalArgumentException("Product quantity must be greater than 0");
-        }
-        else {
-            this.product=product;
-            this.quantity=quantity;
-        }
+    @Override
+    public String toString() {
+        return "ProductOrder{" + "productOrderId=" + productOrderId + ", product=" + productName + ", quantity=" + quantity + '}';
     }
 }

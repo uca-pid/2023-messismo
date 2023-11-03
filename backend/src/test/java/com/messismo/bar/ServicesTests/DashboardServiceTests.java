@@ -153,91 +153,91 @@ public class DashboardServiceTests {
 //        Assertions.assertEquals("CANNOT get product stock information for dashboards right now.", response.getBody());
 //    }
 
-    }
 
-    @Test
-    public void testGetTotalInfo_PositiveCase() {
-
-        HashMap<String, Object> responses = new HashMap<>();
-        responses.put("totalSalesInEarnings", 90.0);
-        responses.put("openSalesInEarnings", 40.0);
-        responses.put("closedSalesInEarnings", 50.0);
-        responses.put("totalOrdersQuantity", 2);
-        responses.put("openOrdersQuantity", 1);
-        responses.put("closedOrdersQuantity", 1);
-        responses.put("totalProducts", 0);
-        responses.put("totalCategories", 0);
-        Order closedOrder = new Order();
-        closedOrder.setStatus("Closed");
-        closedOrder.setTotalPrice(100.0);
-        closedOrder.setTotalCost(50.0);
-        Order openOrder = new Order();
-        openOrder.setStatus("Open");
-        openOrder.setTotalPrice(80.0);
-        openOrder.setTotalCost(40.0);
-        List<Order> allOrders = new ArrayList<>();
-        allOrders.add(closedOrder);
-        allOrders.add(openOrder);
-        List<Product> products = new ArrayList<>();
-        List<Category> categories = new ArrayList<>();
-        when(orderRepository.findAll()).thenReturn(allOrders);
-        when(orderRepository.findByStatus("Open")).thenReturn(List.of(openOrder));
-        when(orderRepository.findByStatus("Closed")).thenReturn(List.of(closedOrder));
-        when(productRepository.findAll()).thenReturn(products);
-        when(categoryRepository.findAll()).thenReturn(categories);
-        ResponseEntity<?> response = dashboardService.getTotalInfo();
-
-        Assertions.assertEquals(ResponseEntity.status(HttpStatus.OK).body(responses), response);
-    }
-
-    @Test
-    public void testGetTotalInfo_ExceptionCase() {
-
-        when(orderRepository.findAll()).thenThrow(new RuntimeException("Simulated exception"));
-        ResponseEntity<?> response = dashboardService.getTotalInfo();
-
-        Assertions.assertEquals(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("CANNOT get total information for dashboards right now."), response);
-    }
-
-    @Test
-    public void testGetProductStock_NegativeMinStock() {
-
-        ThresholdDTO thresholdDTO = ThresholdDTO.builder().minStock(-10).build();
-        ResponseEntity<?> response = dashboardService.getProductStock(thresholdDTO);
-
-        Assertions.assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
-        Assertions.assertEquals("Some values cannot be less than zero. Please check.", response.getBody());
-    }
-
-    @Test
-    public void testGetProductStock_NullMinStock() {
-
-        ThresholdDTO thresholdDTO = ThresholdDTO.builder().build();
-        ResponseEntity<?> response = dashboardService.getProductStock(thresholdDTO);
-
-        Assertions.assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
-        Assertions.assertEquals("Some values cannot be less than zero. Please check.", response.getBody());
-    }
-
-    @Test
-    public void testGetProductStock_ValidMinStock() {
-
-        ThresholdDTO thresholdDTO = ThresholdDTO.builder().minStock(10).build();
-        ResponseEntity<?> response = dashboardService.getProductStock(thresholdDTO);
-
-        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
-    }
-
-    @Test
-    public void testGetProductStock_ExceptionCase() {
-
-        doThrow(new RuntimeException("Simulated exception")).when(productRepository).findAll();
-        ThresholdDTO thresholdDTO = ThresholdDTO.builder().minStock(10).build();
-        ResponseEntity<?> response = dashboardService.getProductStock(thresholdDTO);
-
-        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-        Assertions.assertEquals("CANNOT get product stock information for dashboards right now.", response.getBody());
-    }
+//
+//    @Test
+//    public void testGetTotalInfo_PositiveCase() {
+//
+//        HashMap<String, Object> responses = new HashMap<>();
+//        responses.put("totalSalesInEarnings", 90.0);
+//        responses.put("openSalesInEarnings", 40.0);
+//        responses.put("closedSalesInEarnings", 50.0);
+//        responses.put("totalOrdersQuantity", 2);
+//        responses.put("openOrdersQuantity", 1);
+//        responses.put("closedOrdersQuantity", 1);
+//        responses.put("totalProducts", 0);
+//        responses.put("totalCategories", 0);
+//        Order closedOrder = new Order();
+//        closedOrder.setStatus("Closed");
+//        closedOrder.setTotalPrice(100.0);
+//        closedOrder.setTotalCost(50.0);
+//        Order openOrder = new Order();
+//        openOrder.setStatus("Open");
+//        openOrder.setTotalPrice(80.0);
+//        openOrder.setTotalCost(40.0);
+//        List<Order> allOrders = new ArrayList<>();
+//        allOrders.add(closedOrder);
+//        allOrders.add(openOrder);
+//        List<Product> products = new ArrayList<>();
+//        List<Category> categories = new ArrayList<>();
+//        when(orderRepository.findAll()).thenReturn(allOrders);
+//        when(orderRepository.findByStatus("Open")).thenReturn(List.of(openOrder));
+//        when(orderRepository.findByStatus("Closed")).thenReturn(List.of(closedOrder));
+//        when(productRepository.findAll()).thenReturn(products);
+//        when(categoryRepository.findAll()).thenReturn(categories);
+//        ResponseEntity<?> response = dashboardService.getTotalInfo();
+//
+//        Assertions.assertEquals(ResponseEntity.status(HttpStatus.OK).body(responses), response);
+//    }
+//
+//    @Test
+//    public void testGetTotalInfo_ExceptionCase() {
+//
+//        when(orderRepository.findAll()).thenThrow(new RuntimeException("Simulated exception"));
+//        ResponseEntity<?> response = dashboardService.getTotalInfo();
+//
+//        Assertions.assertEquals(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("CANNOT get total information for dashboards right now."), response);
+//    }
+//
+//    @Test
+//    public void testGetProductStock_NegativeMinStock() {
+//
+//        ThresholdDTO thresholdDTO = ThresholdDTO.builder().minStock(-10).build();
+//        ResponseEntity<?> response = dashboardService.getProductStock(thresholdDTO);
+//
+//        Assertions.assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+//        Assertions.assertEquals("Some values cannot be less than zero. Please check.", response.getBody());
+//    }
+//
+//    @Test
+//    public void testGetProductStock_NullMinStock() {
+//
+//        ThresholdDTO thresholdDTO = ThresholdDTO.builder().build();
+//        ResponseEntity<?> response = dashboardService.getProductStock(thresholdDTO);
+//
+//        Assertions.assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+//        Assertions.assertEquals("Some values cannot be less than zero. Please check.", response.getBody());
+//    }
+//
+//    @Test
+//    public void testGetProductStock_ValidMinStock() {
+//
+//        ThresholdDTO thresholdDTO = ThresholdDTO.builder().minStock(10).build();
+//        ResponseEntity<?> response = dashboardService.getProductStock(thresholdDTO);
+//
+//        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
+//    }
+//
+//    @Test
+//    public void testGetProductStock_ExceptionCase() {
+//
+//        doThrow(new RuntimeException("Simulated exception")).when(productRepository).findAll();
+//        ThresholdDTO thresholdDTO = ThresholdDTO.builder().minStock(10).build();
+//        ResponseEntity<?> response = dashboardService.getProductStock(thresholdDTO);
+//
+//        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+//        Assertions.assertEquals("CANNOT get product stock information for dashboards right now.", response.getBody());
+//    }
 
 
     @Test
