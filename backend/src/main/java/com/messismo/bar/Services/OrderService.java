@@ -44,19 +44,22 @@ public class OrderService {
                     return ResponseEntity.status(HttpStatus.CONFLICT).body("Not enough stock of a product");
                 } else {
                     Product product = productOrderDTO.getProduct();
-                    product.setStock(product.getStock() - productOrderDTO.getQuantity());
+                    product.removeStock(productOrderDTO.getQuantity());
+//                    product.setStock(product.getStock() - productOrderDTO.getQuantity());
                     productRepository.save(product);
                     totalPrice += (product.getUnitPrice() * productOrderDTO.getQuantity());
                     totalCost += (product.getUnitCost() * productOrderDTO.getQuantity());
-                    ProductOrder productOrder = ProductOrder.builder().product(product)
-                            .quantity(productOrderDTO.getQuantity()).build();
+                    ProductOrder productOrder = new ProductOrder(product, productOrderDTO.getQuantity());
+//                    ProductOrder productOrder = ProductOrder.builder().product(product)
+//                            .quantity(productOrderDTO.getQuantity()).build();
                     productOrderRepository.save(productOrder);
                     productOrderList.add(productOrder);
                 }
             }
-            Order newOrder = Order.builder().productOrders(productOrderList).user(employee)
-                    .dateCreated(orderRequestDTO.getDateCreated()).totalPrice(totalPrice).totalCost(totalCost)
-                    .status("Open").build();
+            Order newOrder= new Order(employee,orderRequestDTO.getDateCreated(),productOrderList,totalPrice,totalCost);
+//            Order newOrder = Order.builder().productOrders(productOrderList).user(employee)
+//                    .dateCreated(orderRequestDTO.getDateCreated()).totalPrice(totalPrice).totalCost(totalCost)
+//                    .status("Open").build();
             orderRepository.save(newOrder);
             return ResponseEntity.status(HttpStatus.CREATED).body("Order created successfully");
         } catch (Exception e) {
@@ -69,7 +72,8 @@ public class OrderService {
         try {
             Order order = orderRepository.findById(orderIdDTO.getOrderId())
                     .orElseThrow(() -> new Exception("Order not found"));
-            order.setStatus("Closed");
+//            order.setStatus("Closed");
+            order.close();
             orderRepository.save(order);
             return ResponseEntity.status(HttpStatus.CREATED).body("Order closed successfully");
         } catch (Exception e) {
@@ -91,19 +95,21 @@ public class OrderService {
                     return ResponseEntity.status(HttpStatus.CONFLICT).body("Not enough stock of a product");
                 } else {
                     Product product = productOrderDTO.getProduct();
-                    product.setStock(product.getStock() - productOrderDTO.getQuantity());
+                    product.removeStock( productOrderDTO.getQuantity());
                     productRepository.save(product);
-                    ProductOrder productOrder = ProductOrder.builder().product(product)
-                            .quantity(productOrderDTO.getQuantity()).build();
+                    ProductOrder productOrder= new ProductOrder(product, productOrderDTO.getQuantity());
+//                    ProductOrder productOrder = ProductOrder.builder().product(product)
+//                            .quantity(productOrderDTO.getQuantity()).build();
                     productOrderRepository.save(productOrder);
                     productOrderList.add(productOrder);
                 }
             }
-            List<ProductOrder> productOrdersToUpdate = order.getProductOrders();
-            productOrdersToUpdate.addAll(productOrderList);
-            order.setProductOrders(productOrdersToUpdate);
-            order.setTotalPrice(order.getTotalPrice() + modifyOrderDTO.getTotalPrice());
-            order.setTotalCost(order.getTotalCost() + modifyOrderDTO.getTotalCost());
+//            List<ProductOrder> productOrdersToUpdate = order.getProductOrders();
+//            productOrdersToUpdate.addAll(productOrderList);
+//            order.setProductOrders(productOrdersToUpdate);
+            order.updateProductOrders(productOrderList);
+            order.updateTotalPrice(modifyOrderDTO.getTotalPrice());
+            order.updateTotalCost(modifyOrderDTO.getTotalCost());
             orderRepository.save(order);
             return ResponseEntity.status(HttpStatus.CREATED).body("Order modified successfully");
         } catch (Exception e) {

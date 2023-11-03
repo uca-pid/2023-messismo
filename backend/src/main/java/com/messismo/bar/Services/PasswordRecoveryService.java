@@ -48,7 +48,8 @@ public class PasswordRecoveryService {
             passwordRecovery.ifPresent(passwordRecoveryRepository::delete);
             String pin = generateRandomPin();
             Date dateCreated = new Date();
-            PasswordRecovery newPasswordRecovery = PasswordRecovery.builder().user(user).pin(pin).dateCreated(dateCreated).build();
+            PasswordRecovery newPasswordRecovery = new PasswordRecovery(pin,user,dateCreated);
+//            PasswordRecovery newPasswordRecovery = PasswordRecovery.builder().user(user).pin(pin).dateCreated(dateCreated).build();
             passwordRecoveryRepository.save(newPasswordRecovery);
             SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
             simpleMailMessage.setTo(email);
@@ -72,7 +73,8 @@ public class PasswordRecoveryService {
             calendar.add(Calendar.HOUR_OF_DAY, 1);
             Date passwordRecoveryDatePlusOneHour = calendar.getTime();
             if (dateCreated.before(passwordRecoveryDatePlusOneHour) && Objects.equals(passwordRecoveryDTO.getPin(), passwordRecovery.getPin())) {
-                user.setPassword(passwordEncoder.encode(passwordRecoveryDTO.getNewPassword()));
+                user.updatePassword(passwordEncoder.encode(passwordRecoveryDTO.getNewPassword()));
+//                user.setPassword(passwordEncoder.encode(passwordRecoveryDTO.getNewPassword()));
                 userRepository.save(user);
                 passwordRecoveryRepository.delete(passwordRecovery);
                 return ResponseEntity.status(HttpStatus.OK).body("Password changed successfully");

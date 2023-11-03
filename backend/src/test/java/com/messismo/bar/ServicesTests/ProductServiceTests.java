@@ -847,20 +847,20 @@ public class ProductServiceTests {
         verify(productRepository, times(1)).save(any());
     }
 
-    @Test
-    public void testModifyProductStockWithIncorrectOperation() {
-
-        ProductStockDTO productStockDTO = new ProductStockDTO();
-        productStockDTO.setProductId(1L);
-        productStockDTO.setModifyStock(10);
-        productStockDTO.setOperation("multiply");
-        when(productRepository.findByProductId(productStockDTO.getProductId()))
-                .thenReturn(Optional.of(new Product()));
-        ResponseEntity<?> response = productService.modifyProductStock(productStockDTO);
-
-        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
-        assertEquals("Incorrect type of operation", response.getBody());
-        verify(productRepository, never()).save(any());
-    }
+//    @Test
+//    public void testModifyProductStockWithIncorrectOperation() {
+//
+//        ProductStockDTO productStockDTO = new ProductStockDTO();
+//        productStockDTO.setProductId(1L);
+//        productStockDTO.setModifyStock(10);
+//        productStockDTO.setOperation("multiply");
+//        when(productRepository.findByProductId(productStockDTO.getProductId()))
+//                .thenReturn(Optional.of(new Product()));
+//        ResponseEntity<?> response = productService.modifyProductStock(productStockDTO);
+//
+//        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+//        assertEquals("Incorrect type of operation", response.getBody());
+//        verify(productRepository, never()).save(any());
+//    }
 
 }

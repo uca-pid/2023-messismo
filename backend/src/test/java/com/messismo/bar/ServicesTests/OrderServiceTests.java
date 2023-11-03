@@ -162,8 +162,9 @@ public class OrderServiceTests {
 
         User usuario = User.builder().username("admincito").id(155L).role(Role.ADMIN).email("admin@mail.com")
                 .password("Password1").build();
-        Order existingOrder = Order.builder().dateCreated(new Date()).status("open").id(166L)
-                .productOrders(new ArrayList<>()).totalCost(0.00).totalPrice(0.00).user(usuario).build();
+        Order existingOrder= new Order(usuario,new Date(),new ArrayList<>(),0.00,0.00);
+//        Order existingOrder = Order.builder().dateCreated(new Date()).status("open").id(166L)
+//                .productOrders(new ArrayList<>()).totalCost(0.00).totalPrice(0.00).user(usuario).build();
         List<ProductOrderDTO> productOrderDTO = new ArrayList<>();
         Category category = Category.builder().categoryId(166L).name("Tomates").build();
         Product product = Product.builder().name("Tomato").productId(155L).unitCost(500.00).unitPrice(4500.00)
@@ -195,15 +196,16 @@ public class OrderServiceTests {
 
         User usuario = User.builder().username("admincito").id(155L).role(Role.ADMIN).email("admin@mail.com")
                 .password("Password1").build();
-        Order existingOrder = Order.builder().dateCreated(new Date()).status("open").id(166L)
-                .productOrders(new ArrayList<>()).totalCost(0.00).totalPrice(0.00).user(usuario).build();
+        Order existingOrder= new Order(usuario,new Date(),new ArrayList<>(),0.00,0.00);
+//        Order existingOrder = Order.builder().dateCreated(new Date()).status("open").id(166L)
+//                .productOrders(new ArrayList<>()).totalCost(0.00).totalPrice(0.00).user(usuario).build();
         List<ProductOrderDTO> productOrderDTO = new ArrayList<>();
         Category category = Category.builder().categoryId(166L).name("Tomates").build();
         Product product = Product.builder().name("Tomato").productId(155L).unitCost(500.00).unitPrice(4500.00)
                 .description("aProduct").category(category).stock(10).build();
         ProductOrderDTO productOrderDTO1 = ProductOrderDTO.builder().product(product).quantity(1).build();
         productOrderDTO.add(productOrderDTO1);
-        ModifyOrderDTO modifyOrderDTO = ModifyOrderDTO.builder().orderId(166L).totalPrice(4500.00).totalCost(500.00)
+        ModifyOrderDTO modifyOrderDTO = ModifyOrderDTO.builder().orderId(1L).totalPrice(4500.00).totalCost(500.00)
                 .productOrders(productOrderDTO).build();
         when(orderRepository.findById(existingOrder.getId())).thenReturn(Optional.of(existingOrder));
         ResponseEntity<?> response = orderService.modifyOrder(modifyOrderDTO);

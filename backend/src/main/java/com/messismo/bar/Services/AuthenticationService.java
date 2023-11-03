@@ -43,11 +43,12 @@ public class AuthenticationService {
             if (employeeByUsername.isPresent() || employeeByMail.isPresent()) {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body("The user already exists");
             } else {
-                User newEmployee = new User();
-                newEmployee.setPassword(passwordEncoder.encode(request.getPassword()));
-                newEmployee.setEmail(request.getEmail());
-                newEmployee.setUsername(request.getUsername());
-                newEmployee.setRole(Role.EMPLOYEE);
+                User newEmployee= new User(request.getUsername(),request.getEmail(), request.getPassword());
+//                User newEmployee = new User();
+//                newEmployee.setPassword(passwordEncoder.encode(request.getPassword()));
+//                newEmployee.setEmail(request.getEmail());
+//                newEmployee.setUsername(request.getUsername());
+//                newEmployee.setRole(Role.EMPLOYEE);
                 userRepository.save(newEmployee);
                 String jwtToken = jwtService.generateToken(newEmployee);
                 String refreshToken = jwtService.generateRefreshToken(newEmployee);
@@ -82,12 +83,13 @@ public class AuthenticationService {
     }
 
     private void saveUserToken(User user, String jwtToken) {
-        Token token = new Token();
-        token.setUser(user);
-        token.setToken(jwtToken);
-        token.setTokenType(TokenType.BEARER);
-        token.setExpired(false);
-        token.setRevoked(false);
+        Token token = new Token(jwtToken,user);
+//        Token token = new Token();
+//        token.setUser(user);
+//        token.setToken(jwtToken);
+//        token.setTokenType(TokenType.BEARER);
+//        token.setExpired(false);
+//        token.setRevoked(false);
         tokenRepository.save(token);
     }
 
@@ -96,8 +98,9 @@ public class AuthenticationService {
         if (validUserTokens.isEmpty())
             return;
         validUserTokens.forEach(token -> {
-            token.setExpired(true);
-            token.setRevoked(true);
+            token.removeValidation();
+//            token.setExpired(true);
+//            token.setRevoked(true);
         });
         tokenRepository.saveAll(validUserTokens);
     }

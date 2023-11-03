@@ -34,4 +34,14 @@ public class ProductOrder {
                 ", quantity=" + quantity +
                 '}';
     }
+
+    public ProductOrder(Product product, Integer quantity){
+        if(quantity<=0){
+            throw new IllegalArgumentException("Product quantity must be greater than 0");
+        }
+        else {
+            this.product=product;
+            this.quantity=quantity;
+        }
+    }
 }

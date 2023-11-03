@@ -31,4 +31,17 @@ public class Token {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     public User user;
+
+    public Token(String token, User user) {
+        this.token = token;
+        this.user = user;
+        this.revoked = false;
+        this.expired = false;
+        this.tokenType = TokenType.BEARER;
+    }
+
+    public void removeValidation() {
+        this.revoked=true;
+        this.expired=true;
+    }
 }

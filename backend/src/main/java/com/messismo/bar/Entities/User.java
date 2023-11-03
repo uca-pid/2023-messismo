@@ -36,6 +36,12 @@ public class User implements UserDetails {
     @Column(name = "role")
     private Role role;
 
+    public User(String username, String email, String password){
+        this.username=username;
+        this.email=email;
+        this.password=password;
+        this.role=Role.EMPLOYEE;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -71,4 +77,23 @@ public class User implements UserDetails {
         return this.username;
     }
 
+    public void updatePassword(String encodedPassword) {
+        this.password=encodedPassword;
+    }
+
+    public boolean isEmployee() {
+        return (this.role == Role.EMPLOYEE);
+    }
+
+    public void upgradeToValidateEmployee() {
+        this.role=Role.VALIDATEDEMPLOYEE;
+    }
+
+    public boolean isValidatedEmployee() {
+        return (this.role==Role.VALIDATEDEMPLOYEE);
+    }
+
+    public void upgradeToManager() {
+        this.role=Role.MANAGER;
+    }
 }

@@ -20,7 +20,7 @@ import java.util.*;
 
 import static org.mockito.Mockito.*;
 
-public class DashboardServiceTest {
+public class DashboardServiceTests {
 
     @InjectMocks
     private DashboardService dashboardService;
@@ -410,8 +410,9 @@ public class DashboardServiceTest {
 
     private Order createFakeOrder(List<ProductOrder> productOrders, String username, String email, Double totalPrice,
             Double totalCost, String status, Date date) {
-        return Order.builder().productOrders(productOrders).user(createFakeUser(username, email)).dateCreated(date)
-                .totalPrice(totalPrice).totalCost(totalCost).status(status).build();
+        return new Order(createFakeUser(username, email),date,productOrders,totalPrice,totalCost);
+//        return Order.builder().productOrders(productOrders).user(createFakeUser(username, email)).dateCreated(date)
+//                .totalPrice(totalPrice).totalCost(totalCost).status(status).build();
     }
 
     private User createFakeUser(String username, String email) {
