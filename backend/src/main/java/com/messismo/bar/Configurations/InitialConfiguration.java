@@ -1,16 +1,9 @@
 package com.messismo.bar.Configurations;
 
 import com.messismo.bar.DTOs.*;
-import com.messismo.bar.Entities.Order;
-import com.messismo.bar.Entities.Role;
-import com.messismo.bar.Entities.User;
-import com.messismo.bar.Repositories.OrderRepository;
-import com.messismo.bar.Repositories.ProductRepository;
-import com.messismo.bar.Repositories.UserRepository;
-import com.messismo.bar.Services.AuthenticationService;
-import com.messismo.bar.Services.CategoryService;
-import com.messismo.bar.Services.OrderService;
-import com.messismo.bar.Services.ProductService;
+import com.messismo.bar.Entities.*;
+import com.messismo.bar.Repositories.*;
+import com.messismo.bar.Services.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -20,6 +13,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -28,7 +22,7 @@ import java.util.List;
 public class InitialConfiguration {
 
     @Bean
-    public CommandLineRunner commandLineRunner(AuthenticationService authenticationService, UserRepository userRepository, ProductService productService, CategoryService categoryService, OrderService orderService, OrderRepository orderRepository, ProductRepository productRepository) {
+    public CommandLineRunner commandLineRunner(AuthenticationService authenticationService, UserRepository userRepository, ProductService productService, CategoryService categoryService, OrderService orderService, OrderRepository orderRepository, ProductRepository productRepository, GoalService goalService) {
         return args -> {
             RegisterRequestDTO admin = new RegisterRequestDTO();
             admin.setUsername("admin");
@@ -49,9 +43,38 @@ public class InitialConfiguration {
             System.out.println("ADDED ORDERS");
             closeOrders(orderRepository);
             System.out.println("CLOSED ORDERS");
+            addSampleGoals(goalService);
+            System.out.println("ADDED GOALS");
+            System.out.println("FINISH INITIAL LOADING");
         };
     }
 
+    private void addSampleGoals(GoalService goalService) throws ParseException {
+        // EXPIRED NOT ACHIEVED
+        addNewGoal(goalService,"Category: Starter goal","2023-09-05 00:00:01","2023-10-05 00:00:01","Category","Starter",500000.00);
+        addNewGoal(goalService, "Product: Tomato Bruschetta goal","2023-08-04 00:00:01","2023-09-04 00:00:01","Product","Tomato Bruschetta",50000.00);
+        addNewGoal(goalService, "Product: Fried Calamari goal","2023-08-02 00:00:01","2023-08-03 00:00:01","Product","Fried Calamari",15000.00);
+        // EXPIRED ACHIEVED
+        addNewGoal(goalService, "Total goal","2020-05-05 00:00:01","2020-05-07 00:00:01","Total","",25000.00);
+        // EXPIRED FULFILLED
+        addNewGoal(goalService, "Category: Drink goal","2021-05-05 00:00:01","2023-05-07 00:00:01","Category","Drink",25000.00);
+        // IN PROGRESS NOT ACHIEVED
+        addNewGoal(goalService, "Total goal","2023-10-28 00:02:01","2023-10-30 00:00:01","Total","",25000.00);
+        // UPCOMING NOT ACHIEVED
+        addNewGoal(goalService, "Total goal","2024-01-01 00:00:01","2024-04-01 00:00:01","Total","",25000.00);
+        addNewGoal(goalService, "Product: Chocolate Profiteroles goal","2024-05-01 00:00:01","2024-05-07 00:00:01","Product","Chocolate Profiteroles",10000.00);
+        addNewGoal(goalService, "Category: Dessert goal","2024-09-05 00:00:01","2024-09-07 00:00:01","Category","Dessert",10000.00);
+    }
+    private void addNewGoal(GoalService goalService,String name, String startingDate, String endingDate, String objectType, String goalObject, Double goalObjective) throws ParseException {
+        GoalDTO newGoal = GoalDTO.builder().name(name).startingDate(convertToFormat(startingDate)).endingDate(convertToFormat(endingDate)).objectType(objectType).goalObject(goalObject).goalObjective(goalObjective).build();
+        goalService.addGoal(newGoal);
+    }
+
+
+    private Date convertToFormat(String date) throws ParseException {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return dateFormat.parse(date);
+    }
     private void closeOrders(OrderRepository orderRepository) {
         List<Order> allOrders = orderRepository.findAll();
         LocalDate cutoffDate = LocalDate.of(2023, 10, 1);
@@ -64,6 +87,18 @@ public class InitialConfiguration {
     }
 
     private void addSampleOrders(OrderService orderService, ProductRepository productRepository) throws ParseException {
+        // EXPIRED NOT ACHIEVED
+        generateOrderRequestDTO(orderService, "john.smith@example.com", "2023-09-24 08:10:43", List.of(ProductOrderDTO.builder().product(productRepository.findByName("French Egg Toast").get()).quantity(2).build()));
+        generateOrderRequestDTO(orderService, "martinguido@gmail.com", "2023-08-16 08:10:43", List.of(ProductOrderDTO.builder().product(productRepository.findByName("Tomato Bruschetta").get()).quantity(2).build()));
+        generateOrderRequestDTO(orderService, "john.smith@example.com", "2023-08-02 08:10:43", List.of(ProductOrderDTO.builder().product(productRepository.findByName("Fried Calamari").get()).quantity(2).build()));
+        // EXPIRED ACHIEVED
+        generateOrderRequestDTO(orderService, "john.smith@example.com", "2020-05-06 08:10:43", List.of(ProductOrderDTO.builder().product(productRepository.findByName("Chinese Tea").get()).quantity(5).build()));
+        // EXPIRED FULFILLED
+        generateOrderRequestDTO(orderService, "john.smith@example.com", "2021-05-06 08:10:43", List.of(ProductOrderDTO.builder().product(productRepository.findByName("Chinese Tea").get()).quantity(15).build()));
+        // IN PROGRESS NOT ACHIEVED
+        generateOrderRequestDTO(orderService, "martinguido@gmail.com", "2023-10-28 00:02:06", List.of(ProductOrderDTO.builder().product(productRepository.findByName("Chinese Tea").get()).quantity(4).build()));
+
+        // GENERAL ORDERS
         generateOrderRequestDTO(orderService, "john.smith@example.com", "2023-08-04 08:10:43", List.of(ProductOrderDTO.builder().product(productRepository.findByName("Tomato Bruschetta").get()).quantity(2).build(), ProductOrderDTO.builder().product(productRepository.findByName("Fried Calamari").get()).quantity(1).build()));
         generateOrderRequestDTO(orderService, "martinguido@gmail.com", "2023-09-25 05:02:23", List.of(ProductOrderDTO.builder().product(productRepository.findByName("Tomato Bruschetta").get()).quantity(1).build(), ProductOrderDTO.builder().product(productRepository.findByName("Caramel Flan").get()).quantity(2).build(), ProductOrderDTO.builder().product(productRepository.findByName("Green Tea").get()).quantity(3).build(), ProductOrderDTO.builder().product(productRepository.findByName("Craft Beer").get()).quantity(2).build()));
         generateOrderRequestDTO(orderService, "john.smith@example.com", "2023-09-27 14:30:10", List.of(ProductOrderDTO.builder().product(productRepository.findByName("Fried Calamari").get()).quantity(2).build(), ProductOrderDTO.builder().product(productRepository.findByName("Margherita Pizza").get()).quantity(1).build(), ProductOrderDTO.builder().product(productRepository.findByName("Cheeseburger").get()).quantity(3).build()));
@@ -104,7 +139,7 @@ public class InitialConfiguration {
         generateOrderRequestDTO(orderService, "john.smith@example.com", "2023-10-22 15:15:45", List.of(ProductOrderDTO.builder().product(productRepository.findByName("Veal Milanese with Fries").get()).quantity(2).build(), ProductOrderDTO.builder().product(productRepository.findByName("Mango Mousse").get()).quantity(1).build(), ProductOrderDTO.builder().product(productRepository.findByName("Caramel Flan").get()).quantity(1).build()));
         generateOrderRequestDTO(orderService, "sarah.jones@example.com", "2023-08-11 19:00:30", List.of(ProductOrderDTO.builder().product(productRepository.findByName("Fried Calamari").get()).quantity(1).build()));
         generateOrderRequestDTO(orderService, "sarah.jones@example.com", "2023-10-14 17:20:35", List.of(ProductOrderDTO.builder().product(productRepository.findByName("Tiramisu").get()).quantity(1).build(), ProductOrderDTO.builder().product(productRepository.findByName("Assorted Sushi").get()).quantity(1).build()));
-        generateOrderRequestDTO(orderService, "john.smith@example.com", "2023-10-28 21:10:50", List.of(ProductOrderDTO.builder().product(productRepository.findByName("Lemon Mojito").get()).quantity(1).build(), ProductOrderDTO.builder().product(productRepository.findByName("Cheeseburger").get()).quantity(2).build(), ProductOrderDTO.builder().product(productRepository.findByName("Caramel Flan").get()).quantity(1).build()));
+        generateOrderRequestDTO(orderService, "john.smith@example.com", "2023-10-28 00:01:50", List.of(ProductOrderDTO.builder().product(productRepository.findByName("Lemon Mojito").get()).quantity(1).build(), ProductOrderDTO.builder().product(productRepository.findByName("Cheeseburger").get()).quantity(2).build(), ProductOrderDTO.builder().product(productRepository.findByName("Caramel Flan").get()).quantity(1).build()));
         generateOrderRequestDTO(orderService, "martinguido@gmail.com", "2022-01-10 12:45:30", List.of(ProductOrderDTO.builder().product(productRepository.findByName("Tomato Bruschetta").get()).quantity(1).build(), ProductOrderDTO.builder().product(productRepository.findByName("Mango Mousse").get()).quantity(1).build()));
         generateOrderRequestDTO(orderService, "john.smith@example.com", "2022-01-25 19:30:15", List.of(ProductOrderDTO.builder().product(productRepository.findByName("Veal Milanese with Fries").get()).quantity(2).build(), ProductOrderDTO.builder().product(productRepository.findByName("Tiramisu").get()).quantity(1).build()));
         generateOrderRequestDTO(orderService, "sarah.jones@example.com", "2022-02-08 14:15:22", List.of(ProductOrderDTO.builder().product(productRepository.findByName("Spanish Omelette").get()).quantity(3).build(), ProductOrderDTO.builder().product(productRepository.findByName("Chocolate Profiteroles").get()).quantity(1).build()));
@@ -230,6 +265,8 @@ public class InitialConfiguration {
         productService.addProduct(starter4);
         ProductDTO starter5 = ProductDTO.builder().name("Italian Antipasto").description("Selection of cold cuts, cheeses, and olives").category("Starter").unitPrice(8900.00).stock(20).unitCost(5000.00).newCategory(false).build();
         productService.addProduct(starter5);
+        ProductDTO starter6 = ProductDTO.builder().name("French Egg Toast").description("Toasted bread with eggs").category("Starter").unitPrice(5000.00).stock(40).unitCost(1000.00).newCategory(false).build();
+        productService.addProduct(starter6);
         ProductDTO productDTO1 = ProductDTO.builder().name("Veal Milanese with Fries").description("Veal milanese with french fries").category("Main Course").unitPrice(4500.00).stock(45).unitCost(4000.00).newCategory(false).build();
         productService.addProduct(productDTO1);
         ProductDTO productDTO2 = ProductDTO.builder().name("Margherita Pizza").description("Pizza with tomato, mozzarella, and basil").category("Main Course").unitPrice(8500.00).stock(80).unitCost(7000.00).newCategory(false).build();
@@ -262,5 +299,7 @@ public class InitialConfiguration {
         productService.addProduct(drink4);
         ProductDTO drink5 = ProductDTO.builder().name("Green Tea").description("Green tea with mint and honey").category("Drink").unitPrice(4200.00).stock(78).unitCost(3500.00).newCategory(false).build();
         productService.addProduct(drink5);
+        ProductDTO drink6 = ProductDTO.builder().name("Chinese Tea").description("Chinese tea with mint").category("Drink").unitPrice(5500.00).stock(150).unitCost(500.00).newCategory(false).build();
+        productService.addProduct(drink6);
     }
 }

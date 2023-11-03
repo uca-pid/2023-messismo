@@ -171,7 +171,7 @@ public class OrderServiceTests {
                 .description("aProduct").category(category).stock(10).build();
         ProductOrderDTO productOrderDTO1 = ProductOrderDTO.builder().product(product).quantity(111).build();
         productOrderDTO.add(productOrderDTO1);
-        ModifyOrderDTO modifyOrderDTO = ModifyOrderDTO.builder().orderId(166L).totalPrice(4500.00).totalCost(500.00)
+        ModifyOrderDTO modifyOrderDTO = ModifyOrderDTO.builder().orderId(166L)
                 .productOrders(productOrderDTO).build();
         when(orderRepository.findById(existingOrder.getId())).thenReturn(Optional.of(existingOrder));
         ResponseEntity<?> response = orderService.modifyOrder(modifyOrderDTO);
@@ -205,7 +205,7 @@ public class OrderServiceTests {
                 .description("aProduct").category(category).stock(10).build();
         ProductOrderDTO productOrderDTO1 = ProductOrderDTO.builder().product(product).quantity(1).build();
         productOrderDTO.add(productOrderDTO1);
-        ModifyOrderDTO modifyOrderDTO = ModifyOrderDTO.builder().orderId(1L).totalPrice(4500.00).totalCost(500.00)
+        ModifyOrderDTO modifyOrderDTO = ModifyOrderDTO.builder().orderId(166L)
                 .productOrders(productOrderDTO).build();
         when(orderRepository.findById(existingOrder.getId())).thenReturn(Optional.of(existingOrder));
         ResponseEntity<?> response = orderService.modifyOrder(modifyOrderDTO);

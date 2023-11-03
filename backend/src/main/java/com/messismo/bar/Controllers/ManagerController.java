@@ -1,10 +1,7 @@
 package com.messismo.bar.Controllers;
 
 import com.messismo.bar.DTOs.*;
-import com.messismo.bar.Services.CategoryService;
-import com.messismo.bar.Services.DashboardService;
-import com.messismo.bar.Services.ProductService;
-import com.messismo.bar.Services.UserService;
+import com.messismo.bar.Services.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,6 +21,8 @@ public class ManagerController {
     private final CategoryService categoryService;
 
     private final DashboardService dashboardService;
+
+    private final GoalService goalService;
 
     @PutMapping("/product/updatePrice")
     public ResponseEntity<?> updateProductPrice(@RequestBody ProductPriceDTO body) {
@@ -66,19 +65,39 @@ public class ManagerController {
         return categoryService.deleteCategory(categoryRequestDTO);
     }
 
-    @GetMapping("/dashboard/getTotalInfo")
-    public ResponseEntity<?> getTotalInfo(){
-        return dashboardService.getTotalInfo();
-    }
-
-    @PostMapping("/dashboard/getProductStock")
-    public ResponseEntity<?> getProductStock(@RequestBody ThresholdDTO thresholdDTO) {
-        return dashboardService.getProductStock(thresholdDTO);
-    }
+//    @GetMapping("/dashboard/getTotalInfo")
+//    public ResponseEntity<?> getTotalInfo(){
+//        return dashboardService.getTotalInfo();
+//    }
+//
+//    @PostMapping("/dashboard/getProductStock")
+//    public ResponseEntity<?> getProductStock(@RequestBody ThresholdDTO thresholdDTO) {
+//        return dashboardService.getProductStock(thresholdDTO);
+//    }
 
     @PostMapping("/dashboard/getDashboard")
     public ResponseEntity<?> getDashboardInformation(@RequestBody DashboardRequestDTO dashboardRequestDTO) {
         return dashboardService.getDashboardInformation(dashboardRequestDTO);
+    }
+
+    @PostMapping("/goals/addGoal")
+    public ResponseEntity<?> addGoal(@RequestBody GoalDTO goalDTO){
+        return goalService.addGoal(goalDTO);
+    }
+
+    @DeleteMapping("/goals/deleteGoal")
+    public ResponseEntity<?> deleteGoal(@RequestBody GoalDeleteDTO goalDeleteDTO){
+        return goalService.deleteGoal(goalDeleteDTO);
+    }
+
+    @PutMapping("/goals/modifyGoal")
+    public ResponseEntity<?> modifyGoal(@RequestBody GoalModifyDTO goalModifyDTO){
+        return goalService.modifyGoal(goalModifyDTO);
+    }
+
+    @PostMapping("/goals/getGoals")
+    public ResponseEntity<?> getGoals(@RequestBody GoalFilterRequestDTO goalFilterRequestDTO){
+        return goalService.getGoals(goalFilterRequestDTO);
     }
 
 }
