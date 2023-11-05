@@ -27,6 +27,7 @@ import { useTheme } from "@mui/material/styles";
 import CircularProgress from "@mui/material/CircularProgress";
 import Chip from "@mui/material/Chip";
 import OutlinedInput from "@mui/material/OutlinedInput";
+import { useMediaQuery } from '@mui/material';
 
 const CustomizedDateTimePicker = styled(DatePicker)`
   .MuiInputBase-input {
@@ -373,6 +374,7 @@ function Dashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [dateToShow, setDateToShow] = useState("");
+  const isSmallScreen = useMediaQuery('(max-width:600px)');
 
   useEffect(() => {
     dashboardService
@@ -416,14 +418,14 @@ function Dashboard() {
       .catch((error) => {
         console.error("Error al mostrar los productos", error);
       });
-  }, []);
+  }, [sliderValue]);
 
   useEffect(() => {
     categoryService
       .getAllCategories()
       .then((response) => {
         setCategories(response.data);
-        console.log(categories)
+        console.log(categories);
       })
       .catch((error) => {
         console.error("Error al obtener categorías:", error);
@@ -507,7 +509,6 @@ function Dashboard() {
         date = "Tipo no reconocido";
     }
 
-
     setDateToShow(date);
     dashboardService
       .getDashboard({ dateRequested: date, categoryList: selectedCategories })
@@ -519,8 +520,6 @@ function Dashboard() {
         console.error(error);
       });
   };
-
-
 
   const handleChange = (event) => {
     setChartType(event.target.value);
@@ -547,15 +546,15 @@ function Dashboard() {
   }
   const handleCategoryChange = (event) => {
     const { value: selectedCategoryIds } = event.target;
-  
+
     const selectedCats = categories.filter((category) =>
       selectedCategoryIds.includes(category.categoryId)
     );
-  
+
     setSelectedCategories(selectedCats);
     handleButtonClick();
   };
-  
+
   return (
     <Container>
       <Navbar />
@@ -783,7 +782,12 @@ function Dashboard() {
                   </Select>
                 </FormControl>
               </Box>
-              <p style={{ color: "white"}}>Select Categories</p>
+              <p style={{
+      color: 'white',
+      marginLeft: isSmallScreen ? '0rem' : '2rem',
+      marginRight: isSmallScreen ? '7.5rem' : '0rem',
+     
+    }}>Select Categories</p>
               <Box sx={{ width: "80%" }}>
                 <FormControl fullWidth variant="outlined">
                   <Select
@@ -793,6 +797,7 @@ function Dashboard() {
                       color: "white",
                       fontSize: "1.5rem",
                       margin: "2rem",
+                      marginTop: "0.5rem",
                       color: "white",
                       ".MuiOutlinedInput-notchedOutline": {
                         borderColor: "rgba(228, 219, 233, 0.25)",
@@ -809,27 +814,43 @@ function Dashboard() {
                     }}
                     labelId="category-select-label"
                     id="category-select"
-                    value={selectedCategories.map((category) => category.categoryId)}
+                    value={selectedCategories.map(
+                      (category) => category.categoryId
+                    )}
                     multiple
                     onChange={handleCategoryChange}
                     renderValue={(selected) =>
-                        selectedCategories
-                          .filter((category) => selected.includes(category.categoryId))
-                          .map((category) => category.name)
-                          .join(", ")
-                      }
-                      displayEmpty
+                      selectedCategories
+                        .filter((category) =>
+                          selected.includes(category.categoryId)
+                        )
+                        .map((category) => category.name)
+                        .join(", ")
+                    }
+                    displayEmpty
                   >
-                     <MenuItem disabled value="">
-        <em>Categories</em>
-      </MenuItem>
+                    <MenuItem disabled value="">
+                      <em>Categories</em>
+                    </MenuItem>
                     {categories.map((category) => (
-                       <MenuItem key={category.categoryId} value={category.categoryId} style={{
-                        backgroundColor: selectedCategories.some((selected) => selected.categoryId === category.categoryId)
-                          ? "#A4D4CC"
-                          : "transparent",
-                        color: selectedCategories.some((selected) => selected.categoryId === category.categoryId) ? "white" : "black",
-                      }}>
+                      <MenuItem
+                        key={category.categoryId}
+                        value={category.categoryId}
+                        style={{
+                          backgroundColor: selectedCategories.some(
+                            (selected) =>
+                              selected.categoryId === category.categoryId
+                          )
+                            ? "#A4D4CC"
+                            : "transparent",
+                          color: selectedCategories.some(
+                            (selected) =>
+                              selected.categoryId === category.categoryId
+                          )
+                            ? "white"
+                            : "black",
+                        }}
+                      >
                         {category.name}
                       </MenuItem>
                     ))}
