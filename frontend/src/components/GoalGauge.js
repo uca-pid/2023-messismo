@@ -6,6 +6,15 @@ Chart.register(ArcElement);
 
 const Gauge = ({ data }) => {
 
+    let name = data.Name
+    let percentage = isNaN(parseInt((data.Current / data.Goal) * 100)) ? 0 : parseInt((data.Current / data.Goal) * 100);
+    percentage = `${percentage}%`;
+
+    if (name === undefined) {
+        name = "";
+        percentage = "";
+    }
+
     const info = {
         datasets: [
             {
@@ -34,7 +43,7 @@ const Gauge = ({ data }) => {
                     },
                     title: {
                         display: true,
-                        text: data.Name,
+                        text: [name, "", percentage],
                         color: 'white',
                         font: {
                             size: 16
@@ -49,16 +58,6 @@ const Gauge = ({ data }) => {
                 responsive: true
                 }}
             />
-
-            <div style={{
-            color: "white",
-            textAlign: "center",
-            fontSize: 20,
-            display: isNaN(parseInt(data.Current / data.Goal * 100)) ? "none" : "block"
-            }}>
-            {isNaN(parseInt(data.Current / data.Goal * 100)) ? "" : `${parseInt(data.Current / data.Goal * 100)}%`}
-            </div>
-
 
         </div>
     );

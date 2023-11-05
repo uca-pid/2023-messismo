@@ -320,34 +320,23 @@ const EditGoalForm = ({onCancel, goalId}) => {
 
     const orderSubmit = (data) => {
         formField.forEach((form, index) => {
-            const goalType = watch(`options-${index}`);
-            const selectedProduct = selectedProducts[`product-${index}`];
-            const selectedCategory = selectedCategories[`category-${index}`];
+            const id = goalId;
+            const modifyObjective = "";
             const amount = parseInt(watch(`amount-${index}`)) || 0;
 
-            let goalObject = "";
-            if (goalType === "Product") {
-                goalObject = selectedProduct;
-            } else if (goalType === "Category") {
-                goalObject = selectedCategory;
-            }
-
             const goalData = {
-                name: data[`name-${index}`],
-                startingDate: selectedDateRange[0].toISOString(),
-                endingDate: selectedDateRange[1].toISOString(),
-                objectType: goalType.toLowerCase(),
-                goalObject: goalObject,
-                goalObjective: amount,
+                goalId: id,
+                modifyObjective: modifyObjective,
+                newGoalObjective: amount,
             };
 
-            goalsService.addGoal(goalData)
+            goalsService.modifyGoal(goalData)
                 .then(response => {
-                    console.log("Orden agregada con éxito:", response.data);
+                    console.log("Meta modificada con éxito:", response.data);
                     onCancel();
                 })
                 .catch(error => {
-                    console.error("Error al agregar la orden:", error);
+                    console.error("Error al modificar la meta:", error);
                 });
 
             console.log(goalData);
@@ -377,6 +366,8 @@ const EditGoalForm = ({onCancel, goalId}) => {
     return(
         <>
             <Form onSubmit={ handleSubmit(orderSubmit) } className="form-react">
+
+                <h3>Edit Goal {goalId}</h3>
 
                 {formField.map((form, index) => {
                     return(

@@ -16,7 +16,7 @@ const addGoal = (goalData) => {
 };
 
 const modifyGoal = (goalData) => {
-  return axios.post(edit_goal, goalData, { headers: authHeader() });
+  return axios.put(edit_goal, goalData, { headers: authHeader() });
 };
 
 const deleteGoal = (id) => {

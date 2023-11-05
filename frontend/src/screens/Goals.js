@@ -199,18 +199,32 @@ const DoughnutDiv = styled.div`
 
 const MOBILE_COLUMNS = {
   id: true,
-  dateCreated: true,
-  totalPrice: true,
-  details: false,
+  name: false,
+  startingDate: true,
+  endingDate: true,
+  objectType: false,
+  currentGoal: false,
+  goalObjective: false,
+  goal: true,
+  tempGoal: false,
+  goalObject: false,
   status: true,
+  achieved: true,
+
 };
 const ALL_COLUMNS = {
-  id: true,
-  username: true,
-  dateCreated: true,
-  totalPrice: true,
-  details: true,
+  id: false,
+  name: true,
+  startingDate: true,
+  endingDate: true,
+  objectType: true,
+  currentGoal: false,
+  goalObjective: false,
+  goal: true,
+  tempGoal: false,
+  goalObject: true,
   status: true,
+  achieved: true,
 };
 
 
@@ -263,7 +277,7 @@ function Goals() {
       .then((response) => {
         const goalsData = response.data;
         setGoals(goalsData);
-        setInitialRows(goalsData.length > 0 ? [goalsData[0]] : []);
+        setInitialRows(goalsData.length > 0 ? [goalsData[goalsData.length-1]] : []);
         setIsLoading(false);
         console.log("done");
       })
@@ -345,6 +359,7 @@ function Goals() {
           setIsLoading(false);
         });
         setOpenSnackbar(true);
+        setSelectedRow(initialRows);
         
       } catch (error) {
         if (error.response) {
@@ -382,13 +397,37 @@ function Goals() {
 
   const columns = [
     {
+      field: "id",
+      headerName: "ID",
+      flex: 2,
+      align: "center",
+      headerAlign: "center",
+      sortable: true,
+    },
+    {
       field: "name",
       headerName: "Name",
       flex: 2,
       align: "center",
       headerAlign: "center",
       sortable: true,
-      minWidth: 150,
+    },
+    {
+      field: "objectType",
+      headerName: "Type",
+      flex: 2,
+      align: "center",
+      headerAlign: "center",
+      sortable: true,
+      maxWidth: 100,
+    },
+    {
+      field: "goalObject",
+      headerName: "Object",
+      flex: 2,
+      align: "center",
+      headerAlign: "center",
+      sortable: true,
     },
     {
       field: "startingDate",
@@ -476,7 +515,7 @@ function Goals() {
         align: "center",
         headerAlign: "center",
         sortable: true,
-        minWidth: 150,
+        maxWidth: 100,
         renderCell: (params) => {
         const isAchieved = params.row.achieved === "Achieved";
         const isExpired = params.row.status === "Expired";
@@ -500,12 +539,12 @@ function Goals() {
     },
     {
       field: "edit",
-      headerName: "Edit",
+      headerName: "",
       flex: 1,
       align: "center",
       headerAlign: "center",
       sortable: false,
-      minWidth: 100,
+      maxWidth: 80,
       renderCell: (params) => {
         const status = params.row.status;
         const isExpired = status === "Expired";
@@ -527,12 +566,12 @@ function Goals() {
 
     {
         field: "remove",
-        headerName: "Remove",
+        headerName: "",
         flex: 1,
         align: "center",
         headerAlign: "center",
         sortable: false,
-        minWidth: 100,
+        maxWidth: 80,
         renderCell: (params) => {
           const status = params.row.status;
           const isInProcess = status === "In Process";
@@ -705,17 +744,55 @@ function Goals() {
                       }}
                     />
 
-                    <div style={{  display: "flex", flexDirection: "row" }}>
+                    <div style={{  
+                      display: "flex", 
+                      flexDirection: "row",
+                      width: "100%",
+                      height: "auto",
 
-                      <div style={{ color: "white", width: '25%', margin:"2rem" }}></div>
+                      '@media (max-width: 1000px)': {
+                        flexDirection: "column",
+                      }
+                      }}>
 
-                      <div style={{ color: "white", width: '25%', margin:"2rem" }}>
+                      <div style={{ 
+                        color: "white", 
+                        width: '25%', 
+                        margin:"2rem",
+                        
+                        '@media (max-width: 1000px)': {
+                          width: '100%',
+                          height: "auto",
+                        }
+                        }}>
+
+                        </div>
+
+                      <div style={{ 
+                        color: "white", 
+                        width: '25%', 
+                        margin:"2rem", 
+
+                        '@media (max-width: 1000px)': {
+                          width: '100%',
+                          height: "auto",
+                        }
+                        
+                        }}>
                           <Doughnut  
                           data={Object(goalsCount)} 
                           label={'Expired Goals'} />
                       </div>
                       
-                      <div style={{ width: '25%', margin:"2rem" }}>
+                      <div style={{ 
+                        width: '25%', 
+                        margin:"2rem",
+
+                        '@media (max-width: 1000px)': {
+                          width: '100%',
+                          height: "auto",
+                        }
+                        }}>
                         {selectedRow && (
                           <div>
                             <GoalGauge  
@@ -725,7 +802,17 @@ function Goals() {
 
                       </div>
 
-                      <div style={{ color: "white", width: '25%', margin:"2rem" }}></div>
+                      <div style={{ 
+                        color: "white", 
+                        width: '25%', 
+                        margin:"2rem", 
+
+                        '@media (max-width: 1000px)': {
+                          width: '100%',
+                          height: "auto",
+                        }
+                        
+                        }}></div>
 
                       {/* <div style={{ backgroundColor: 'green', width: '33.33%', margin:"1rem" }}>
                           Div3

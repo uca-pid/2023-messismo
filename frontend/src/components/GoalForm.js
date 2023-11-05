@@ -13,6 +13,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { formatISO } from 'date-fns';
+import dayjs from 'dayjs';
 
 
 
@@ -319,6 +320,10 @@ const GoalForm = ({onCancel}) => {
 
 
     const orderSubmit = (data) => {
+
+        const startFormattedDate = dayjs(selectedDateRange[0]).format('YYYY-MM-DDTHH:mm:ss.SSSZ');
+        const endFormattedDate = dayjs(selectedDateRange[1]).format('YYYY-MM-DDTHH:mm:ss.SSSZ');
+
         formField.forEach((form, index) => {
             const goalType = watch(`options-${index}`);
             const selectedProduct = selectedProducts[`product-${index}`];
@@ -334,9 +339,9 @@ const GoalForm = ({onCancel}) => {
 
             const goalData = {
                 name: data[`name-${index}`],
-                startingDate: selectedDateRange[0].toISOString(),
-                endingDate: selectedDateRange[1].toISOString(),
-                objectType: goalType.toLowerCase(),
+                startingDate: startFormattedDate,
+                endingDate: endFormattedDate,
+                objectType: goalType,
                 goalObject: goalObject,
                 goalObjective: amount,
             };
@@ -516,7 +521,7 @@ const GoalForm = ({onCancel}) => {
                                         <CustomizedDateTimePicker
                                         localeText={{ start: 'Start', end: 'End' }}
                                         value={selectedDateRange}
-                                        format="YYYY-MM-DDTHH:mm:ss.SSSZ"
+                                        format="YYYY-MM-DD"
                                         onChange={handleDateChange}
                                         
                                         />
