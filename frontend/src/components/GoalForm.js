@@ -14,6 +14,11 @@ import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { formatISO } from 'date-fns';
 import dayjs from 'dayjs';
+import { DateRange } from "react-date-range";
+import "react-date-range/dist/styles.css";
+import "react-date-range/dist/theme/default.css";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
 
 
 
@@ -47,7 +52,7 @@ const CustomizedDateTimePicker = styled(DateRangePicker)`
 
 const Form = styled.form`
     padding: 2rem;
-    background-color: rgb(164, 212, 204, 0.6);
+    background-color: white;
 
     .fail {
         color: red;
@@ -80,6 +85,7 @@ const Form = styled.form`
     @media (max-width: 250px) {
         min-width: 250px;
     }
+    
 
 `;
 
@@ -95,6 +101,7 @@ const ProductContainer = styled.div`
 
     .form-dates{
         margin-top: 1rem;
+        overflow-x: auto;
     }
 
     .form-types{
@@ -255,6 +262,17 @@ const GoalForm = ({onCancel}) => {
     const [selectedCategoryNames, setSelectedCategoryNames] = useState([]);
     const [selectedDate, setSelectedDate] = useState("");
     const [selectedDateRange, setSelectedDateRange] = useState([null, null]);
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [isOperationSuccessful, setIsOperationSuccessful] = useState(false);
+    const [alertText, setAlertText] = useState("");
+
+    const [dateRange, setDateRange] = useState([
+        {
+          startDate: new Date(),
+          endDate: new Date(),
+          key: "selection",
+        },
+      ]);
 
 
     useEffect(() => {
@@ -321,8 +339,11 @@ const GoalForm = ({onCancel}) => {
 
     const orderSubmit = (data) => {
 
-        const startFormattedDate = dayjs(selectedDateRange[0]).format('YYYY-MM-DDTHH:mm:ss.SSSZ');
-        const endFormattedDate = dayjs(selectedDateRange[1]).format('YYYY-MM-DDTHH:mm:ss.SSSZ');
+        //const startFormattedDate = dayjs(selectedDateRange[0]).format('YYYY-MM-DDTHH:mm:ss.SSSZ');
+        //const endFormattedDate = dayjs(selectedDateRange[1]).format('YYYY-MM-DDTHH:mm:ss.SSSZ');
+
+        const startFormattedDate = dayjs(dateRange[0].startDate).format('YYYY-MM-DDTHH:mm:ss.SSSZ');
+        const endFormattedDate = dayjs(dateRange[0].endDate).format('YYYY-MM-DDTHH:mm:ss.SSSZ');
 
         formField.forEach((form, index) => {
             const goalType = watch(`options-${index}`);
@@ -348,11 +369,17 @@ const GoalForm = ({onCancel}) => {
 
             goalsService.addGoal(goalData)
                 .then(response => {
-                    console.log("Orden agregada con éxito:", response.data);
+                    console.log("Meta agregada con éxito:", response.data);
+                    setIsOperationSuccessful(true);
+                    setAlertText("Goal added successfully");
+                    setOpenSnackbar(true);
                     onCancel();
                 })
                 .catch(error => {
-                    console.error("Error al agregar la orden:", error);
+                    console.error("Error al agregar la meta:", error);
+                    setIsOperationSuccessful(false);
+                    setAlertText(error.response.data);
+                    setOpenSnackbar(true);
                 });
 
             console.log(goalData);
@@ -365,10 +392,17 @@ const GoalForm = ({onCancel}) => {
     };
 
 
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    yesterday.setHours(23, 59, 59, 999);
+    const handleDateChange = (ranges) => {
 
-    const handleDateChange = (newDateRange) => {
-        setSelectedDateRange(newDateRange);
-    };
+        if (ranges.selection.startDate < yesterday) {
+          return;
+        }
+    
+        setDateRange([ranges.selection]);
+      };
 
     const totalPrice = formField.reduce((total, form, index) => {
         const productName = watch(`product-${index}`);
@@ -515,8 +549,8 @@ const GoalForm = ({onCancel}) => {
                             </div>
 
                             <div className="form-dates">
-                                <Label>Dates</Label>
-                                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                {/* <Label>Dates</Label> */}
+                                {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
                                     <DemoContainer components={['DateRangePicker']}>
                                         <CustomizedDateTimePicker
                                         localeText={{ start: 'Start', end: 'End' }}
@@ -526,7 +560,14 @@ const GoalForm = ({onCancel}) => {
                                         
                                         />
                                     </DemoContainer>
-                                </LocalizationProvider>
+                                </LocalizationProvider> */}
+
+                                <DateRange
+                                ranges={[...dateRange]}
+                                onChange={handleDateChange}
+                                />
+
+                                
                             </div>
 
                             <div className="form-amount">
@@ -556,6 +597,17 @@ const GoalForm = ({onCancel}) => {
                 </Buttons>
 
             </Form>
+
+            <Snackbar
+            open={openSnackbar}
+            autoHideDuration={10000} 
+            onClose={() => setOpenSnackbar(false)}
+            anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+            >
+                <Alert onClose={() => setOpenSnackbar(false)} severity={isOperationSuccessful ? "success" : "error"} variant="filled" sx={{fontSize: '80%'}}>
+                    {alertText}
+                </Alert>
+            </Snackbar>
         </>
     )
 

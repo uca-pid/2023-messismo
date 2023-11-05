@@ -334,6 +334,7 @@ const EditGoalForm = ({onCancel, goalId}) => {
                 .then(response => {
                     console.log("Meta modificada con éxito:", response.data);
                     onCancel();
+                    window.location.reload();
                 })
                 .catch(error => {
                     console.error("Error al modificar la meta:", error);
