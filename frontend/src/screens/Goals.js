@@ -17,18 +17,23 @@ import { AiFillCloseCircle } from "react-icons/ai";
 import moment from "moment";
 import EditIcon from "@mui/icons-material/Edit";
 import EditGoalForm from "../components/EditGoalForm";
-import ModifyForm from "../components/modifyForm";
-import VisibilityIcon from "@mui/icons-material/Visibility";
+import Dialog from "@mui/material/Dialog";
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from "@mui/material/DialogActions";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContentText from "@mui/material/DialogContentText";
 import Fab from "@mui/material/Fab";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import CircularProgress from "@mui/material/CircularProgress";
 import Doughnut from "../components/DoughnutChart";
 import GoalGauge from "../components/GoalGauge";
+import { Button } from "@mui/material";
+
 
 const Container = styled.div``;
 
-const Button = styled.button`
+const AddGoalButton = styled.button`
   display: block;
   font-size: 1.2rem;
   border-radius: 3px;
@@ -208,26 +213,15 @@ const ALL_COLUMNS = {
   status: true,
 };
 
-const initialRows = [
-  {
-    "id": 3,
-    "name": "Product: Fried Calamari goal",
-    "startingDate": "2023-08-02T03:00:01.000+00:00",
-    "endingDate": "2023-08-03T03:00:01.000+00:00",
-    "objectType": "Product",
-    "goal": "8600/15000",
-    "goalObject": "Fried Calamari",
-    "status": "Expired",
-    "achieved": "Not Achieved"
-  }
-];
 
 function Goals() {
   const { user: currentUser } = useSelector((state) => state.auth);
   const clicked = useSelector((state) => state.navigation.clicked);
   const [isGoalFormVisible, setGoalFormVisible] = useState(false);
+  const [isEditGoalFormVisible, setEditGoalFormVisible] = useState(false);
   const [isDetailsVisible, setDetailsVisible] = useState(false);
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const [orders, setGoals] = useState([]);
   const [selectedOrderDetails, setSelectedOrderDetails] = useState(null);
   const [pageSize, setPageSize] = useState(5);
@@ -242,7 +236,10 @@ function Goals() {
   const [alertText, setAlertText] = useState("");
   const [isOperationSuccessful, setIsOperationSuccessful] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedRow, setSelectedRow] = useState(initialRows.find(row => row.id === 3));
+  const [initialRows, setInitialRows] = useState([]);
+  const [selectedRow, setSelectedRow] = useState(initialRows);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [editGoalId, setEditGoalId] = useState(null);
 
 
 
@@ -256,16 +253,17 @@ function Goals() {
   }, [matches]);
 
   useEffect(() => {
-
     const goalData = {
-        status: [], 
-        achieved: [],
+      status: [], 
+      achieved: [],
     };
-
+  
     goalsService
       .getAllGoals(goalData)
       .then((response) => {
-        setGoals(response.data);
+        const goalsData = response.data;
+        setGoals(goalsData);
+        setInitialRows(goalsData.length > 0 ? [goalsData[0]] : []);
         setIsLoading(false);
         console.log("done");
       })
@@ -274,6 +272,7 @@ function Goals() {
         setIsLoading(false);
       });
   }, [isGoalFormVisible, open, isEditFormVisible, openEditForm]);
+  
 
   if (!currentUser) {
     return <Navigate to="/" />;
@@ -285,16 +284,19 @@ function Goals() {
     setGoalFormVisible(true);
     setOpen(true);
   };
-
   const handleCloseGoalForm = () => {
     setGoalFormVisible(false);
     setOpen(false);
   };
 
+  const handleEditGoalClick = (goalId) => {
+    setEditGoalId(goalId);
+    setEditGoalFormVisible(true);
+    setOpen(true);
+  };
   const handleCloseEditGoalForm = () => {
-    setEditFormVisible(false);
+    setEditGoalFormVisible(false);
     setOpenEditForm(false);
-    setOpen(false);
   };
 
   const handleViewDetails = (orderId) => {
@@ -307,26 +309,58 @@ function Goals() {
     setDetailsVisible(false);
   };
 
-  const handleEditGoalClick = (goalId) => {
-    setEditFormVisible(true);
-    setOrderIdToEdit(goalId);
-    const selectedOrder = orders.find((goal) => goal.id === goalId);
-    setSelectedOrderDetails(selectedOrder.productOrders);
-    setSelectedTotalPrice(selectedOrder.totalPrice);
-    setOpen(true);
-  };
-
-  const handleDeleteGoalClick = (goalId) => {
-    setEditFormVisible(true);
-    setOrderIdToEdit(goalId);
-    const selectedOrder = orders.find((goal) => goal.id === goalId);
-    setSelectedOrderDetails(selectedOrder.productOrders);
-    setSelectedTotalPrice(selectedOrder.totalPrice);
-    setOpen(true);
-  };
-
   const handleRowClick = (params) => {
     setSelectedRow(params.row);
+  };
+
+  const handleClose = () => {
+    setConfirmOpen(false);
+  }
+
+  const handleDeleteClick = (goalId) => {
+    setSelectedCategory(goalId);
+    setConfirmOpen(true);
+  };
+
+  const handleDeleteCategory = async () => {
+    const goalData = {
+      status: [], 
+      achieved: [],
+    };
+    if (selectedCategory) {
+      try {
+        await deleteCategoryAsync(selectedCategory);
+        setSelectedCategory(null);
+        setIsOperationSuccessful(true);
+        setAlertText("Goal deleted successfully");
+        goalsService
+        .getAllGoals(goalData)
+        .then((response) => {
+          setGoals(response.data);
+          setIsLoading(false);
+          console.log("done");
+        })
+        .catch((error) => {
+          console.error("Error al mostrar las metas", error);
+          setIsLoading(false);
+        });
+        setOpenSnackbar(true);
+        
+      } catch (error) {
+        if (error.response) {
+          console.log("Datos de respuesta del error:", error.response.data);
+          setAlertText("Failed to delete goal: " + error.response.data);
+        }
+        setIsOperationSuccessful(false);
+        setOpenSnackbar(true);
+      }
+      setConfirmOpen(false);
+
+    }
+  };
+  
+  const deleteCategoryAsync = async (id) => {
+    return goalsService.deleteGoal(id);
   };
 
 
@@ -474,18 +508,23 @@ function Goals() {
       minWidth: 100,
       renderCell: (params) => {
         const status = params.row.status;
-        const isClosed = status === "Closed";
+        const isExpired = status === "Expired";
 
         return (
           <button
             onClick={() => handleEditGoalClick(params.row.id)}
-            disabled={isClosed}
+            disabled={isExpired}
           >
-            <EditIcon />
+            <EditIcon style={{ fontSize: "2rem" }}/>
           </button>
         );
       },
     },
+
+    // Upcoming: edit, delete
+    // In Process: edit
+    // Expired: delete
+
     {
         field: "remove",
         headerName: "Remove",
@@ -496,15 +535,16 @@ function Goals() {
         minWidth: 100,
         renderCell: (params) => {
           const status = params.row.status;
-          const isClosed = status === "Closed";
+          const isInProcess = status === "In Process";
   
           return (
             <button
-              onClick={() => handleDeleteGoalClick(params.row.id)}
-              disabled={isClosed}
+              onClick={() => handleDeleteClick(params.row.id)}
+              disabled={isInProcess}
             >
-              <AiFillDelete />
+              <AiFillDelete style={{ fontSize: "2rem" }}/>
             </button>
+            
           );
         },
       },
@@ -536,9 +576,9 @@ function Goals() {
 
         {currentUser.role === "ADMIN" ||
         currentUser.role === "MANAGER" ? (
-          <Button variant="contained" onClick={handleAddOrderClick}>
+          <AddGoalButton variant="contained" onClick={handleAddOrderClick}>
             Add Goal
-          </Button>
+          </AddGoalButton>
         ) : null}
 
         <div visible={contentVisible}>
@@ -551,21 +591,15 @@ function Goals() {
             </ModalContent>
           </Modal>
 
-          <Modal open={isEditFormVisible}>
+          <Modal open={isEditGoalFormVisible}>
             <ModalContent>
-              {isEditFormVisible && (
-                <EditGoalForm
-                  onCancel={handleCloseEditGoalForm}
-                  orderId={orderIdToEdit}
-                  orderDetails={selectedOrderDetails}
-                  totalPrice={selectedTotalPrice}
-                  onClose={handleCloseEditGoalForm}
-                />
+              {isEditGoalFormVisible && (
+                <EditGoalForm onCancel={handleCloseEditGoalForm} goalId={editGoalId}/>
               )}
             </ModalContent>
           </Modal>
 
-          {!isGoalFormVisible && !isEditFormVisible && (
+          {!isGoalFormVisible && !isEditGoalFormVisible && !isEditFormVisible && (
             <div>
               {isLoading ? (
                 <Box
@@ -672,30 +706,31 @@ function Goals() {
                     />
 
                     <div style={{  display: "flex", flexDirection: "row" }}>
-                        <div style={{ color: "white", width: '33.33%', margin:"1rem" }}>
-                            <Doughnut  
-                            data={Object(goalsCount)} 
-                            label={'Expired Goals'} />
-                        </div>
-                        
-                        <div style={{ width: '33.33%', margin:"1rem" }}>
-                          {selectedRow && (
-                            <div>
-                              <p style={{ color: "white" }}>{selectedRow.name}</p>
-                              <p style={{ color: "white" }}>{selectedRow.currentGoal}</p>
-                              <p style={{ color: "white" }}>{selectedRow.goalObjective}</p>
-                              <p style={{ color: "white" }}>{selectedRow.tempGoal}</p>
 
-                              <GoalGauge  
-                                data={Object(rowInfo)}/>
-                            </div>
-                          )}
+                      <div style={{ color: "white", width: '25%', margin:"2rem" }}></div>
 
-                        </div>
+                      <div style={{ color: "white", width: '25%', margin:"2rem" }}>
+                          <Doughnut  
+                          data={Object(goalsCount)} 
+                          label={'Expired Goals'} />
+                      </div>
+                      
+                      <div style={{ width: '25%', margin:"2rem" }}>
+                        {selectedRow && (
+                          <div>
+                            <GoalGauge  
+                              data={Object(rowInfo)}/>
+                          </div>
+                        )}
 
-                        <div style={{ backgroundColor: 'green', width: '33.33%', margin:"1rem" }}>
-                            Div3
-                        </div>
+                      </div>
+
+                      <div style={{ color: "white", width: '25%', margin:"2rem" }}></div>
+
+                      {/* <div style={{ backgroundColor: 'green', width: '33.33%', margin:"1rem" }}>
+                          Div3
+                      </div> */}
+
                     </div>
 
                   </Box>
@@ -710,21 +745,56 @@ function Goals() {
 
       </MainContent>
 
-      <Snackbar
-        open={openSnackbar}
-        autoHideDuration={10000}
-        onClose={() => setOpenSnackbar(false)}
-        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-      >
-        <Alert
-          onClose={() => setOpenSnackbar(false)}
-          variant="filled"
-          severity={isOperationSuccessful ? "success" : "error"}
-          sx={{ fontSize: "75%" }}
+      <Dialog
+          open={confirmOpen}
+          onClose={handleClose}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+          PaperProps={{
+            style: {
+              backgroundColor: "white",
+              boxShadow: "none",
+              zIndex: 1000,
+              fontSize: "24px",
+            },
+          }}
         >
-          {alertText}
-        </Alert>
-      </Snackbar>
+          <DialogTitle id="alert-dialog-title" style={{ fontSize: "1.3rem" }}>
+            {selectedCategory &&
+              `Are you sure you want to delete this goal?`}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText
+              id="alert-dialog-description"
+              style={{ fontSize: "1rem" }}
+            >
+              The goal will be permanently deleted
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose} style={{ fontSize: "1rem" }}>
+              Cancel
+            </Button>
+            <Button
+              onClick={handleDeleteCategory}
+              style={{ color: "red", fontSize: "1rem" }}
+              autoFocus
+            >
+              Delete
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        <Snackbar
+          open={openSnackbar}
+          autoHideDuration={10000} 
+          onClose={() => setOpenSnackbar(false)}
+          anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+        >
+          <Alert onClose={() => setOpenSnackbar(false)} severity={isOperationSuccessful ? "success" : "error"} variant="filled" sx={{fontSize: '80%'}}>
+            {alertText}
+          </Alert>
+        </Snackbar>
       
     </Container>
 

@@ -19,8 +19,20 @@ const modifyGoal = (goalData) => {
   return axios.post(edit_goal, goalData, { headers: authHeader() });
 };
 
-const deleteGoal = (goalId) => {
-  return axios.post(delete_goal, goalId, { headers: authHeader() });
+const deleteGoal = (id) => {
+  const data = {
+    goalId: id,
+  };
+  console.log(data);
+  return axios.delete(delete_goal, {data: data, headers: authHeader() ,      
+  'Content-Type' : 'application/json'})
+  .then(response => {
+      console.log("Categoria eliminada con exito:", response.data);
+  })
+  .catch(error => {
+      console.error("Error al eliminar la categoria:", error);
+      throw error;
+  })
 };
 
 

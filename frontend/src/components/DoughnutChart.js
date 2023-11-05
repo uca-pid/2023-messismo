@@ -48,7 +48,7 @@ export default function Doughnuts({ data, label }) {
             text: label,
             color: 'white',
             font: {
-                size: 12
+                size: 16
             }
            }
       },

@@ -4,9 +4,45 @@ import styled from "styled-components";
 import { GrAddCircle } from 'react-icons/gr'
 import { RiDeleteBinLine } from 'react-icons/ri'
 import productsService from "../services/products.service";
-import ordersService from "../services/orders.service";
+import categoryService from "../services/category.service";
+import goalsService from "../services/goals.service";
 import { useSelector } from 'react-redux';
-import { propsToClassKey } from "@mui/styles";
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker';
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+import { formatISO } from 'date-fns';
+
+
+
+const CustomizedDateTimePicker = styled(DateRangePicker)`
+   
+    .MuiInputBase-input {
+        color: #a4d4cc; 
+    }
+    .MuiInputLabel-root {
+        color: black; 
+    }
+    .MuiOutlinedInput-notchedOutline {
+        border-color: #a4d4cc;
+    }
+    .MuiSvgIcon-root {
+        fill: #a4d4cc;
+    }
+    .MuiOutlinedInput-root {
+        &:hover fieldset {
+            border-color: #a4d4cc;
+        }
+        &.Mui-focused fieldset {
+            border-color: #a4d4cc;
+        }
+    }
+    :focus-within .MuiInputLabel-root {
+        color: #a4d4cc;
+    }
+
+`;
 
 const Form = styled.form`
     padding: 2rem;
@@ -48,42 +84,43 @@ const Form = styled.form`
 
 const ProductContainer = styled.div`
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: space-between;
     margin-bottom: 2rem;
 
-    .form-product{
+    .form-name{
+
+    }
+
+    .form-dates{
+        margin-top: 1rem;
+    }
+
+    .form-types{
+        display: flex;
+        flex-direction: row;
+    }
+
+    .form-type{
         margin-right: 1rem;
-        width: 70%;
+        margin-top: 1rem;
+        width: 50%;
+    }
+
+    .form-product{
+        margin-top: 1rem;
+        width: 50%;
+    }
+
+    .form-category{
+        margin-top: 1rem;
+        width: 50%;
     }
 
     .form-amount{
         margin-right: 1rem;
-        width: 15%;
-        text-align: center;
-    }
-
-    .form-price{
-        width: 15%;
-        overflow: hidden;
-        text-align: center;
-        margin-top: 3.5rem;
-
-        span{
-            font-size: 14px;
-        
-            @media (max-width: 550px) {
-                font-size: 12px;
-            }
-
-            @media (max-width: 450px) {
-                font-size: 10px;
-            }
-
-            @media (max-width: 350px) {
-                font-size: 8px;
-            }
-        }
+        margin-top: 1rem;
+        width: 100%;
     }
 
 `;
@@ -122,8 +159,7 @@ const Input = styled.input`
     font-family: inherit;
     font-size: 16px;
     padding: 1.1rem;
-    width: 100%;
-    text-align: center;   
+    width: 100%; 
 
     &:focus{
         outline: none;
@@ -195,21 +231,29 @@ const Buttons = styled.div`
     }
 `;
 
-const EditGoalForm = ({onCancel, orderId}) => {
+const EditGoalForm = ({onCancel, goalId}) => {
 
     const { control, register, handleSubmit, formState: {errors}, watch } = useForm()
     const { user: currentUser } = useSelector((state) => state.auth);
     const [selectedProducts, setSelectedProducts] = useState({});
+    const [selectedCategories, setSelectedCategories] = useState({});
     const [productStocks, setProductStocks] = useState({});
     const [products, setProducts] = useState([]);
+    const [categories, setCategories] = useState([]);
+    const [selectedType, setSelectedType] = useState('');
     const [formField, setFormField] = useState([
         { product: '', amount: '' }
     ]);
     const [options, setOptions] = useState({
         products: [],
-        // paymentMethods: ['cash', 'credit card', 'debit card'],
+      });
+    const [catOptions, setCatOptions] = useState({
+        categories: [],
       });
     const [selectedProductNames, setSelectedProductNames] = useState([]);
+    const [selectedCategoryNames, setSelectedCategoryNames] = useState([]);
+    const [selectedDate, setSelectedDate] = useState("");
+    const [selectedDateRange, setSelectedDateRange] = useState([null, null]);
 
 
     useEffect(() => {
@@ -238,6 +282,26 @@ const EditGoalForm = ({onCancel, orderId}) => {
     }, []);
 
     useEffect(() => {
+        categoryService
+          .getAllCategories()
+          .then((response) => {
+            const formattedCategories = response.data.map(category => ({
+                id: category.categoryId,
+                name: category.name,
+            }));
+            setCategories(formattedCategories);
+            const categoryNames = formattedCategories.map(category => category.name);
+            setCatOptions(prevOptions => ({
+              ...prevOptions,
+              categories: categoryNames
+            }));
+          })
+          .catch((error) => {
+            console.error("Error al mostrar las categorias", error);
+          });
+    }, []);
+
+    useEffect(() => {
         const stockData = {};
         products.forEach(product => {
             stockData[product.name] = product.stock;
@@ -253,69 +317,52 @@ const EditGoalForm = ({onCancel, orderId}) => {
         setFormField([...formField, object])
     }
 
+
     const orderSubmit = (data) => {
-        const orderedProducts = formField.map((form, index) => {
-            const productName = data[`product-${index}`];
-            const product = products.find(product => product.name === productName);
-            const amount = parseInt(data[`amount-${index}`]) || 0;
+        formField.forEach((form, index) => {
+            const goalType = watch(`options-${index}`);
+            const selectedProduct = selectedProducts[`product-${index}`];
+            const selectedCategory = selectedCategories[`category-${index}`];
+            const amount = parseInt(watch(`amount-${index}`)) || 0;
 
-            if (product && !isNaN(product.unitPrice) && !isNaN(amount)) {
-                return {
-                    id: product.id,
-                    name: product.name,
-                    unitPrice: parseFloat(product.unitPrice),
-                    description: product.description,
-                    stock: product.stock,
-                    category: product.category,
-                    amount: amount,
-                    unitCost: parseFloat(product.unitCost),
-                };
-            } else {
-                return null;
+            let goalObject = "";
+            if (goalType === "Product") {
+                goalObject = selectedProduct;
+            } else if (goalType === "Category") {
+                goalObject = selectedCategory;
             }
-        }).filter(product => product !== null);
 
-        const totalPrice = orderedProducts.reduce((total, product) => {
-            return total + product.unitPrice * product.amount;
-        }, 0);
+            const goalData = {
+                name: data[`name-${index}`],
+                startingDate: selectedDateRange[0].toISOString(),
+                endingDate: selectedDateRange[1].toISOString(),
+                objectType: goalType.toLowerCase(),
+                goalObject: goalObject,
+                goalObjective: amount,
+            };
 
-        const totalCost = orderedProducts.reduce((total, product) => {
-            return total + product.unitCost * product.amount;
-        }, 0);
+            goalsService.addGoal(goalData)
+                .then(response => {
+                    console.log("Orden agregada con éxito:", response.data);
+                    onCancel();
+                })
+                .catch(error => {
+                    console.error("Error al agregar la orden:", error);
+                });
 
-        const orderData = {
-            //registeredEmployeeEmail: currentUser.email,
-            //dateCreated: new Date().toISOString(),
-            orderId: orderId,
-            productOrders: orderedProducts.map(product => ({
-              product: {
-                productId: product.id,
-                name: product.name,
-                unitPrice: product.unitPrice,
-                description: product.description,
-                stock: product.stock,
-                category: product.category
-              },
-              quantity: product.amount
-            })),
-            totalPrice: totalPrice.toFixed(2),
-            totalCost: totalCost.toFixed(2),
-        };
-
-        ordersService.modifyOrder(orderData)
-        .then(response => {
-          console.log("Orden enviada con éxito:", response.data);
-          onCancel();
-        })
-        .catch(error => {
-          console.error("Error al enviar la orden:", error);
+            console.log(goalData);
         });
-
-        console.log(orderData);
     };
+
 
     const handleCancelClick = () => {
         onCancel();
+    };
+
+
+
+    const handleDateChange = (newDateRange) => {
+        setSelectedDateRange(newDateRange);
     };
 
     const totalPrice = formField.reduce((total, form, index) => {
@@ -325,95 +372,29 @@ const EditGoalForm = ({onCancel, orderId}) => {
         return total + (product?.unitPrice || 0) * amount;
     }, 0);
 
+  
+
     return(
         <>
-            
             <Form onSubmit={ handleSubmit(orderSubmit) } className="form-react">
-            <h1 style={{fontSize: '2rem', marginBottom: '3%'}}>Edit goal</h1>
+
                 {formField.map((form, index) => {
                     return(
                         <ProductContainer key={index}>
-
-                            <div className="form-product">
-                                <Label>Product</Label>
-
-                                <Controller
-                                name={`product-${index}`}
-                                control={control}
-                                defaultValue=""
-                                {...register(`product-${index}`, { required: true })}
-                                render={({ field }) => (
-                                    <Select
-                                        {...field}
-                                        onChange={(e) => {
-                                            const selectedProduct = e.target.value;
-                                            setSelectedProductNames(prevSelectedProductNames => (
-                                                prevSelectedProductNames.includes(selectedProduct)
-                                                    ? prevSelectedProductNames
-                                                    : [...prevSelectedProductNames, selectedProduct]
-                                            ));
-                                            setSelectedProducts(prevState => ({
-                                                ...prevState,
-                                                [field.name]: selectedProduct
-                                            }));
-                                            field.onChange(selectedProduct);
-                                        }}
-                                    >
-                                        <option value="" disabled></option>
-                                        {options.products.map(product => (
-                                            <option
-                                                key={product}
-                                                value={product}
-                                                disabled={selectedProductNames.includes(product)}
-                                            >
-                                                {product}
-                                            </option>
-                                        ))}
-                                    </Select>
-                                )}
-                                />
-                                {errors[`product-${index}`]?.type === 'required' && <small className="fail">Field is empty</small>}
-                            </div>
-
+            
                             <div className="form-amount">
-                                <Label>Units</Label>
+                                <Label>Amount</Label>
                                 <Input
                                 name={`amount-${index}`}
                                 type="number"
                                 {...register(`amount-${index}`, {
                                     required: true,
-                                    min: 1,
-                                    max: productStocks[selectedProducts[`product-${index}`]] || 1
+                                    min: 0,
                                 })}
                                 />
                                 {errors[`amount-${index}`]?.type === 'required' && <small className="fail">Field is empty</small>}
 
-                                {errors[`amount-${index}`]?.type === 'min' && (
-                                    <small className="fail">
-                                        {products.find(product => product.name === selectedProducts[`product-${index}`]).stock === 0
-                                            ? "Out of Stock"
-                                            : "Min: 1"
-                                        }
-                                    </small>
-                                )}
-
-                                {errors[`amount-${index}`]?.type === 'max' && (
-                                    <small className="fail">
-                                        {products.find(product => product.name === selectedProducts[`product-${index}`]).stock === 0
-                                            ? "Out of Stock"
-                                            : `Stock: ${products.find(product => product.name === selectedProducts[`product-${index}`]).stock}`
-                                        }
-                                    </small>
-                                )}
-
-                            </div>
-
-                            <div className="form-price">
-                                    {selectedProducts[`product-${index}`] && (
-                                        <span>
-                                            {`$${(products.find(product => product.name === selectedProducts[`product-${index}`]).unitPrice * watch(`amount-${index}`)).toFixed(2)}`}
-                                        </span>
-                                    )}
+                                {errors[`amount-${index}`]?.type === 'min' && <small className="fail">Min: 0</small>}
                             </div>
 
                             {/* <RemoveIcon onClick={() => removeField(index)}/> */}
@@ -421,39 +402,10 @@ const EditGoalForm = ({onCancel, orderId}) => {
                         </ProductContainer>
                     )
                 })}
-
-                <AddIcon onClick={addField} />
-
-                {/* <div className="form-paymentmethod">
-                    <Label>Payment Method</Label>
-                    <Controller
-                        control={control}
-                        defaultValue=""
-                        {...register('paymentmethod', { required: true })}
-                        render={({ field }) => (
-                            <Select {...field}>
-                                <option value="" disabled></option>
-                                {options.paymentMethods.map(method => (
-                                    <option key={method} value={method}>
-                                        {method}
-                                    </option>
-                                ))}
-                            </Select>
-                        )}
-                    />
-                    {errors.paymentmethod?.type === 'required' && <small className="fail">Field is empty</small>}
-                </div> */}
-
-                <div className="form-totalprice">
-                    <Label>Total</Label>
-                    <div>
-                        <span>{`$${totalPrice.toFixed(2)}`}</span>
-                    </div>
-                </div>
         
                 <Buttons>
-                    <Button type="submit" className="placeorder">Set goal</Button>
-                    <Button type="button" className="cancel" onClick={handleCancelClick}>Cancel</Button>
+                    <Button type="submit" className="placeorder">Edit Goal</Button>
+                    <Button type="submit" className="cancel" onClick={handleCancelClick}>Cancel</Button>
                 </Buttons>
 
             </Form>

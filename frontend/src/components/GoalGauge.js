@@ -21,45 +21,45 @@ const Gauge = ({ data }) => {
         };
 
     return (
-        <div>
-        <Doughnut
-            data={info}
-            options={{
-            plugins: {
-                legend: {
-                display: false
+        <div style={{ display: 'flex', flexDirection: 'row', textAlign: "center" }}>
+            <Doughnut
+                data={info}
+                options={{
+                plugins: {
+                    legend: {
+                    display: false
+                    },
+                    tooltip: {
+                    enabled: false
+                    },
+                    title: {
+                        display: true,
+                        text: data.Name,
+                        color: 'white',
+                        font: {
+                            size: 16
+                        }
+                    },
+                    
                 },
-                tooltip: {
-                enabled: false
-                },
-                title: {
-                    display: true,
-                    text: data.Name,
-                    color: 'white',
-                    font: {
-                        size: 12
-                    }
-                   }
-                
-            },
-            rotation: -90,
-            circumference: 180,
-            cutout: "60%",
-            maintainAspectRatio: true,
-            responsive: true
-            }}
-        />
-        <div
-            style={{
-            position: "absolute",
-            top: "55%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            textAlign: "center"
-            }}
-        >
-            <div>Text Here</div>
-        </div>
+                rotation: -90,
+                circumference: 180,
+                cutout: "60%",
+                maintainAspectRatio: true,
+                responsive: true
+                }}
+            />
+
+            <div style={{
+            color: "white",
+            textAlign: "center",
+            fontSize: 20,
+            display: isNaN(parseInt(data.Current / data.Goal * 100)) ? "none" : "block"
+            }}>
+            {isNaN(parseInt(data.Current / data.Goal * 100)) ? "" : `${parseInt(data.Current / data.Goal * 100)}%`}
+            </div>
+
+
         </div>
     );
 };

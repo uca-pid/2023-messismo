@@ -5,13 +5,15 @@ import { GrAddCircle } from 'react-icons/gr'
 import { RiDeleteBinLine } from 'react-icons/ri'
 import productsService from "../services/products.service";
 import categoryService from "../services/category.service";
-import ordersService from "../services/orders.service";
+import goalsService from "../services/goals.service";
 import { useSelector } from 'react-redux';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+import { formatISO } from 'date-fns';
+
 
 
 const CustomizedDateTimePicker = styled(DateRangePicker)`
@@ -315,72 +317,43 @@ const GoalForm = ({onCancel}) => {
         setFormField([...formField, object])
     }
 
+
     const orderSubmit = (data) => {
-        const orderedProducts = formField.map((form, index) => {
-            const productName = data[`product-${index}`];
-            const product = products.find(product => product.name === productName);
-            const amount = parseInt(data[`amount-${index}`]) || 0;
-            console.log(products);
-            if (product && !isNaN(product.unitPrice) && !isNaN(amount) && !isNaN(product.unitCost)) {
-                return {
-                    id: product.id,
-                    name: product.name,
-                    unitPrice: parseFloat(product.unitPrice),
-                    description: product.description,
-                    stock: product.stock,
-                    category: product.category,
-                    amount: amount,
-                    unitCost: parseFloat(product.unitCost)
-                };
-            } else {
-                return null;
+        formField.forEach((form, index) => {
+            const goalType = watch(`options-${index}`);
+            const selectedProduct = selectedProducts[`product-${index}`];
+            const selectedCategory = selectedCategories[`category-${index}`];
+            const amount = parseInt(watch(`amount-${index}`)) || 0;
+
+            let goalObject = "";
+            if (goalType === "Product") {
+                goalObject = selectedProduct;
+            } else if (goalType === "Category") {
+                goalObject = selectedCategory;
             }
-        }).filter(product => product !== null);
 
-        const totalPrice = orderedProducts.reduce((total, product) => {
-            return total + product.unitPrice * product.amount;
-        }, 0);
+            const goalData = {
+                name: data[`name-${index}`],
+                startingDate: selectedDateRange[0].toISOString(),
+                endingDate: selectedDateRange[1].toISOString(),
+                objectType: goalType.toLowerCase(),
+                goalObject: goalObject,
+                goalObjective: amount,
+            };
 
-        const totalCost = orderedProducts.reduce((total, product) => {
-            console.log(product);
-            return total + product.unitCost * product.amount;
-        }, 0);
+            goalsService.addGoal(goalData)
+                .then(response => {
+                    console.log("Orden agregada con éxito:", response.data);
+                    onCancel();
+                })
+                .catch(error => {
+                    console.error("Error al agregar la orden:", error);
+                });
 
-
-
-
-        const orderData = {
-            registeredEmployeeEmail: currentUser.email,
-            dateCreated: new Date().toISOString(),
-            productOrders: orderedProducts.map(product => ({
-              product: {
-                productId: product.id,
-                name: product.name,
-                unitPrice: product.unitPrice,
-                description: product.description,
-                stock: product.stock,
-                category: product.category,
-                unitCost: product.unitCost,
-              },
-              quantity: product.amount
-            })),
-            totalPrice: totalPrice.toFixed(2),
-            totalCost: totalCost.toFixed(2),
-            
-
-        };
-
-        ordersService.addOrders(orderData)
-        .then(response => {
-          console.log("Orden enviada con éxito:", response.data);
-          onCancel();
-        })
-        .catch(error => {
-          console.error("Error al enviar la orden:", error);
+            console.log(goalData);
         });
-
-        console.log(orderData);
     };
+
 
     const handleCancelClick = () => {
         onCancel();
@@ -543,7 +516,9 @@ const GoalForm = ({onCancel}) => {
                                         <CustomizedDateTimePicker
                                         localeText={{ start: 'Start', end: 'End' }}
                                         value={selectedDateRange}
+                                        format="YYYY-MM-DDTHH:mm:ss.SSSZ"
                                         onChange={handleDateChange}
+                                        
                                         />
                                     </DemoContainer>
                                 </LocalizationProvider>
