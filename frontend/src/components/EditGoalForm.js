@@ -46,7 +46,7 @@ const CustomizedDateTimePicker = styled(DateRangePicker)`
 
 const Form = styled.form`
     padding: 2rem;
-    background-color: rgb(164, 212, 204, 0.6);
+    background-color: white;
 
     .fail {
         color: red;
@@ -375,7 +375,7 @@ const EditGoalForm = ({onCancel, goalId}) => {
                         <ProductContainer key={index}>
             
                             <div className="form-amount">
-                                <Label>Amount</Label>
+                                <Label>New Amount</Label>
                                 <Input
                                 name={`amount-${index}`}
                                 type="number"

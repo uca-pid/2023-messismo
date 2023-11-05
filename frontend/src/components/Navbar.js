@@ -94,7 +94,7 @@ const NavContainer = styled.nav`
         position: absolute;
         margin-left: auto;
         margin-right: auto;
-        top: 15%;
+        top: 10%;
         left: 0;
         right: 0;
         text-align: center;
@@ -103,14 +103,14 @@ const NavContainer = styled.nav`
             padding: 1rem;
             .icon{
                 color: white;
-                font-size: 30px;
+                font-size: 28px;
                 margin-right: 1rem;
             }
 
             span{
                 color: white;
                 font-family: 'Roboto';
-                font-size: 38px;
+                font-size: 34px;
             }
         }
 

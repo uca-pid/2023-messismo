@@ -426,6 +426,7 @@ const GoalForm = ({onCancel}) => {
                                 <Input
                                 name={`name-${index}`}
                                 type="text"
+                                maxLength={50}
                                 {...register(`name-${index}`, {
                                     required: true,
                                 })}

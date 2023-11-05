@@ -33,6 +33,45 @@ import { Button } from "@mui/material";
 
 const Container = styled.div``;
 
+const Graphs = styled.div`
+      display: flex;
+      flex-direction: row;
+      width: "100%";
+      height: "auto";
+      justify-content: center;
+      margin: 3rem;
+    @media (max-width: 1000px) {
+        display: flex;
+        flex-direction: column;
+    }
+`;
+
+const DoughnutDiv = styled.div`
+    max-width: 50%;
+    display: flex;
+    margin-right: 5rem;
+    justify-content: center;
+
+    @media (max-width: 1000px) {
+        max-width: 100%;
+        height: auto;
+        flex-direction: column;
+    }        
+`;
+
+const GaugeDiv = styled.div`
+    max-width: 50%;
+    display: flex;
+    justify-content: center;
+
+    @media (max-width: 1000px) {
+        max-width: 100%;
+        height: auto;
+        flex-direction: column;
+        margin-top: 2rem;
+    }
+`;
+
 const AddGoalButton = styled.button`
   display: block;
   font-size: 1.2rem;
@@ -62,7 +101,7 @@ const AddGoalButton = styled.button`
   }
 
   @media (max-width: 477px) {
-    margin-top: 1rem;
+    margin: 1rem;
     font-size: 1rem;
     padding: 1rem 2.5rem;
   }
@@ -183,18 +222,6 @@ const MoreDetails = styled(MdFastfood)`
   @media (max-width: 500px) {
     font-size: 0.8rem;
   }
-`;
-
-const DoughnutDiv = styled.div`
-    max-width: 50%;
-    display: flex;
-
-    @media (max-width: 1000px) {
-        max-width: 90%;
-        height: auto;
-        flex-direction: column;
-    }
-
 `;
 
 const MOBILE_COLUMNS = {
@@ -613,8 +640,9 @@ function Goals() {
     
       <MainContent visible={contentVisible}>
 
-        {currentUser.role === "ADMIN" ||
-        currentUser.role === "MANAGER" ? (
+        {(currentUser.role === "ADMIN" ||
+        currentUser.role === "MANAGER") &&
+        !isGoalFormVisible && !isEditGoalFormVisible ? (
           <AddGoalButton variant="contained" onClick={handleAddOrderClick}>
             Add Goal
           </AddGoalButton>
@@ -744,55 +772,15 @@ function Goals() {
                       }}
                     />
 
-                    <div style={{  
-                      display: "flex", 
-                      flexDirection: "row",
-                      width: "100%",
-                      height: "auto",
+                  <Graphs id="wrap">
 
-                      '@media (max-width: 1000px)': {
-                        flexDirection: "column",
-                      }
-                      }}>
-
-                      <div style={{ 
-                        color: "white", 
-                        width: '25%', 
-                        margin:"2rem",
-                        
-                        '@media (max-width: 1000px)': {
-                          width: '100%',
-                          height: "auto",
-                        }
-                        }}>
-
-                        </div>
-
-                      <div style={{ 
-                        color: "white", 
-                        width: '25%', 
-                        margin:"2rem", 
-
-                        '@media (max-width: 1000px)': {
-                          width: '100%',
-                          height: "auto",
-                        }
-                        
-                        }}>
+                      <DoughnutDiv>
                           <Doughnut  
                           data={Object(goalsCount)} 
                           label={'Expired Goals'} />
-                      </div>
+                      </DoughnutDiv>
                       
-                      <div style={{ 
-                        width: '25%', 
-                        margin:"2rem",
-
-                        '@media (max-width: 1000px)': {
-                          width: '100%',
-                          height: "auto",
-                        }
-                        }}>
+                      <GaugeDiv>
                         {selectedRow && (
                           <div>
                             <GoalGauge  
@@ -800,25 +788,9 @@ function Goals() {
                           </div>
                         )}
 
-                      </div>
+                      </GaugeDiv>
 
-                      <div style={{ 
-                        color: "white", 
-                        width: '25%', 
-                        margin:"2rem", 
-
-                        '@media (max-width: 1000px)': {
-                          width: '100%',
-                          height: "auto",
-                        }
-                        
-                        }}></div>
-
-                      {/* <div style={{ backgroundColor: 'green', width: '33.33%', margin:"1rem" }}>
-                          Div3
-                      </div> */}
-
-                    </div>
+                  </Graphs>
 
                   </Box>
                 </OrdersTable>

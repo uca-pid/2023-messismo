@@ -8,7 +8,7 @@ const Gauge = ({ data }) => {
 
     let name = data.Name
     let percentage = isNaN(parseInt((data.Current / data.Goal) * 100)) ? 0 : parseInt((data.Current / data.Goal) * 100);
-    percentage = `${percentage}%`;
+    percentage = `${percentage}% completed`;
 
     if (name === undefined) {
         name = "";
