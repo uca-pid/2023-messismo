@@ -6,6 +6,7 @@ import { PiCoffeeFill } from 'react-icons/pi'
 import { ImExit } from 'react-icons/im'
 import { VscGraph } from 'react-icons/vsc'
 import { HiShoppingBag } from 'react-icons/hi2'
+import { GiStairsGoal } from 'react-icons/gi'
 import { styled } from 'styled-components'
 import { Link, useNavigate } from 'react-router-dom'
 import BurgerIcon from './BurgerIcon'
@@ -183,6 +184,13 @@ function Navbar() {
                     <NavLink to={'/dashboard'} onClick={clicked ? handleClick : undefined}>
                         <VscGraph className='icon'/>
                         <span>Dashboard</span>
+                    </NavLink>
+                )}
+
+                {(showManagerBoard || showAdminBoard) && (
+                    <NavLink to={'/goals'} onClick={clicked ? handleClick : undefined}>
+                        <GiStairsGoal className='icon'/>
+                        <span>Goals</span>
                     </NavLink>
                 )}
 
