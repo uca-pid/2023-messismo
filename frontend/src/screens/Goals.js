@@ -54,6 +54,7 @@ const DoughnutDiv = styled.div`
 
     @media (max-width: 1000px) {
         max-width: 100%;
+        margin-right: 0rem;
         height: auto;
         flex-direction: column;
     }        
