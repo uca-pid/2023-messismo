@@ -6,7 +6,7 @@ import { RiDeleteBinLine } from "react-icons/ri";
 import productsService from "../services/products.service";
 import ordersService from "../services/orders.service";
 import { useSelector } from "react-redux";
-//import Select from "react-select";
+import Select from "react-select";
 
 const Form = styled.form`
   padding: 2rem;
@@ -94,7 +94,7 @@ const Label = styled.label`
   color: black;
 `;
 
-const Select = styled.select`
+/*const Select = styled.select`
   border: 1px solid rgb(164, 212, 204, 0.7);
   background-color: transparent;
   display: block;
@@ -112,7 +112,7 @@ const Select = styled.select`
     font-size: 12px;
   }
 `;
-
+*/
 const Input = styled.input`
   border: 1px solid rgb(164, 212, 204, 0.7);
   background-color: transparent;
@@ -190,7 +190,7 @@ const Buttons = styled.div`
   }
 `;
 
-const OrderForm = ({ onCancel }) => {
+const OrderFormNew = ({ onCancel }) => {
   const {
     control,
     register,
@@ -209,7 +209,6 @@ const OrderForm = ({ onCancel }) => {
   });
   const [selectedProductNames, setSelectedProductNames] = useState([]);
   const [search, setSearch] = useState(""); // Estado para almacenar el término de búsqueda
- 
 
   const handleSearchChange = (event) => {
     setSearch(event.target.value);
@@ -252,8 +251,6 @@ const OrderForm = ({ onCancel }) => {
     });
     setProductStocks(stockData);
   }, [products]);
-
-
 
   const addField = () => {
     let object = {
@@ -355,42 +352,15 @@ const OrderForm = ({ onCancel }) => {
               <div className="form-product">
                 <Label>Product</Label>
 
-                <Controller
-                  name={`product-${index}`}
-                  control={control}
-                  defaultValue=""
-                  {...register(`product-${index}`, { required: true })}
-                  render={({ field }) => (
-                    <Select
-                      {...field}
-                      isSearchable
-                      onChange={(e) => {
-                        const selectedProduct = e.target.value;
-                        setSelectedProductNames((prevSelectedProductNames) =>
-                          prevSelectedProductNames.includes(selectedProduct)
-                            ? prevSelectedProductNames
-                            : [...prevSelectedProductNames, selectedProduct]
-                        );
-                        setSelectedProducts((prevState) => ({
-                          ...prevState,
-                          [field.name]: selectedProduct,
-                        }));
-                        field.onChange(selectedProduct);
-                      }}
-                    >
-                      <option value="" disabled></option>
-                      {options.products.map((product) => (
-                        <option
-                          key={product}
-                          value={product}
-                          disabled={selectedProductNames.includes(product)}
-                        >
-                          {product}
-                        </option>
-                      ))}
-                    </Select>
-                  )}
-                />
+                <Select onChange={(selectedOption) => {
+                    // Código para manejar la selección del producto
+                  }}
+                  options={products.map((product) => ({
+                    label: product.name,
+                    value: product.name,
+                  }))}>
+
+                </Select>
                 {errors[`product-${index}`]?.type === "required" && (
                   <small className="fail">Field is empty</small>
                 )}
@@ -501,4 +471,4 @@ const OrderForm = ({ onCancel }) => {
   );
 };
 
-export default OrderForm;
+export default OrderFormNew;

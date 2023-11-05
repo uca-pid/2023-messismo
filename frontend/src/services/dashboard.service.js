@@ -5,8 +5,13 @@ import apiUrl from "../deploy";
 const API_URL = apiUrl + "/api/v1/manager/dashboard/getDashboard";
 
 
-const getDashboard = (date) => {
-  return axios.post(API_URL, date, { headers: authHeader() });
+const getDashboard = (data) => {
+  console.log(data);
+  const data2 = {
+    date: "",
+    categoryList: ["Starter", "Dessert"],
+  }
+  return axios.post(API_URL, data, { headers: authHeader() });
 };
 
 const dashboardService = {
