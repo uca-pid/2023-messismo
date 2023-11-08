@@ -51,23 +51,24 @@ public class InitialConfiguration {
 
     private void addSampleGoals(GoalService goalService) throws ParseException {
         // EXPIRED NOT ACHIEVED
-        addNewGoal(goalService,"Category: Starter goal","2023-09-05 00:00:01","2023-10-05 00:00:01","Category","Starter",500000.00);
-        addNewGoal(goalService, "Product: Tomato Bruschetta goal","2023-08-04 00:00:01","2023-09-04 00:00:01","Product","Tomato Bruschetta",50000.00);
-        addNewGoal(goalService, "Product: Fried Calamari goal","2023-08-02 00:00:01","2023-08-03 00:00:01","Product","Fried Calamari",15000.00);
+        addNewGoal(1,goalService,"Category: Starter goal","2023-09-05 00:00:01","2023-10-05 00:00:01","Category","Starter",500000.00);
+        addNewGoal(2,goalService, "Product: Tomato Bruschetta goal","2023-08-04 00:00:01","2023-09-04 00:00:01","Product","Tomato Bruschetta",50000.00);
+        addNewGoal(3,goalService, "Product: Fried Calamari goal","2023-08-02 00:00:01","2023-08-03 00:00:01","Product","Fried Calamari",15000.00);
         // EXPIRED ACHIEVED
-        addNewGoal(goalService, "Total goal","2020-05-05 00:00:01","2020-05-07 00:00:01","Total","",25000.00);
+        addNewGoal(4,goalService, "Total goal","2020-05-05 00:00:01","2020-05-07 00:00:01","Total","",25000.00);
         // EXPIRED FULFILLED
-        addNewGoal(goalService, "Category: Drink goal","2021-05-05 00:00:01","2023-05-07 00:00:01","Category","Drink",25000.00);
+        addNewGoal(5,goalService, "Category: Drink goal","2021-05-05 00:00:01","2023-05-07 00:00:01","Category","Drink",25000.00);
         // IN PROGRESS NOT ACHIEVED
-        addNewGoal(goalService, "Total goal","2023-10-28 00:02:01","2023-10-30 00:00:01","Total","",25000.00);
+        addNewGoal(6,goalService, "Total goal","2023-10-28 00:02:01","2023-10-30 00:00:01","Total","",25000.00);
         // UPCOMING NOT ACHIEVED
-        addNewGoal(goalService, "Total goal","2024-01-01 00:00:01","2024-04-01 00:00:01","Total","",25000.00);
-        addNewGoal(goalService, "Product: Chocolate Profiteroles goal","2024-05-01 00:00:01","2024-05-07 00:00:01","Product","Chocolate Profiteroles",10000.00);
-        addNewGoal(goalService, "Category: Dessert goal","2024-09-05 00:00:01","2024-09-07 00:00:01","Category","Dessert",10000.00);
+        addNewGoal(7,goalService, "Total goal","2024-01-01 00:00:01","2024-04-01 00:00:01","Total","",25000.00);
+        addNewGoal(8,goalService, "Product: Chocolate Profiteroles goal","2024-05-01 00:00:01","2024-05-07 00:00:01","Product","Chocolate Profiteroles",10000.00);
+        addNewGoal(9,goalService, "Category: Dessert goal","2024-09-05 00:00:01","2024-09-07 00:00:01","Category","Dessert",10000.00);
     }
-    private void addNewGoal(GoalService goalService,String name, String startingDate, String endingDate, String objectType, String goalObject, Double goalObjective) throws ParseException {
+    private void addNewGoal(Integer goalNumber, GoalService goalService,String name, String startingDate, String endingDate, String objectType, String goalObject, Double goalObjective) throws ParseException {
         GoalDTO newGoal = GoalDTO.builder().name(name).startingDate(convertToFormat(startingDate)).endingDate(convertToFormat(endingDate)).objectType(objectType).goalObject(goalObject).goalObjective(goalObjective).build();
-        goalService.addGoal(newGoal);
+        System.out.println("GOAL:" + goalNumber);
+        System.out.println(goalService.addGoal(newGoal));
     }
 
 

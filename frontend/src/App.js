@@ -11,6 +11,7 @@ import Categories from "./screens/Categories";
 import Login from "./screens/Login";
 import Register from "./screens/Register";
 import Dashboard from "./screens/Dashboard";
+import Goals from "./screens/Goals";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/homepage" element={<Home />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/goals" element={<Goals />} />
           <Route path="/products" element={<Products />} />
           <Route path="/orders" element={<Orders />} />
           <Route path="/resources" element={<Resources />} />

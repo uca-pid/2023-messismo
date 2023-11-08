@@ -291,9 +291,72 @@ const OrderForm = ({ onCancel }) => {
       })
       .filter((product) => product !== null);
 
+
     const totalPrice = orderedProducts.reduce((total, product) => {
       return total + product.unitPrice * product.amount;
     }, 0);
+
+    const orderSubmit = (data) => {
+        const orderedProducts = formField.map((form, index) => {
+            const productName = data[`product-${index}`];
+            const product = products.find(product => product.name === productName);
+            const amount = parseInt(data[`amount-${index}`]) || 0;
+            console.log(products);
+            if (product && !isNaN(product.unitPrice) && !isNaN(amount) && !isNaN(product.unitCost)) {
+                return {
+                    id: product.id,
+                    name: product.name,
+                    unitPrice: parseFloat(product.unitPrice),
+                    description: product.description,
+                    stock: product.stock,
+                    category: product.category,
+                    amount: amount,
+                    unitCost: parseFloat(product.unitCost)
+                };
+            } else {
+                return null;
+            }
+        }).filter(product => product !== null);
+
+        const totalPrice = orderedProducts.reduce((total, product) => {
+            return total + product.unitPrice * product.amount;
+        }, 0);
+
+        const totalCost = orderedProducts.reduce((total, product) => {
+            console.log(product);
+            return total + product.unitCost * product.amount;
+        }, 0);
+
+        const orderData = {
+            registeredEmployeeEmail: currentUser.email,
+            dateCreated: new Date().toISOString(),
+            productOrders: orderedProducts.map(product => ({
+              product: {
+                productId: product.id,
+                name: product.name,
+                unitPrice: product.unitPrice,
+                description: product.description,
+                stock: product.stock,
+                category: product.category,
+                unitCost: product.unitCost,
+              },
+              quantity: product.amount
+            })),
+            totalPrice: totalPrice.toFixed(2),
+            totalCost: totalCost.toFixed(2),
+        };
+
+        ordersService.addOrders(orderData)
+        .then(response => {
+          console.log("Orden enviada con éxito:", response.data);
+          onCancel();
+        })
+        .catch(error => {
+          console.error("Error al enviar la orden:", error);
+        });
+
+        console.log(orderData);
+    };
 
     const totalCost = orderedProducts.reduce((total, product) => {
       console.log(product);
