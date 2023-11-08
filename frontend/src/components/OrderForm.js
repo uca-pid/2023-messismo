@@ -209,7 +209,6 @@ const OrderForm = ({ onCancel }) => {
   });
   const [selectedProductNames, setSelectedProductNames] = useState([]);
   const [search, setSearch] = useState(""); // Estado para almacenar el término de búsqueda
- 
 
   const handleSearchChange = (event) => {
     setSearch(event.target.value);
@@ -252,8 +251,6 @@ const OrderForm = ({ onCancel }) => {
     });
     setProductStocks(stockData);
   }, [products]);
-
-
 
   const addField = () => {
     let object = {
@@ -364,6 +361,11 @@ const OrderForm = ({ onCancel }) => {
                     <Select
                       {...field}
                       isSearchable
+                      options={filteredProducts.filter((product) => {
+                        return product
+                          .toLowerCase()
+                          .startsWith(search.toLowerCase());
+                      })}
                       onChange={(e) => {
                         const selectedProduct = e.target.value;
                         setSelectedProductNames((prevSelectedProductNames) =>
@@ -379,7 +381,7 @@ const OrderForm = ({ onCancel }) => {
                       }}
                     >
                       <option value="" disabled></option>
-                      {options.products.map((product) => (
+                      {filteredProducts.map((product) => (
                         <option
                           key={product}
                           value={product}

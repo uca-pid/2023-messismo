@@ -209,10 +209,16 @@ const OrderFormNew = ({ onCancel }) => {
   });
   const [selectedProductNames, setSelectedProductNames] = useState([]);
   const [search, setSearch] = useState(""); // Estado para almacenar el término de búsqueda
+  const [selectedProduct, setSelectedProduct] = useState(null);
+
+  const [selectedUnits, setSelectedUnits] = useState(0);
 
   const handleSearchChange = (event) => {
     setSearch(event.target.value);
   };
+
+
+
 
   // Filtrar los productos según el término de búsqueda
   const filteredProducts = options.products.filter((product) => {
@@ -220,6 +226,7 @@ const OrderFormNew = ({ onCancel }) => {
   });
 
   useEffect(() => {
+    console.log(selectedProducts);
     productsService
       .getAllProducts()
       .then((response) => {
@@ -244,6 +251,7 @@ const OrderFormNew = ({ onCancel }) => {
       });
   }, []);
 
+
   useEffect(() => {
     const stockData = {};
     products.forEach((product) => {
@@ -261,6 +269,8 @@ const OrderFormNew = ({ onCancel }) => {
   };
 
   const orderSubmit = (data) => {
+    console.log("ORDERRRRRR");
+    console.log(data);
     const orderedProducts = formField
       .map((form, index) => {
         const productName = data[`product-${index}`];
@@ -291,14 +301,14 @@ const OrderFormNew = ({ onCancel }) => {
       })
       .filter((product) => product !== null);
 
-    const totalPrice = orderedProducts.reduce((total, product) => {
+    /*const totalPrice = orderedProducts.reduce((total, product) => {
       return total + product.unitPrice * product.amount;
     }, 0);
 
     const totalCost = orderedProducts.reduce((total, product) => {
       console.log(product);
       return total + product.unitCost * product.amount;
-    }, 0);
+    }, 0);*/
 
     const orderData = {
       registeredEmployeeEmail: currentUser.email,
@@ -336,6 +346,17 @@ const OrderFormNew = ({ onCancel }) => {
     onCancel();
   };
 
+  /*const calculateTotalPrice = () => {
+    console.log("holi");
+    const totalPrice = formField.reduce((total, form, index) => {
+      const productName = watch(`product-${index}`);
+      const product = products.find((product) => product.name === productName);
+      const amount = parseInt(watch(`amount-${index}`)) || 0;
+      setTotalPrice(total + (product?.unitPrice || 0) * amount);
+      return total + (product?.unitPrice || 0) * amount;
+    }, 0);
+  }*/
+
   const totalPrice = formField.reduce((total, form, index) => {
     const productName = watch(`product-${index}`);
     const product = products.find((product) => product.name === productName);
@@ -353,8 +374,14 @@ const OrderFormNew = ({ onCancel }) => {
                 <Label>Product</Label>
 
                 <Select onChange={(selectedOption) => {
-                    // Código para manejar la selección del producto
+                    setSelectedProduct(selectedOption);
+                    setSelectedProducts({
+                      ...selectedProducts,
+                      [`product-${index}`]: selectedOption.value
+                    })
+                    //field.onChange(selectedProduct);
                   }}
+                  className="form-select"
                   options={products.map((product) => ({
                     label: product.name,
                     value: product.name,
@@ -371,6 +398,9 @@ const OrderFormNew = ({ onCancel }) => {
                 <Input
                   name={`amount-${index}`}
                   type="number"
+                  onChange={(event) => {
+                    setSelectedUnits(event.target.value);
+                  }}
                   {...register(`amount-${index}`, {
                     required: true,
                     min: 1,

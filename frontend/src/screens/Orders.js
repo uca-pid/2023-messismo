@@ -251,6 +251,20 @@ function Orders() {
       });
   }, [isOrderFormVisible, open, isEditFormVisible, openEditForm]);
 
+  useEffect(() => {
+    ordersService
+      .getAllOrders()
+      .then((response) => {
+        setOrders(response.data);
+        setIsLoading(false);
+        console.log("done");
+      })
+      .catch((error) => {
+        console.error("Error al mostrar las ordenes", error);
+        setIsLoading(false);
+      });
+  }, [isEditFormVisible]);
+
 
   if (!currentUser) {
     return <Navigate to="/" />;
