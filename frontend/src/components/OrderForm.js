@@ -283,9 +283,6 @@ const OrderForm = ({onCancel}) => {
             return total + product.unitCost * product.amount;
         }, 0);
 
-
-
-
         const orderData = {
             registeredEmployeeEmail: currentUser.email,
             dateCreated: new Date().toISOString(),
@@ -303,8 +300,6 @@ const OrderForm = ({onCancel}) => {
             })),
             totalPrice: totalPrice.toFixed(2),
             totalCost: totalCost.toFixed(2),
-            
-
         };
 
         ordersService.addOrders(orderData)
