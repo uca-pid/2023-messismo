@@ -7,8 +7,8 @@ const apiUrl = "localhost:8080";
 const API_URL = apiUrl + "/api/v1/manager/dashboard/getDashboard";
 
 
-const getDashboard = (date) => {
-  return axios.post(API_URL, date, { headers: authHeader() });
+const getDashboard = (data) => {
+  return axios.post(API_URL, data, { headers: authHeader() });
 };
 
 const dashboardService = {

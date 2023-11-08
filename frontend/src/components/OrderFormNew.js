@@ -6,7 +6,7 @@ import { RiDeleteBinLine } from "react-icons/ri";
 import productsService from "../services/products.service";
 import ordersService from "../services/orders.service";
 import { useSelector } from "react-redux";
-//import Select from "react-select";
+import Select from "react-select";
 
 const Form = styled.form`
   padding: 2rem;
@@ -94,7 +94,7 @@ const Label = styled.label`
   color: black;
 `;
 
-const Select = styled.select`
+/*const Select = styled.select`
   border: 1px solid rgb(164, 212, 204, 0.7);
   background-color: transparent;
   display: block;
@@ -112,7 +112,7 @@ const Select = styled.select`
     font-size: 12px;
   }
 `;
-
+*/
 const Input = styled.input`
   border: 1px solid rgb(164, 212, 204, 0.7);
   background-color: transparent;
@@ -190,7 +190,7 @@ const Buttons = styled.div`
   }
 `;
 
-const OrderForm = ({ onCancel }) => {
+const OrderFormNew = ({ onCancel }) => {
   const {
     control,
     register,
@@ -209,10 +209,16 @@ const OrderForm = ({ onCancel }) => {
   });
   const [selectedProductNames, setSelectedProductNames] = useState([]);
   const [search, setSearch] = useState(""); // Estado para almacenar el término de búsqueda
+  const [selectedProduct, setSelectedProduct] = useState(null);
+
+  const [selectedUnits, setSelectedUnits] = useState(0);
 
   const handleSearchChange = (event) => {
     setSearch(event.target.value);
   };
+
+
+
 
   // Filtrar los productos según el término de búsqueda
   const filteredProducts = options.products.filter((product) => {
@@ -220,6 +226,7 @@ const OrderForm = ({ onCancel }) => {
   });
 
   useEffect(() => {
+    console.log(selectedProducts);
     productsService
       .getAllProducts()
       .then((response) => {
@@ -244,6 +251,7 @@ const OrderForm = ({ onCancel }) => {
       });
   }, []);
 
+
   useEffect(() => {
     const stockData = {};
     products.forEach((product) => {
@@ -261,6 +269,8 @@ const OrderForm = ({ onCancel }) => {
   };
 
   const orderSubmit = (data) => {
+    console.log("ORDERRRRRR");
+    console.log(data);
     const orderedProducts = formField
       .map((form, index) => {
         const productName = data[`product-${index}`];
@@ -291,77 +301,14 @@ const OrderForm = ({ onCancel }) => {
       })
       .filter((product) => product !== null);
 
-
-    const totalPrice = orderedProducts.reduce((total, product) => {
+    /*const totalPrice = orderedProducts.reduce((total, product) => {
       return total + product.unitPrice * product.amount;
     }, 0);
-
-    const orderSubmit = (data) => {
-        const orderedProducts = formField.map((form, index) => {
-            const productName = data[`product-${index}`];
-            const product = products.find(product => product.name === productName);
-            const amount = parseInt(data[`amount-${index}`]) || 0;
-            console.log(products);
-            if (product && !isNaN(product.unitPrice) && !isNaN(amount) && !isNaN(product.unitCost)) {
-                return {
-                    id: product.id,
-                    name: product.name,
-                    unitPrice: parseFloat(product.unitPrice),
-                    description: product.description,
-                    stock: product.stock,
-                    category: product.category,
-                    amount: amount,
-                    unitCost: parseFloat(product.unitCost)
-                };
-            } else {
-                return null;
-            }
-        }).filter(product => product !== null);
-
-        const totalPrice = orderedProducts.reduce((total, product) => {
-            return total + product.unitPrice * product.amount;
-        }, 0);
-
-        const totalCost = orderedProducts.reduce((total, product) => {
-            console.log(product);
-            return total + product.unitCost * product.amount;
-        }, 0);
-
-        const orderData = {
-            registeredEmployeeEmail: currentUser.email,
-            dateCreated: new Date().toISOString(),
-            productOrders: orderedProducts.map(product => ({
-              product: {
-                productId: product.id,
-                name: product.name,
-                unitPrice: product.unitPrice,
-                description: product.description,
-                stock: product.stock,
-                category: product.category,
-                unitCost: product.unitCost,
-              },
-              quantity: product.amount
-            })),
-            totalPrice: totalPrice.toFixed(2),
-            totalCost: totalCost.toFixed(2),
-        };
-
-        ordersService.addOrders(orderData)
-        .then(response => {
-          console.log("Orden enviada con éxito:", response.data);
-          onCancel();
-        })
-        .catch(error => {
-          console.error("Error al enviar la orden:", error);
-        });
-
-        console.log(orderData);
-    };
 
     const totalCost = orderedProducts.reduce((total, product) => {
       console.log(product);
       return total + product.unitCost * product.amount;
-    }, 0);
+    }, 0);*/
 
     const orderData = {
       registeredEmployeeEmail: currentUser.email,
@@ -399,6 +346,17 @@ const OrderForm = ({ onCancel }) => {
     onCancel();
   };
 
+  /*const calculateTotalPrice = () => {
+    console.log("holi");
+    const totalPrice = formField.reduce((total, form, index) => {
+      const productName = watch(`product-${index}`);
+      const product = products.find((product) => product.name === productName);
+      const amount = parseInt(watch(`amount-${index}`)) || 0;
+      setTotalPrice(total + (product?.unitPrice || 0) * amount);
+      return total + (product?.unitPrice || 0) * amount;
+    }, 0);
+  }*/
+
   const totalPrice = formField.reduce((total, form, index) => {
     const productName = watch(`product-${index}`);
     const product = products.find((product) => product.name === productName);
@@ -415,47 +373,21 @@ const OrderForm = ({ onCancel }) => {
               <div className="form-product">
                 <Label>Product</Label>
 
-                <Controller
-                  name={`product-${index}`}
-                  control={control}
-                  defaultValue=""
-                  {...register(`product-${index}`, { required: true })}
-                  render={({ field }) => (
-                    <Select
-                      {...field}
-                      isSearchable
-                      options={filteredProducts.filter((product) => {
-                        return product
-                          .toLowerCase()
-                          .startsWith(search.toLowerCase());
-                      })}
-                      onChange={(e) => {
-                        const selectedProduct = e.target.value;
-                        setSelectedProductNames((prevSelectedProductNames) =>
-                          prevSelectedProductNames.includes(selectedProduct)
-                            ? prevSelectedProductNames
-                            : [...prevSelectedProductNames, selectedProduct]
-                        );
-                        setSelectedProducts((prevState) => ({
-                          ...prevState,
-                          [field.name]: selectedProduct,
-                        }));
-                        field.onChange(selectedProduct);
-                      }}
-                    >
-                      <option value="" disabled></option>
-                      {filteredProducts.map((product) => (
-                        <option
-                          key={product}
-                          value={product}
-                          disabled={selectedProductNames.includes(product)}
-                        >
-                          {product}
-                        </option>
-                      ))}
-                    </Select>
-                  )}
-                />
+                <Select onChange={(selectedOption) => {
+                    setSelectedProduct(selectedOption);
+                    setSelectedProducts({
+                      ...selectedProducts,
+                      [`product-${index}`]: selectedOption.value
+                    })
+                    //field.onChange(selectedProduct);
+                  }}
+                  className="form-select"
+                  options={products.map((product) => ({
+                    label: product.name,
+                    value: product.name,
+                  }))}>
+
+                </Select>
                 {errors[`product-${index}`]?.type === "required" && (
                   <small className="fail">Field is empty</small>
                 )}
@@ -466,6 +398,9 @@ const OrderForm = ({ onCancel }) => {
                 <Input
                   name={`amount-${index}`}
                   type="number"
+                  onChange={(event) => {
+                    setSelectedUnits(event.target.value);
+                  }}
                   {...register(`amount-${index}`, {
                     required: true,
                     min: 1,
@@ -566,4 +501,4 @@ const OrderForm = ({ onCancel }) => {
   );
 };
 
-export default OrderForm;
+export default OrderFormNew;

@@ -2,11 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useForm, Controller } from 'react-hook-form'
 import styled from "styled-components";
 import { GrAddCircle } from 'react-icons/gr'
-import { RiDeleteBinLine } from 'react-icons/ri'
 import productsService from "../services/products.service";
 import ordersService from "../services/orders.service";
-import { useSelector } from 'react-redux';
-import { propsToClassKey } from "@mui/styles";
+
 
 const Form = styled.form`
     padding: 2rem;
@@ -195,10 +193,9 @@ const Buttons = styled.div`
     }
 `;
 
-const EditOrderForm = ({onCancel, orderId}) => {
+const EditOrderForm = ({onCancel, orderId, onAdd}) => {
 
     const { control, register, handleSubmit, formState: {errors}, watch } = useForm()
-    const { user: currentUser } = useSelector((state) => state.auth);
     const [selectedProducts, setSelectedProducts] = useState({});
     const [productStocks, setProductStocks] = useState({});
     const [products, setProducts] = useState([]);
@@ -283,26 +280,21 @@ const EditOrderForm = ({onCancel, orderId}) => {
             return total + product.unitCost * product.amount;
         }, 0);
 
-        const orderData = {
-            //registeredEmployeeEmail: currentUser.email,
-            //dateCreated: new Date().toISOString(),
+      
+
+        const orderDataNew= {
             orderId: orderId,
             productOrders: orderedProducts.map(product => ({
-              product: {
-                productId: product.id,
-                name: product.name,
-                unitPrice: product.unitPrice,
-                description: product.description,
-                stock: product.stock,
-                category: product.category
-              },
-              quantity: product.amount
+              
+            product,
+            quantity: product.amount
             })),
-            totalPrice: totalPrice.toFixed(2),
-            totalCost: totalCost.toFixed(2),
         };
+        
+    
+  
 
-        ordersService.modifyOrder(orderData)
+        ordersService.modifyOrder(orderDataNew)
         .then(response => {
           console.log("Orden enviada con éxito:", response.data);
           onCancel();
@@ -311,7 +303,12 @@ const EditOrderForm = ({onCancel, orderId}) => {
           console.error("Error al enviar la orden:", error);
         });
 
-        console.log(orderData);
+       
+    };
+
+    const handleAddProductsClick = () => {
+            orderSubmit();
+            onAdd();
     };
 
     const handleCancelClick = () => {

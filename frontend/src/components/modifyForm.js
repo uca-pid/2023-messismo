@@ -149,7 +149,7 @@ const AddIcon = styled(GrAddCircle)`
 const Button = styled.button`
   display: block;
   width: 100%;
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   border-radius: 3px;
   padding: 1rem 3.5rem;
   margin-top: 2rem;
@@ -319,13 +319,14 @@ const ModalContent = styled.div`
     border-radius: 8px;
     display: flex;
     flex-direction: column;
-    max-height: 60vh;
+    max-height: 100vh;
     overflow-y: auto;
 `;
 
 const ModifyForm = ({ onCancel, orderId, orderDetails, totalPrice }) => {
     const [closeOrderForm, setCloseOrderForm] = useState(false);
     const [isEditFormVisible, setIsEditFormVisible] = useState(false);
+    const [formVisible, setFormVisible] = useState(true);
 
 
     const handleCloseOrderDetails = () => {
@@ -360,12 +361,19 @@ const handleCloseOrder = () => {
 
     const handleCloseEditOrderForm = () => {
         setIsEditFormVisible(false);
+
     }
+
+    const handleAddedProducts = () => {
+      setIsEditFormVisible(false);
+      setFormVisible(false);
+      onCancel();
+      
+  }
   return (
     <>
-     {!isEditFormVisible && (
+     {!isEditFormVisible && formVisible && (
       <Form className="form-react">
-        
         <h1 style={{ fontSize: "1.7rem", marginBottom: "3%" }}>Order {orderId}</h1>
         <Buttons>
           <Button type="button" className="placeorder" onClick={handleAddProductsOrder}>
@@ -384,8 +392,8 @@ const handleCloseOrder = () => {
                <DetailsContent>
                    {orderDetails.map(productOrder => (
                            <div key={productOrder.productOrderId}>
-                               <strong>{productOrder.quantity}x {productOrder.product.name}</strong><br />
-                               <strong>${productOrder.product.unitPrice} ea.</strong><br />
+                               <strong>{productOrder.quantity}x {productOrder.productName}</strong><br />
+                               <strong>${productOrder.productUnitPrice} ea.</strong><br />
                                <strong></strong><br />
                            </div>
                        ))}
@@ -409,7 +417,7 @@ const handleCloseOrder = () => {
        )}
        <Modal open={isEditFormVisible}>
                 <ModalContent>
-                    {isEditFormVisible && <EditOrderForm onCancel={handleCloseEditOrderForm} orderId={orderId}/>}
+                    {isEditFormVisible && <EditOrderForm onCancel={handleCloseEditOrderForm} onAdd={handleAddedProducts} orderId={orderId}/>}
                 </ModalContent>
         </Modal>
     </>
