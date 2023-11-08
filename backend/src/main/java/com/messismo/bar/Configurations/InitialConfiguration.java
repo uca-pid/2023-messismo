@@ -212,7 +212,7 @@ public class InitialConfiguration {
         orderService.addNewOrder(OrderRequestDTO.builder().registeredEmployeeEmail(userEmail).dateCreated(date).productOrders(productOrderDTO).build());
     }
 
-    private void addSampleEmployees(AuthenticationService authenticationService, UserRepository userRepository) {
+    private void addSampleEmployees(AuthenticationService authenticationService, UserRepository userRepository) throws Exception {
         RegisterRequestDTO user00 = RegisterRequestDTO.builder().username("martinguido0").email("guidomartin7@gmail.com").password("Password1").build();
         authenticationService.register(user00);
         User user00Created = userRepository.findByEmail(user00.getEmail()).get();

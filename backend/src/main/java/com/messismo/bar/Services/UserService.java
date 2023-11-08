@@ -1,13 +1,12 @@
 package com.messismo.bar.Services;
 
 import com.messismo.bar.DTOs.UserDTO;
-import com.messismo.bar.Entities.Role;
+import com.messismo.bar.DTOs.UserIdDTO;
 import com.messismo.bar.Entities.User;
+import com.messismo.bar.Exceptions.CannotUpgradeToManager;
+import com.messismo.bar.Exceptions.CannotUpgradeToValidatedEmployee;
 import com.messismo.bar.Repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -30,63 +28,47 @@ public class UserService implements UserDetailsService {
         return userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 
-    public ResponseEntity<?> getAllEmployees() {
+    public List<UserDTO> getAllEmployees() {
         List<User> allEmployees = userRepository.findAll();
         List<UserDTO> response = new ArrayList<>();
         for (User user : allEmployees) {
             UserDTO newUserDTO = UserDTO.builder().id(user.getId()).role(user.getRole()).username(user.getFunctionalUsername()).email(user.getEmail()).build();
             response.add(newUserDTO);
         }
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return response;
     }
 
-    public ResponseEntity<?> validateEmployee(Long userId) {
+    public String validateEmployee(UserIdDTO userIdDTO) throws Exception {
         try {
-            User user = userRepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("User DOES NOT exist"));
-//            Collection<? extends GrantedAuthority> authorities = user.getAuthorities();
-//            boolean isEmployee = false;
-//            boolean isValidEmployee= user.isValidatedEmployeeOrGreater();
-//            for (GrantedAuthority authority : authorities) {
-//                if ("ROLE_VALIDATEDEMPLOYEE".equals(authority.getAuthority()) || "ROLE_MANAGER".equals(authority.getAuthority()) || "ROLE_ADMIN".equals(authority.getAuthority())) {
-//                    isEmployee = true;
-//                    break;
-//                }
-//            }
+            User user = userRepository.findById(userIdDTO.getUserId()).orElseThrow(() -> new UsernameNotFoundException("User DOES NOT exist"));
             if (user.isEmployee()) {
                 user.upgradeToValidateEmployee();
-//                user.setRole(Role.VALIDATEDEMPLOYEE);
                 userRepository.save(user);
-                return ResponseEntity.status(HttpStatus.OK).body("User IS NOW a VALIDATED_EMPLOYEE");
+                return "User IS NOW a VALIDATED_EMPLOYEE";
             } else {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User IS already a VALIDATED_EMPLOYEE OR SUPERIOR");
+                throw new CannotUpgradeToValidatedEmployee("User IS already a VALIDATED_EMPLOYEE OR SUPERIOR");
             }
+        } catch (UsernameNotFoundException | CannotUpgradeToValidatedEmployee e) {
+            throw e;
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User DOES NOT exist");
+            throw new Exception("Cannot upgrade to validated employee");
         }
     }
 
-    public ResponseEntity<?> validateManager(Long userId) {
+    public String validateManager(UserIdDTO userIdDTO) throws Exception {
         try {
-            User user = userRepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("User DOES NOT exist"));
-//            Collection<? extends GrantedAuthority> authorities = user.getAuthorities();
-//            boolean isValidatedEmployee = false;
-//            for (GrantedAuthority authority : authorities) {
-//                if ("ROLE_VALIDATEDEMPLOYEE".equals(authority.getAuthority())) {
-//                    isValidatedEmployee = true;
-//                    break;
-//                }
-//            }
-//            boolean isValidatedEmployee = user.isValidatedEmployee();
+            User user = userRepository.findById(userIdDTO.getUserId()).orElseThrow(() -> new UsernameNotFoundException("User DOES NOT exist"));
             if (user.isValidatedEmployee()) {
                 user.upgradeToManager();
-//                user.setRole(Role.MANAGER);
                 userRepository.save(user);
-                return ResponseEntity.status(HttpStatus.OK).body("User IS NOW a MANAGER");
+                return "User IS NOW a MANAGER";
             } else {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User MUST be first a VALIDATED_EMPLOYEE");
+                throw new CannotUpgradeToManager("User MUST be first a VALIDATED_EMPLOYEE");
             }
+        } catch (UsernameNotFoundException | CannotUpgradeToManager e) {
+            throw e;
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User DOES NOT exist");
+            throw new Exception("Cannot upgrade to manager");
         }
     }
 }

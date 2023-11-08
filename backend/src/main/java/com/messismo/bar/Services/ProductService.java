@@ -4,6 +4,7 @@ import com.messismo.bar.DTOs.*;
 import com.messismo.bar.Entities.Category;
 import com.messismo.bar.Entities.Product;
 import com.messismo.bar.Exceptions.CategoryNotFoundException;
+import com.messismo.bar.Exceptions.ExistingProductFoundException;
 import com.messismo.bar.Exceptions.ProductNotFoundException;
 import com.messismo.bar.Repositories.CategoryRepository;
 import com.messismo.bar.Repositories.ProductRepository;
@@ -14,8 +15,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -27,31 +26,27 @@ public class ProductService {
 
     private final CategoryService categoryService;
 
-    public ResponseEntity<?> addProduct(ProductDTO productDTO) {
-        if (productDTO.getCategory() == null || productDTO.getName() == null || productDTO.getName().isEmpty() || productDTO.getUnitPrice() == null || productDTO.getDescription() == null || productDTO.getStock() == null || productDTO.getUnitCost() == null || productDTO.getNewCategory() == null) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Missing information to create a product");
-        }
-        if (productDTO.getUnitCost() <= 0 || productDTO.getStock() < 0 || productDTO.getUnitPrice() < 0) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Some values cannot be less than zero. Please check.");
-        }
+    public String addProduct(ProductDTO productDTO) throws Exception {
         try {
-            Optional<Product> product = productRepository.findByName(productDTO.getName());
-            if (product.isPresent()) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body("The product already exists");
-            } else {
-                if(productDTO.getNewCategory()==Boolean.TRUE){
-                    CategoryRequestDTO categoryRequestDTO = CategoryRequestDTO.builder().categoryName(productDTO.getCategory()).build();
-                    ResponseEntity<?> response = categoryService.addCategory(categoryRequestDTO);
-                }
-                Category category = categoryRepository.findByName(productDTO.getCategory()).orElseThrow(() -> new CategoryNotFoundException("Provided category name DOES NOT match any category name"));
-                Product newProduct = new Product(productDTO.getName(), productDTO.getUnitPrice(),productDTO.getUnitCost() , productDTO.getDescription(), productDTO.getStock(), category);
-//                Product newProduct = Product.builder().name(productDTO.getName()).unitPrice(productDTO.getUnitPrice()).category(category).description(productDTO.getDescription()).stock(productDTO.getStock()).unitCost(productDTO.getUnitCost()).build();
-                productRepository.save(newProduct);
-                return ResponseEntity.status(HttpStatus.CREATED).body("Product created successfully");
+            Product product = productRepository.findByName(productDTO.getName()).orElseThrow((() -> new ExistingProductFoundException("The product already exists")));
+            if (productDTO.getNewCategory() == Boolean.TRUE) {
+                CategoryRequestDTO categoryRequestDTO = CategoryRequestDTO.builder().categoryName(productDTO.getCategory()).build();
+                categoryService.addCategory(categoryRequestDTO);
             }
+            Category category = categoryRepository.findByName(productDTO.getCategory()).orElseThrow(() -> new CategoryNotFoundException("Provided category name DOES NOT match any category name"));
+            Product newProduct = new Product(productDTO.getName(), productDTO.getUnitPrice(), productDTO.getUnitCost(), productDTO.getDescription(), productDTO.getStock(), category);
+            productRepository.save(newProduct);
+            return "Product created successfully";
+
+        } catch (CategoryNotFoundException | ExistingProductFoundException e) {
+            throw e;
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Product NOT created. ");
+            throw new Exception("Product NOT created");
         }
+    }
+
+    public List<Product> getAllProducts() {
+        return productRepository.findAll();
     }
 
     public ResponseEntity<?> deleteProduct(Long productId) {
@@ -74,7 +69,6 @@ public class ProductService {
         try {
             Product product = productRepository.findByProductId(productPriceDTO.getProductId()).orElseThrow(() -> new ProductNotFoundException("ProductId DOES NOT match any productId"));
             product.updateUnitPrice(productPriceDTO.getUnitPrice());
-//            product.setUnitPrice(productPriceDTO.getUnitPrice());
             productRepository.save(product);
             return ResponseEntity.status(HttpStatus.OK).body("Product price updated successfully");
         } catch (Exception e) {
@@ -92,7 +86,6 @@ public class ProductService {
         try {
             Product product = productRepository.findByProductId(productPriceDTO.getProductId()).orElseThrow(() -> new ProductNotFoundException("ProductId DOES NOT match any productId"));
             product.updateUnitCost(productPriceDTO.getUnitPrice());
-//            product.setUnitCost(productPriceDTO.getUnitPrice());
             productRepository.save(product);
             return ResponseEntity.status(HttpStatus.OK).body("Product cost updated successfully");
         } catch (Exception e) {
@@ -100,9 +93,6 @@ public class ProductService {
         }
     }
 
-    public ResponseEntity<?> getAllProducts() {
-        return ResponseEntity.status(HttpStatus.OK).body(productRepository.findAll());
-    }
 
     public ResponseEntity<?> modifyProductStock(ProductStockDTO productStockDTO) {
         if (productStockDTO.getModifyStock() == null || productStockDTO.getProductId() == null || productStockDTO.getOperation() == null) {
@@ -113,14 +103,7 @@ public class ProductService {
         }
         try {
             Product product = productRepository.findByProductId(productStockDTO.getProductId()).orElseThrow(() -> new ProductNotFoundException("ProductId DOES NOT match any productId"));
-            product.updateStock(productStockDTO.getOperation(),productStockDTO.getModifyStock());
-//            if (Objects.equals(productStockDTO.getOperation(), "add")) {
-//                product.setStock(product.getStock() + productStockDTO.getModifyStock());
-//            } else if (Objects.equals(productStockDTO.getOperation(), "substract")) {
-//                product.setStock(product.getStock() - productStockDTO.getModifyStock());
-//            } else {
-//                return ResponseEntity.status(HttpStatus.CONFLICT).body("Incorrect type of operation");
-//            }
+            product.updateStock(productStockDTO.getOperation(), productStockDTO.getModifyStock());
             productRepository.save(product);
             return ResponseEntity.status(HttpStatus.OK).body("Product stock updated successfully");
         } catch (Exception e) {
@@ -128,7 +111,7 @@ public class ProductService {
         }
     }
 
-    public ResponseEntity<?> filterProducts(FilterProductDTO filterProductDTO) {
+    public List<Product> filterProducts(FilterProductDTO filterProductDTO) throws Exception {
         try {
             List<Product> filteredProducts = new ArrayList<>();
             List<Product> allProducts = productRepository.findAll();
@@ -147,9 +130,11 @@ public class ProductService {
             filteredProducts = filterByMaxUnitCost(filteredProducts, filterProductDTO.getMaxUnitCost());
             filteredProducts = filterByMinStock(filteredProducts, filterProductDTO.getMinStock());
             filteredProducts = filterByMaxStock(filteredProducts, filterProductDTO.getMaxStock());
-            return ResponseEntity.status(HttpStatus.OK).body(filteredProducts);
+            return filteredProducts;
+        } catch (CategoryNotFoundException e) {
+            throw e;
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("CANNOT filter at the moment.");
+            throw new Exception("CANNOT filter at the moment");
         }
     }
 

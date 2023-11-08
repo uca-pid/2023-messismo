@@ -1,10 +1,13 @@
 package com.messismo.bar.Controllers;
 
 import com.messismo.bar.DTOs.*;
+import com.messismo.bar.Exceptions.*;
 import com.messismo.bar.Services.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -47,56 +50,79 @@ public class ManagerController {
 
     @GetMapping("/getAllEmployees")
     public ResponseEntity<?> getAllEmployees() {
-        return userService.getAllEmployees();
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getAllEmployees());
     }
 
     @PutMapping("/validateEmployee")
-    public ResponseEntity<?> validateEmployee(@RequestBody UserIdDTO body) {
-        return userService.validateEmployee(body.getUserId());
+    public ResponseEntity<?> validateEmployee(@RequestBody UserIdDTO userIdDTO) {
+        if (userIdDTO.getUserId() == null) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Missing userId to upgrade to validated employee");
+        }
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(userService.validateEmployee(userIdDTO));
+        } catch (UsernameNotFoundException | CannotUpgradeToValidatedEmployee e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 
     @PostMapping("/category/addCategory")
-    public ResponseEntity<?> addProduct(@RequestBody CategoryRequestDTO categoryRequestDTO) {
-        return categoryService.addCategory(categoryRequestDTO);
+    public ResponseEntity<?> addCategory(@RequestBody CategoryRequestDTO categoryRequestDTO) {
+        if (categoryRequestDTO.getCategoryName() == null) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Missing information to create a category");
+        }
+        try {
+            return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.addCategory(categoryRequestDTO));
+        } catch (ExistingCategoryFoundException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Category name already exists");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Category NOT created");
+        }
     }
 
     @DeleteMapping("/category/deleteCategory")
     public ResponseEntity<?> deleteCategory(@RequestBody CategoryRequestDTO categoryRequestDTO) {
-        return categoryService.deleteCategory(categoryRequestDTO);
+        if (categoryRequestDTO.getCategoryName() == null) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Missing information to delete a category");
+        }
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(categoryService.deleteCategory(categoryRequestDTO));
+        } catch (CategoryNotFoundException | CategoryHasAtLeastOneProductAssociated e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Category NOT deleted");
+        }
     }
-
-//    @GetMapping("/dashboard/getTotalInfo")
-//    public ResponseEntity<?> getTotalInfo(){
-//        return dashboardService.getTotalInfo();
-//    }
-//
-//    @PostMapping("/dashboard/getProductStock")
-//    public ResponseEntity<?> getProductStock(@RequestBody ThresholdDTO thresholdDTO) {
-//        return dashboardService.getProductStock(thresholdDTO);
-//    }
 
     @PostMapping("/dashboard/getDashboard")
     public ResponseEntity<?> getDashboardInformation(@RequestBody DashboardRequestDTO dashboardRequestDTO) {
-        return dashboardService.getDashboardInformation(dashboardRequestDTO);
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(dashboardService.getDashboardInformation(dashboardRequestDTO));
+        } catch (InvalidDashboardRequestedDate e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 
     @PostMapping("/goals/addGoal")
-    public ResponseEntity<?> addGoal(@RequestBody GoalDTO goalDTO){
+    public ResponseEntity<?> addGoal(@RequestBody GoalDTO goalDTO) {
         return goalService.addGoal(goalDTO);
     }
 
     @DeleteMapping("/goals/deleteGoal")
-    public ResponseEntity<?> deleteGoal(@RequestBody GoalDeleteDTO goalDeleteDTO){
+    public ResponseEntity<?> deleteGoal(@RequestBody GoalDeleteDTO goalDeleteDTO) {
         return goalService.deleteGoal(goalDeleteDTO);
     }
 
     @PutMapping("/goals/modifyGoal")
-    public ResponseEntity<?> modifyGoal(@RequestBody GoalModifyDTO goalModifyDTO){
+    public ResponseEntity<?> modifyGoal(@RequestBody GoalModifyDTO goalModifyDTO) {
         return goalService.modifyGoal(goalModifyDTO);
     }
 
     @PostMapping("/goals/getGoals")
-    public ResponseEntity<?> getGoals(@RequestBody GoalFilterRequestDTO goalFilterRequestDTO){
+    public ResponseEntity<?> getGoals(@RequestBody GoalFilterRequestDTO goalFilterRequestDTO) {
         return goalService.getGoals(goalFilterRequestDTO);
     }
 
