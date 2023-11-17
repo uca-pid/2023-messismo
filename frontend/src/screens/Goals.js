@@ -4,26 +4,76 @@ import styled from "styled-components";
 import { useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import OrderForm from "../components/OrderForm";
+import GoalForm from "../components/GoalForm";
 import ordersService from "../services/orders.service";
+import goalsService from "../services/goals.service";
 import { useTheme } from "@mui/material/styles";
 import { Box, Typography, gridClasses, useMediaQuery } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { MdFastfood } from "react-icons/md";
+import { AiFillDelete } from "react-icons/ai";
+import { AiFillCheckCircle } from "react-icons/ai";
+import { AiFillCloseCircle } from "react-icons/ai";
 import moment from "moment";
 import EditIcon from "@mui/icons-material/Edit";
-import EditOrderForm from "../components/EditOrderForm";
-import ModifyForm from "../components/modifyForm";
-import VisibilityIcon from "@mui/icons-material/Visibility";
+import EditGoalForm from "../components/EditGoalForm";
+import Dialog from "@mui/material/Dialog";
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from "@mui/material/DialogActions";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContentText from "@mui/material/DialogContentText";
 import Fab from "@mui/material/Fab";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import CircularProgress from "@mui/material/CircularProgress";
-import OrderFormNew from "../components/OrderFormNew";
+import Doughnut from "../components/DoughnutChart";
+import GoalGauge from "../components/GoalGauge";
+import { Button } from "@mui/material";
+
 
 const Container = styled.div``;
 
-const Button = styled.button`
+const Graphs = styled.div`
+      display: flex;
+      flex-direction: row;
+      width: "100%";
+      height: "auto";
+      justify-content: center;
+      margin: 3rem;
+    @media (max-width: 1000px) {
+        display: flex;
+        flex-direction: column;
+    }
+`;
+
+const DoughnutDiv = styled.div`
+    max-width: 50%;
+    display: flex;
+    margin-right: 5rem;
+    justify-content: center;
+
+    @media (max-width: 1000px) {
+        max-width: 100%;
+        margin-right: 0rem;
+        height: auto;
+        flex-direction: column;
+    }        
+`;
+
+const GaugeDiv = styled.div`
+    max-width: 50%;
+    display: flex;
+    justify-content: center;
+
+    @media (max-width: 1000px) {
+        max-width: 100%;
+        height: auto;
+        flex-direction: column;
+        margin-top: 2rem;
+    }
+`;
+
+const AddGoalButton = styled.button`
   display: block;
   font-size: 1.2rem;
   border-radius: 3px;
@@ -52,7 +102,7 @@ const Button = styled.button`
   }
 
   @media (max-width: 477px) {
-    margin-top: 1rem;
+    margin: 1rem;
     font-size: 1rem;
     padding: 1rem 2.5rem;
   }
@@ -86,7 +136,7 @@ const ModalContent = styled.div`
   border-radius: 8px;
   display: flex;
   flex-direction: column;
-  max-height: 100vh;
+  max-height: 60vh;
   overflow-y: auto;
 `;
 
@@ -111,7 +161,7 @@ const DetailsContent = styled.div`
   border-radius: 8px;
   display: flex;
   flex-direction: column;
-  max-height: 100vh;
+  max-height: 60vh;
   overflow-y: auto;
   width: 20%;
   margin: auto;
@@ -119,16 +169,8 @@ const DetailsContent = styled.div`
   strong {
     color: white;
     font-family: "Roboto";
-    font-size: 1.5rem;
+    font-size: 2rem;
   }
-  strong2{
-    color: white;
-    font-family: 'Roboto';
-    font-size: 1.7rem;
-    margin-top: 1rem;
-    align-self: center;
-    margin-bottom: 1rem;
-}
 
   @media (max-width: 1500px) {
     width: 30%;
@@ -137,12 +179,8 @@ const DetailsContent = styled.div`
     width: 40%;
   }
   @media (max-width: 800px) {
-    width: 100%;
-    
+    width: 50%;
   }
-
- 
- 
 `;
 
 const DetailsButton = styled.button`
@@ -189,27 +227,44 @@ const MoreDetails = styled(MdFastfood)`
 
 const MOBILE_COLUMNS = {
   id: true,
-  dateCreated: true,
-  totalPrice: true,
-  details: true,
+  name: false,
+  startingDate: true,
+  endingDate: true,
+  objectType: false,
+  currentGoal: false,
+  goalObjective: false,
+  goal: true,
+  tempGoal: false,
+  goalObject: false,
   status: true,
+  achieved: true,
+
 };
 const ALL_COLUMNS = {
-  id: true,
-  username: true,
-  dateCreated: true,
-  totalPrice: true,
-  details: true,
+  id: false,
+  name: true,
+  startingDate: true,
+  endingDate: true,
+  objectType: true,
+  currentGoal: false,
+  goalObjective: false,
+  goal: true,
+  tempGoal: false,
+  goalObject: true,
   status: true,
+  achieved: true,
 };
 
-function Orders() {
+
+function Goals() {
   const { user: currentUser } = useSelector((state) => state.auth);
   const clicked = useSelector((state) => state.navigation.clicked);
-  const [isOrderFormVisible, setOrderFormVisible] = useState(false);
+  const [isGoalFormVisible, setGoalFormVisible] = useState(false);
+  const [isEditGoalFormVisible, setEditGoalFormVisible] = useState(false);
   const [isDetailsVisible, setDetailsVisible] = useState(false);
-  const [open, setOpen] = React.useState(false);
-  const [orders, setOrders] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [orders, setGoals] = useState([]);
   const [selectedOrderDetails, setSelectedOrderDetails] = useState(null);
   const [pageSize, setPageSize] = useState(5);
   const isAdminOrManager =
@@ -223,6 +278,12 @@ function Orders() {
   const [alertText, setAlertText] = useState("");
   const [isOperationSuccessful, setIsOperationSuccessful] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [initialRows, setInitialRows] = useState([]);
+  const [selectedRow, setSelectedRow] = useState(initialRows);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [editGoalId, setEditGoalId] = useState(null);
+
+
 
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.up("sm"));
@@ -234,37 +295,26 @@ function Orders() {
   }, [matches]);
 
   useEffect(() => {
-    console.log("holis",selectedOrderDetails);
-  }, [selectedOrderDetails])
-
-  useEffect(() => {
-    ordersService
-      .getAllOrders()
+    const goalData = {
+      status: [], 
+      achieved: [],
+    };
+  
+    goalsService
+      .getAllGoals(goalData)
       .then((response) => {
-        setOrders(response.data);
+        const goalsData = response.data;
+        setGoals(goalsData);
+        setInitialRows(goalsData.length > 0 ? [goalsData[goalsData.length-1]] : []);
         setIsLoading(false);
         console.log("done");
       })
       .catch((error) => {
-        console.error("Error al mostrar las ordenes", error);
+        console.error("Error al mostrar las metas", error);
         setIsLoading(false);
       });
-  }, [isOrderFormVisible, open, isEditFormVisible, openEditForm]);
-
-  useEffect(() => {
-    ordersService
-      .getAllOrders()
-      .then((response) => {
-        setOrders(response.data);
-        setIsLoading(false);
-        console.log("done");
-      })
-      .catch((error) => {
-        console.error("Error al mostrar las ordenes", error);
-        setIsLoading(false);
-      });
-  }, [isEditFormVisible]);
-
+  }, [isGoalFormVisible, open, isEditFormVisible, openEditForm]);
+  
 
   if (!currentUser) {
     return <Navigate to="/" />;
@@ -273,25 +323,27 @@ function Orders() {
   const contentVisible = !clicked;
 
   const handleAddOrderClick = () => {
-    setOrderFormVisible(true);
+    setGoalFormVisible(true);
     setOpen(true);
   };
-
-  const handleCloseOrderForm = () => {
-    setOrderFormVisible(false);
+  const handleCloseGoalForm = () => {
+    setGoalFormVisible(false);
     setOpen(false);
   };
 
-  const handleCloseEditOrderForm = () => {
-    setEditFormVisible(false);
+  const handleEditGoalClick = (goalId) => {
+    setEditGoalId(goalId);
+    setEditGoalFormVisible(true);
+    setOpen(true);
+  };
+  const handleCloseEditGoalForm = () => {
+    setEditGoalFormVisible(false);
     setOpenEditForm(false);
-    setOpen(false);
   };
 
   const handleViewDetails = (orderId) => {
     const selectedOrder = orders.find((order) => order.id === orderId);
     setSelectedOrderDetails(selectedOrder.productOrders);
-    setSelectedTotalPrice(selectedOrder.totalPrice);
     setDetailsVisible(true);
   };
 
@@ -299,76 +351,142 @@ function Orders() {
     setDetailsVisible(false);
   };
 
-  const handleEditOrderClick = (orderId) => {
-    setEditFormVisible(true);
-    setOrderIdToEdit(orderId);
-    const selectedOrder = orders.find((order) => order.id === orderId);
-    setSelectedOrderDetails(selectedOrder.productOrders);
-    setSelectedTotalPrice(selectedOrder.totalPrice);
-    setOpen(true);
+  const handleRowClick = (params) => {
+    setSelectedRow(params.row);
   };
 
+  const handleClose = () => {
+    setConfirmOpen(false);
+  }
+
+  const handleDeleteClick = (goalId) => {
+    setSelectedCategory(goalId);
+    setConfirmOpen(true);
+  };
+
+  const handleDeleteCategory = async () => {
+    const goalData = {
+      status: [], 
+      achieved: [],
+    };
+    if (selectedCategory) {
+      try {
+        await deleteCategoryAsync(selectedCategory);
+        setSelectedCategory(null);
+        setIsOperationSuccessful(true);
+        setAlertText("Goal deleted successfully");
+        goalsService
+        .getAllGoals(goalData)
+        .then((response) => {
+          setGoals(response.data);
+          setIsLoading(false);
+          console.log("done");
+        })
+        .catch((error) => {
+          console.error("Error al mostrar las metas", error);
+          setIsLoading(false);
+        });
+        setOpenSnackbar(true);
+        setSelectedRow(initialRows);
+        
+      } catch (error) {
+        if (error.response) {
+          console.log("Datos de respuesta del error:", error.response.data);
+          setAlertText("Failed to delete goal: " + error.response.data);
+        }
+        setIsOperationSuccessful(false);
+        setOpenSnackbar(true);
+      }
+      setConfirmOpen(false);
+
+    }
+  };
+  
+  const deleteCategoryAsync = async (id) => {
+    return goalsService.deleteGoal(id);
+  };
+
+
+
   const rows = orders.map((order) => ({
-    id: order.id,
-    username: order.user.username,
-    dateCreated: order.dateCreated,
-    totalPrice: order.totalPrice.toLocaleString("en-US", {
-      style: "currency",
-      currency: "USD",
-    }),
+    id: order.goalId,
+    name: order.name,
+    startingDate: order.startingDate,
+    endingDate: order.endingDate,
+    objectType: order.objectType,
+    currentGoal: order.currentGoal,
+    goalObjective: order.goalObjective,
+    goal: order.currentGoal + "/" + order.goalObjective,
+    tempGoal: order.currentGoal < order.goalObjective ? order.goalObjective - order.currentGoal : 0,
+    goalObject: order.goalObject,
     status: order.status,
+    achieved: order.achieved,
   }));
 
   const columns = [
     {
       field: "id",
       headerName: "ID",
-      flex: 1,
-      align: "center",
-      headerAlign: "center",
-      sortable: false,
-      minWidth: 90,
-    },
-    {
-      field: "username",
-      headerName: "Vendor",
       flex: 2,
       align: "center",
       headerAlign: "center",
       sortable: true,
-      minWidth: 150,
     },
     {
-      field: "dateCreated",
-      headerName: "Date",
+      field: "name",
+      headerName: "Name",
+      flex: 2,
+      align: "center",
+      headerAlign: "center",
+      sortable: true,
+    },
+    {
+      field: "objectType",
+      headerName: "Type",
+      flex: 2,
+      align: "center",
+      headerAlign: "center",
+      sortable: true,
+      maxWidth: 100,
+    },
+    {
+      field: "goalObject",
+      headerName: "Object",
+      flex: 2,
+      align: "center",
+      headerAlign: "center",
+      sortable: true,
+    },
+    {
+      field: "startingDate",
+      headerName: "Start Date",
       flex: 1,
       align: "center",
       headerAlign: "center",
       sortable: true,
       minWidth: 150,
       renderCell: (params) =>
-        moment(params.row.dateCreated).format("YYYY-MM-DD HH:MM:SS"),
+        moment(params.row.startingDate).format("YYYY-MM-DD"),
     },
     {
-      field: "totalPrice",
-      headerName: "Total",
+        field: "endingDate",
+        headerName: "End Date",
+        flex: 1,
+        align: "center",
+        headerAlign: "center",
+        sortable: true,
+        minWidth: 150,
+        renderCell: (params) =>
+          moment(params.row.endingDate).format("YYYY-MM-DD"),
+      },
+    {
+      field: "goal",
+      headerName: "Goal",
       flex: 1,
       align: "center",
       headerAlign: "center",
       sortable: true,
       minWidth: 150,
-    },
-    {
-      field: "details",
-      headerName: "Products",
-      flex: 1,
-      align: "center",
-      headerAlign: "center",
-      sortable: false,
-      renderCell: (params) => (
-        <VisibilityIcon onClick={() => handleViewDetails(params.row.id)} />
-        //<MoreDetails onClick={() => handleViewDetails(params.row.id)} />
-      ),
     },
     {
       field: "status",
@@ -381,13 +499,13 @@ function Orders() {
       renderCell: (params) => {
         const status = params.row.status;
         const statusColors = {
-          Open: "#D5F2BF",
-          Closed: "#FEBCBC",
+            Upcoming: "#FDFEBC",
+            Expired: "#FEBCBC",
         };
 
         const fontColors = {
-          Open: "green",
-          Closed: "red",
+          Upcoming: "black",
+          Expired: "black",
         };
 
         const backgroundColor = statusColors[status] || "white";
@@ -419,65 +537,137 @@ function Orders() {
       },
     },
     {
+        field: "achieved",
+        headerName: "Achieved",
+        flex: 1,
+        align: "center",
+        headerAlign: "center",
+        sortable: true,
+        maxWidth: 100,
+        renderCell: (params) => {
+        const isAchieved = params.row.achieved === "Achieved";
+        const isExpired = params.row.status === "Expired";
+    
+        if (isAchieved && isExpired) {
+            return (
+            <div style={{ textAlign: "center" }}>
+                <AiFillCheckCircle style={{ color: 'rgba(159,193,108)',  fontSize: "2rem" }} />
+            </div>
+            );
+        } else if (!isAchieved && isExpired) {
+            return (
+            <div style={{ textAlign: "center" }}>
+                <AiFillCloseCircle style={{ color: 'rgba(212,150,187)', fontSize: "2rem" }} />
+            </div>
+            );
+        }
+    
+        return null;
+        },
+    },
+    {
       field: "edit",
-      headerName: "Edit",
+      headerName: "",
       flex: 1,
       align: "center",
       headerAlign: "center",
       sortable: false,
-      minWidth: 100,
+      maxWidth: 80,
       renderCell: (params) => {
         const status = params.row.status;
-        const isClosed = status === "Closed";
+        const isExpired = status === "Expired";
 
         return (
           <button
-            onClick={() => handleEditOrderClick(params.row.id)}
-            disabled={isClosed}
+            onClick={() => handleEditGoalClick(params.row.id)}
+            disabled={isExpired}
           >
-            <EditIcon />
+            <EditIcon style={{ fontSize: "2rem" }}/>
           </button>
         );
       },
     },
+
+    // Upcoming: edit, delete
+    // In Process: edit
+    // Expired: delete
+
+    {
+        field: "remove",
+        headerName: "",
+        flex: 1,
+        align: "center",
+        headerAlign: "center",
+        sortable: false,
+        maxWidth: 80,
+        renderCell: (params) => {
+          const status = params.row.status;
+          const isInProcess = status === "In Process";
+  
+          return (
+            <button
+              onClick={() => handleDeleteClick(params.row.id)}
+              disabled={isInProcess}
+            >
+              <AiFillDelete style={{ fontSize: "2rem" }}/>
+            </button>
+            
+          );
+        },
+      },
   ];
+
+  const filteredGoals = orders.filter(goal => goal.status === "Expired");
+  const achievedCount = filteredGoals.filter(goal => goal.achieved === "Achieved").length;
+  const notAchievedCount = filteredGoals.filter(goal => goal.achieved === "Not Achieved").length;
+
+  const goalsCount = {
+    "Achieved": achievedCount,
+    "Not Achieved": notAchievedCount
+  };
+  const rowInfo = {
+    Name: selectedRow.name,
+    Current: selectedRow.currentGoal,
+    Goal: selectedRow.goalObjective,
+    tempGoal: selectedRow.tempGoal,
+  };
+ 
+
+  
 
   return (
     <Container>
       <Navbar />
     
       <MainContent visible={contentVisible}>
-      {!isOrderFormVisible && !isEditFormVisible && (currentUser.role === "ADMIN" ||
-        currentUser.role === "MANAGER" ||
-        currentUser.role === "VALIDATEDEMPLOYEE") && (
-          <Button variant="contained" onClick={handleAddOrderClick}>
-            Add Order
-          </Button>
-        )}
+
+        {(currentUser.role === "ADMIN" ||
+        currentUser.role === "MANAGER") &&
+        !isGoalFormVisible && !isEditGoalFormVisible ? (
+          <AddGoalButton variant="contained" onClick={handleAddOrderClick}>
+            Add Goal
+          </AddGoalButton>
+        ) : null}
 
         <div visible={contentVisible}>
-          <Modal open={isOrderFormVisible}>
+            
+          <Modal open={isGoalFormVisible}>
             <ModalContent>
-              {isOrderFormVisible && (
-                <OrderForm onCancel={handleCloseOrderForm} />
-              )}
-            </ModalContent>
-          </Modal>
-          <Modal open={isEditFormVisible}>
-            <ModalContent>
-              {isEditFormVisible && (
-                <ModifyForm
-                  onCancel={handleCloseEditOrderForm}
-                  orderId={orderIdToEdit}
-                  orderDetails={selectedOrderDetails}
-                  totalPrice={selectedTotalPrice}
-                  onClose={handleCloseEditOrderForm}
-                />
+              {isGoalFormVisible && (
+                <GoalForm onCancel={handleCloseGoalForm} />
               )}
             </ModalContent>
           </Modal>
 
-          {!isOrderFormVisible && !isEditFormVisible && (
+          <Modal open={isEditGoalFormVisible}>
+            <ModalContent>
+              {isEditGoalFormVisible && (
+                <EditGoalForm onCancel={handleCloseEditGoalForm} goalId={editGoalId}/>
+              )}
+            </ModalContent>
+          </Modal>
+
+          {!isGoalFormVisible && !isEditGoalFormVisible && !isEditFormVisible && (
             <div>
               {isLoading ? (
                 <Box
@@ -498,7 +688,7 @@ function Orders() {
                       component="h3"
                       sx={{ textAlign: "center", mt: 3, mb: 3, color: "white" }}
                     >
-                      Orders
+                      Goals
                     </Typography>
                     <DataGrid
                       initialState={{
@@ -507,12 +697,14 @@ function Orders() {
                           sortModel: [{ field: "dateCreated", sort: "desc" }],
                         },
                       }}
-                      sx={{ fontSize: "1rem" }}
+
                       autoHeight={true}
                       columns={columns}
                       columnVisibilityModel={columnVisible}
                       rows={rows}
-                      getRowId={(row) => row.id}
+
+                      onRowClick={handleRowClick}
+
                       pageSizeOptions={[5, 10, 25]}
                       //rowsPerPageOptions={[5, 10, 25]}
                       pagination
@@ -525,6 +717,7 @@ function Orders() {
                         bottom: params.isLastVisible ? 0 : 5,
                       })}
                       sx={{
+                        fontSize: "1rem",
                         border: 2,
                         borderColor: "#a4d4cc",
                         "& .MuiButtonBase-root": {
@@ -579,54 +772,94 @@ function Orders() {
                         },
                       }}
                     />
+
+                  <Graphs id="wrap">
+
+                      <DoughnutDiv>
+                          <Doughnut  
+                          data={Object(goalsCount)} 
+                          label={'Expired Goals'} />
+                      </DoughnutDiv>
+                      
+                      <GaugeDiv>
+                        {selectedRow && (
+                          <div>
+                            <GoalGauge  
+                              data={Object(rowInfo)}/>
+                          </div>
+                        )}
+
+                      </GaugeDiv>
+
+                  </Graphs>
+
                   </Box>
                 </OrdersTable>
               )}
 
-              {isDetailsVisible && (
-                <Details>
-                  <DetailsContent>
-                    {selectedOrderDetails.map((productOrder) => (
-                      <div key={productOrder.productOrderId}>
-                        <strong>
-                          {productOrder.quantity}x {productOrder.productName}
-                        </strong>
-                        <br />
-                        <strong>${productOrder.productUnitPrice} ea.</strong>
-                        <br />
-                        <strong></strong>
-                        <br />
-                      </div>
-                    ))}
-                    <strong2 style={{ color: "white" }}>Total price: ${selectedTotalPrice}</strong2>
-
-                    <DetailsButton onClick={() => handleCloseDetails()}>
-                      Close
-                    </DetailsButton>
-                  </DetailsContent>
-                </Details>
-              )}
             </div>
           )}
+
         </div>
+
+
       </MainContent>
-      <Snackbar
-        open={openSnackbar}
-        autoHideDuration={10000}
-        onClose={() => setOpenSnackbar(false)}
-        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-      >
-        <Alert
-          onClose={() => setOpenSnackbar(false)}
-          variant="filled"
-          severity={isOperationSuccessful ? "success" : "error"}
-          sx={{ fontSize: "75%" }}
+
+      <Dialog
+          open={confirmOpen}
+          onClose={handleClose}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+          PaperProps={{
+            style: {
+              backgroundColor: "white",
+              boxShadow: "none",
+              zIndex: 1000,
+              fontSize: "24px",
+            },
+          }}
         >
-          {alertText}
-        </Alert>
-      </Snackbar>
+          <DialogTitle id="alert-dialog-title" style={{ fontSize: "1.3rem" }}>
+            {selectedCategory &&
+              `Are you sure you want to delete this goal?`}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText
+              id="alert-dialog-description"
+              style={{ fontSize: "1rem" }}
+            >
+              The goal will be permanently deleted
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose} style={{ fontSize: "1rem" }}>
+              Cancel
+            </Button>
+            <Button
+              onClick={handleDeleteCategory}
+              style={{ color: "red", fontSize: "1rem" }}
+              autoFocus
+            >
+              Delete
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        <Snackbar
+          open={openSnackbar}
+          autoHideDuration={10000} 
+          onClose={() => setOpenSnackbar(false)}
+          anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+        >
+          <Alert onClose={() => setOpenSnackbar(false)} severity={isOperationSuccessful ? "success" : "error"} variant="filled" sx={{fontSize: '80%'}}>
+            {alertText}
+          </Alert>
+        </Snackbar>
+      
     </Container>
+
+    
   );
 }
 
-export default Orders;
+export default Goals;

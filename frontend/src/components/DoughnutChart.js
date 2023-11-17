@@ -48,7 +48,7 @@ export default function Doughnuts({ data, label }) {
             text: label,
             color: 'white',
             font: {
-                size: 12
+                size: 16
             }
            }
       },
@@ -62,18 +62,18 @@ export default function Doughnuts({ data, label }) {
                 label: label,
                 data: values,
                 backgroundColor: [
-                  'rgba(164,200,233)',
-                  'rgba(159,193,108)',
                   'rgba(212,150,187)',
+                  'rgba(159,193,108)',
+                  'rgba(164,200,233)',
                   'rgba(239,202,102)',
                   'rgba(181,164,227)',
                 ],
                 borderColor: [
-                  'rgba(164,200,233)',
-                  'rgba(159,193,108)',
-                  'rgba(212,150,187)',
-                  'rgba(239,202,102)',
-                  'rgba(181,164,227)',
+                    'rgba(212,150,187)',
+                    'rgba(159,193,108)',
+                    'rgba(164,200,233)',
+                    'rgba(239,202,102)',
+                    'rgba(181,164,227)',
                 ],
                 borderWidth: 1,
             }
