@@ -53,36 +53,4 @@ public class AuthenticationController {
         return ResponseEntity.status(HttpStatus.OK).body("Server is up!");
     }
 
-
-    @GetMapping("/getAllProducts")
-    public ResponseEntity<?> getAllProducts() {
-        return productService.getAllProducts();
-    }
-
-    @PostMapping("/addNewOrder")
-    public ResponseEntity<?> addNewOrder(@RequestBody OrderRequestDTO orderRequestDTO) {
-        return orderService.addNewOrder(orderRequestDTO);
-    }
-
-    @PostMapping("/modifyOrder")
-    public ResponseEntity<?> modifyOrder(@RequestBody ModifyOrderDTO modifyOrderDTO) {
-        return orderService.modifyOrder(modifyOrderDTO);
-    }
-    @PostMapping("/product/addProduct")
-    public ResponseEntity<?> addProduct(@RequestBody ProductDTO productDTO) {
-        return productService.addProduct(productDTO);
-    }
-    @GetMapping("orders/getAllOrders")
-    public ResponseEntity<?> getAllOrders(){
-        return orderService.getAllOrders();
-    }
-
-    @PostMapping("/dashboard/getDashboard")
-    public ResponseEntity<?> getDashboardInformation(@RequestBody DashboardRequestDTO dashboardRequestDTO) {
-        return dashboardService.getDashboardInformation(dashboardRequestDTO);
-    }
-    @GetMapping("/getAllCategories")
-    public ResponseEntity<?> getAllCategories() {
-        return categoryService.getAllCategories();
-    }
 }
