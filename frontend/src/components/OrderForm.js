@@ -424,11 +424,10 @@ const OrderForm = ({ onCancel }) => {
                     <Select
                       {...field}
                       isSearchable
-                      options={filteredProducts.filter((product) => {
-                        return product
-                          .toLowerCase()
-                          .startsWith(search.toLowerCase());
-                      })}
+                      options={filteredProducts
+                        .filter((product) => product.toLowerCase().startsWith(search.toLowerCase()))
+                        .sort((a, b) => a.localeCompare(b)) // Ordenar alfabéticamente
+                      }
                       onChange={(e) => {
                         const selectedProduct = e.target.value;
                         setSelectedProductNames((prevSelectedProductNames) =>
@@ -444,7 +443,9 @@ const OrderForm = ({ onCancel }) => {
                       }}
                     >
                       <option value="" disabled></option>
-                      {filteredProducts.map((product) => (
+                      {filteredProducts
+                      .sort((a, b) => a.localeCompare(b))
+                      .map((product) => (
                         <option
                           key={product}
                           value={product}
