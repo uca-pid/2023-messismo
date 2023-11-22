@@ -27,7 +27,7 @@ import { useTheme } from "@mui/material/styles";
 import CircularProgress from "@mui/material/CircularProgress";
 import Chip from "@mui/material/Chip";
 import OutlinedInput from "@mui/material/OutlinedInput";
-import { useMediaQuery } from '@mui/material';
+import { useMediaQuery } from "@mui/material";
 
 const CustomizedDateTimePicker = styled(DatePicker)`
   .MuiInputBase-input {
@@ -374,7 +374,7 @@ function Dashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [dateToShow, setDateToShow] = useState("");
-  const isSmallScreen = useMediaQuery('(max-width:600px)');
+  const isSmallScreen = useMediaQuery("(max-width:600px)");
 
   useEffect(() => {
     dashboardService
@@ -782,12 +782,15 @@ function Dashboard() {
                   </Select>
                 </FormControl>
               </Box>
-              <p style={{
-      color: 'white',
-      marginLeft: isSmallScreen ? '0rem' : '2rem',
-      marginRight: isSmallScreen ? '7.5rem' : '0rem',
-     
-    }}>Select Categories</p>
+              <p
+                style={{
+                  color: "white",
+                  marginLeft: isSmallScreen ? "0rem" : "2rem",
+                  marginRight: isSmallScreen ? "7.5rem" : "0rem",
+                }}
+              >
+                Select Categories
+              </p>
               <Box sx={{ width: "80%" }}>
                 <FormControl fullWidth variant="outlined">
                   <Select
@@ -861,15 +864,17 @@ function Dashboard() {
               <DoughnutDiv>
                 {chartType === "product" ? (
                   <>
-                    <Doughnut
-                      data={Object(dashboardData.data.earningProductDonut)}
-                      label={"Revenue"}
-                    />
-
-                    <Doughnut
-                      data={Object(dashboardData.data.quantityProductDonut)}
-                      label={"Sales"}
-                    />
+                  
+                      <Doughnut
+                        data={Object(dashboardData.data.earningProductDonut)}
+                        label={"Revenue"}
+                      />
+                      <Doughnut
+                        data={Object(dashboardData.data.quantityProductDonut)}
+                        label={"Sales"}
+                      />
+                   
+                  
                   </>
                 ) : (
                   <>
