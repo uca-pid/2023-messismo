@@ -137,4 +137,18 @@ public class CategoryServiceTests {
 
     }
 
+    @Test
+    public void testDeleteCategory_Exception() {
+
+        CategoryRequestDTO requestDTO = CategoryRequestDTO.builder().categoryName("NonExistentCategory").build();
+        Category categoryToDelete = new Category();
+        when(categoryRepository.findByName(requestDTO.getCategoryName())).thenReturn(Optional.of(categoryToDelete));
+
+        doThrow(new DataIntegrityViolationException("Error saving")).when(categoryRepository).delete(any(Category.class));
+        Exception exception = assertThrows(Exception.class, () -> {
+            categoryService.deleteCategory(requestDTO);
+        });
+        assertEquals("Category NOT deleted", exception.getMessage());
+
+    }
 }

@@ -246,6 +246,24 @@ public class GoalServiceTests {
     }
 
     @Test
+    public void testGoalServiceAddGoal_Exception()  {
+
+        GoalDTO validDTO = GoalDTO.builder().name("Valid Goal").startingDate(new Date()).endingDate(new Date(System.currentTimeMillis() + 3600 * 1000)).objectType("Product").goalObject("ValidProduct").goalObjective(10.0).build();
+        List<Goal> goalList = new ArrayList<>();
+        goalList.add(Goal.builder().name("ExistingGoal").startingDate(new Date(System.currentTimeMillis() + 360000 * 1000)).endingDate(new Date(System.currentTimeMillis() + 360000L * 10000)).build());
+
+        when(goalRepository.findAll()).thenReturn(goalList);
+        doThrow(new RuntimeException("Runtime Exception")).when(goalRepository).save(any());
+        Exception exception = assertThrows(Exception.class, () -> {
+            goalService.addGoal(validDTO);
+        });
+        Assertions.assertEquals("CANNOT create a goal at the moment", exception.getMessage());
+
+    }
+
+
+
+    @Test
     public void testGoalServiceGoalAchievedWithProductType() {
 
         List<Order> orderList = new ArrayList<>();

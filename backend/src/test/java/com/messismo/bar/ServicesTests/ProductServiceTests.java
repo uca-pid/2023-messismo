@@ -1,10 +1,8 @@
 package com.messismo.bar.ServicesTests;
 
-import com.messismo.bar.DTOs.FilterProductDTO;
-import com.messismo.bar.DTOs.ProductDTO;
-import com.messismo.bar.DTOs.ProductPriceDTO;
-import com.messismo.bar.DTOs.ProductStockDTO;
+import com.messismo.bar.DTOs.*;
 import com.messismo.bar.Entities.Category;
+import com.messismo.bar.Entities.Goal;
 import com.messismo.bar.Entities.Product;
 import com.messismo.bar.Exceptions.CategoryNotFoundException;
 import com.messismo.bar.Exceptions.ExistingProductFoundException;
@@ -21,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -125,6 +124,17 @@ public class ProductServiceTests {
         verify(productRepository, times(1)).findByProductId(1L);
 
     }
+    @Test
+    public void testProductServiceDeleteProduct_Exception()  {
+
+        doThrow(new RuntimeException("Runtime Exception")).when(productRepository).delete(any());
+        Exception exception = assertThrows(Exception.class, () -> {
+            productService.deleteProduct(1L);
+        });
+        Assertions.assertEquals("Product CANNOT be deleted", exception.getMessage());
+
+    }
+
 
     @Test
     public void testProductServiceDeleteProduct_NotFound() {
@@ -155,6 +165,19 @@ public class ProductServiceTests {
 
         ProductNotFoundException exception = assertThrows(ProductNotFoundException.class, () -> {
             productService.modifyProductPrice(productPriceDTO);
+        });
+        Assertions.assertEquals("ProductId DOES NOT match any productId", exception.getMessage());
+        verify(productRepository, times(1)).findByProductId(productPriceDTO.getProductId());
+
+    }
+
+    @Test
+    public void testProductServiceModifyUnitCostProduct_NotFound() {
+
+        ProductPriceDTO productPriceDTO = new ProductPriceDTO(10L, 50.00);
+
+        ProductNotFoundException exception = assertThrows(ProductNotFoundException.class, () -> {
+            productService.modifyProductCost(productPriceDTO);
         });
         Assertions.assertEquals("ProductId DOES NOT match any productId", exception.getMessage());
         verify(productRepository, times(1)).findByProductId(productPriceDTO.getProductId());
@@ -513,6 +536,24 @@ public class ProductServiceTests {
         assertEquals(response, productService.filterProducts(filterProductDTO));
 
     }
+
+    @Test
+    public void testGoalServiceAddGoal_Exception()  {
+
+        FilterProductDTO filterProductDTO = FilterProductDTO.builder().productName("Pollo").build();
+        Category category1 = Category.builder().categoryId(1L).name("Entrada").build();
+        Product product3 = Product.builder().productId(3L).name("Pollo").unitPrice(15.99).category(category1).stock(5).description("Pollo con papas fritas").unitCost(15.00).build();
+        List<Product> response = new ArrayList<>();
+        response.add(product3);
+
+        doThrow(new RuntimeException("Runtime Exception")).when(productRepository).findAll();
+        Exception exception = assertThrows(Exception.class, () -> {
+            productService.filterProducts(filterProductDTO);
+        });
+        Assertions.assertEquals("CANNOT filter at the moment", exception.getMessage());
+
+    }
+
 
     @Test
     public void testProductServiceFilterProductsByCategory() throws Exception {

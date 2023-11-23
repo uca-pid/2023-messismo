@@ -65,6 +65,7 @@ public class PasswordRecoveryService {
         }
     }
 
+
     public String changeForgottenPassword(PasswordRecoveryDTO passwordRecoveryDTO) throws Exception {
         try {
             Date dateCreated = new Date();

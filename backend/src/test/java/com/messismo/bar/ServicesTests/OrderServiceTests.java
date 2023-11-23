@@ -139,6 +139,36 @@ public class OrderServiceTests {
     }
 
     @Test
+    public void testAddOrder_Exception() throws ParseException {
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date1 = dateFormat.parse("2023-08-04 08:10:43");
+        User user = User.builder().username("example").email("employee@example.com").password("password1").id(1L)
+                .role(Role.EMPLOYEE).build();
+        Category category1 = Category.builder().categoryId(1L).name("Entrada").build();
+        Product product1 = Product.builder().productId(1L).name("Empanadas").stock(50).category(category1)
+                .unitPrice(50.00).unitCost(20.00).description("Empanadas de carne").build();
+        Product product2 = Product.builder().productId(2L).name("Ensalada").stock(50).category(category1)
+                .unitPrice(50.00).unitCost(25.00).description("Ensalada de pollo").build();
+        List<ProductOrderDTO> productOrders = new ArrayList<>();
+        ProductOrderDTO productOrderDTO1 = ProductOrderDTO.builder().product(product1).quantity(2).build();
+        productOrders.add(productOrderDTO1);
+        ProductOrderDTO productOrderDTO2 = ProductOrderDTO.builder().product(product2).quantity(3).build();
+        productOrders.add(productOrderDTO2);
+        OrderRequestDTO orderRequestDTO = OrderRequestDTO.builder().dateCreated(date1)
+                .registeredEmployeeEmail("employee@example.com").productOrders(productOrders).build();
+
+        when(userRepository.findByEmail("employee@example.com")).thenReturn(Optional.ofNullable(user));
+
+        doThrow(new RuntimeException("Runtime Exception")).when(orderRepository).save(any());
+        Exception exception = assertThrows(Exception.class, () -> {
+            orderService.addNewOrder(orderRequestDTO);
+        });
+        Assertions.assertEquals("CANNOT create an order at the moment", exception.getMessage());
+
+    }
+
+    @Test
     public void testCloseOrder_Success() throws Exception {
 
         Order existingOrder = new Order();
@@ -153,6 +183,24 @@ public class OrderServiceTests {
         verify(orderRepository, times(1)).save(any());
     }
 
+
+    @Test
+    public void testCloseOrder_Exception() throws ParseException {
+
+        Order existingOrder = new Order();
+        existingOrder.setId(1L);
+        existingOrder.setStatus("Open");
+        OrderIdDTO orderIdDTO = new OrderIdDTO();
+        orderIdDTO.setOrderId(1L);
+        when(orderRepository.findById(anyLong())).thenReturn(Optional.of(existingOrder));
+
+        doThrow(new RuntimeException("Runtime Exception")).when(orderRepository).save(any());
+        Exception exception = assertThrows(Exception.class, () -> {
+            orderService.closeOrder(orderIdDTO);
+        });
+        Assertions.assertEquals("CANNOT close an order at the moment", exception.getMessage());
+
+    }
     @Test
     public void testCloseOrder_OrderIdNotFound() {
 

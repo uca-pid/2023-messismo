@@ -1,6 +1,8 @@
 package com.messismo.bar.ServicesTests;
 
+import com.messismo.bar.DTOs.CategoryRequestDTO;
 import com.messismo.bar.DTOs.PasswordRecoveryDTO;
+import com.messismo.bar.Entities.Category;
 import com.messismo.bar.Entities.PasswordRecovery;
 import com.messismo.bar.Entities.Role;
 import com.messismo.bar.Entities.User;
@@ -16,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -75,6 +78,21 @@ public class PasswordRecoveryServiceTests {
         verify(passwordRecoveryRepository, times(1)).findByUser(user);
         verify(javaMailSender, times(1)).send(any(SimpleMailMessage.class));
         Assertions.assertEquals("Email sent!", response);
+
+    }
+    @Test
+    public void testPasswordRecoveryServiceForgotPassword_Exception() {
+
+        String email = "user@example.com";
+        User user = User.builder().id(1L).username("user").email("user@example.com").password("Password1").role(Role.EMPLOYEE).build();
+        when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
+        when(passwordRecoveryRepository.findByUser(user)).thenReturn(Optional.empty());
+
+        doThrow(new DataIntegrityViolationException("Error saving")).when(passwordRecoveryRepository).save(any(PasswordRecovery.class));
+        Exception exception = assertThrows(Exception.class, () -> {
+            passwordRecoveryService.forgotPassword(email);
+        });
+        Assertions.assertEquals("CANNOT recover the password at the moment", exception.getMessage());
 
     }
 
