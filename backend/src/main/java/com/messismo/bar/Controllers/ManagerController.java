@@ -10,6 +10,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Objects;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/manager")
@@ -28,7 +30,7 @@ public class ManagerController {
     private final GoalService goalService;
 
     @PutMapping("/product/updatePrice")
-    public ResponseEntity<?> updateProductPrice(@RequestBody ProductPriceDTO productPriceDTO) {
+    public ResponseEntity<String> updateProductPrice(@RequestBody ProductPriceDTO productPriceDTO) {
         if (productPriceDTO.getUnitPrice() == null || productPriceDTO.getProductId() == null) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Missing data to modify product price");
         }
@@ -45,7 +47,7 @@ public class ManagerController {
     }
 
     @PutMapping("/product/updateCost")
-    public ResponseEntity<?> updateProductCost(@RequestBody ProductPriceDTO productPriceDTO) {
+    public ResponseEntity<String> updateProductCost(@RequestBody ProductPriceDTO productPriceDTO) {
         if (productPriceDTO.getUnitPrice() == null || productPriceDTO.getProductId() == null) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Missing data to modify product cost");
         }
@@ -62,7 +64,7 @@ public class ManagerController {
     }
 
     @PutMapping("/product/modifyProductStock")
-    public ResponseEntity<?> modifyProductStock(@RequestBody ProductStockDTO productStockDTO) {
+    public ResponseEntity<String> modifyProductStock(@RequestBody ProductStockDTO productStockDTO) {
         if (productStockDTO.getModifyStock() == null || productStockDTO.getProductId() == null || productStockDTO.getOperation() == null) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Missing data to add product stock");
         }
@@ -80,7 +82,7 @@ public class ManagerController {
 
 
     @DeleteMapping("/product/deleteProduct/{productId}")
-    public ResponseEntity<?> deleteProduct(@PathVariable Long productId) {
+    public ResponseEntity<String> deleteProduct(@PathVariable Long productId) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(productService.deleteProduct(productId));
         } catch (ProductNotFoundException e) {
@@ -96,7 +98,7 @@ public class ManagerController {
     }
 
     @PutMapping("/validateEmployee")
-    public ResponseEntity<?> validateEmployee(@RequestBody UserIdDTO userIdDTO) {
+    public ResponseEntity<String> validateEmployee(@RequestBody UserIdDTO userIdDTO) {
         if (userIdDTO.getUserId() == null) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Missing userId to upgrade to validated employee");
         }
@@ -110,7 +112,7 @@ public class ManagerController {
     }
 
     @PostMapping("/category/addCategory")
-    public ResponseEntity<?> addCategory(@RequestBody CategoryRequestDTO categoryRequestDTO) {
+    public ResponseEntity<String> addCategory(@RequestBody CategoryRequestDTO categoryRequestDTO) {
         if (categoryRequestDTO.getCategoryName() == null) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Missing information to create a category");
         }
@@ -124,7 +126,7 @@ public class ManagerController {
     }
 
     @DeleteMapping("/category/deleteCategory")
-    public ResponseEntity<?> deleteCategory(@RequestBody CategoryRequestDTO categoryRequestDTO) {
+    public ResponseEntity<String> deleteCategory(@RequestBody CategoryRequestDTO categoryRequestDTO) {
         if (categoryRequestDTO.getCategoryName() == null) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Missing information to delete a category");
         }
@@ -149,23 +151,57 @@ public class ManagerController {
     }
 
     @PostMapping("/goals/addGoal")
-    public ResponseEntity<?> addGoal(@RequestBody GoalDTO goalDTO) {
-        return goalService.addGoal(goalDTO);
+    public ResponseEntity<String> addGoal(@RequestBody GoalDTO goalDTO) {
+        if (Objects.equals(goalDTO.getName(), "") || goalDTO.getName() == null || goalDTO.getStartingDate() == null || goalDTO.getEndingDate() == null || Objects.equals(goalDTO.getObjectType(), "") || goalDTO.getObjectType() == null || goalDTO.getGoalObjective() <= 0.00 || goalDTO.getGoalObjective() == null || ((goalDTO.getObjectType().equals("Product") || goalDTO.getObjectType().equals("Category")) && (Objects.equals(goalDTO.getGoalObject(), "") || goalDTO.getGoalObject() == null))) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Missing information to create a goal");
+        }
+        try {
+            return ResponseEntity.status(HttpStatus.CREATED).body(goalService.addGoal(goalDTO));
+        } catch (ProvidedDatesMustNotCollideWithOtherDatesException | ProductNotFoundException | CategoryNotFoundException | EndingDateMustBeAfterStartingDateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 
     @DeleteMapping("/goals/deleteGoal")
-    public ResponseEntity<?> deleteGoal(@RequestBody GoalDeleteDTO goalDeleteDTO) {
-        return goalService.deleteGoal(goalDeleteDTO);
+    public ResponseEntity<String> deleteGoal(@RequestBody GoalDeleteDTO goalDeleteDTO) {
+        if (goalDeleteDTO.getGoalId() == null) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Missing information to delete a goal");
+        }
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(goalService.deleteGoal(goalDeleteDTO));
+        } catch (GoalIdNotFoundException | GoalInProcessCannotBeDeletedException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 
     @PutMapping("/goals/modifyGoal")
-    public ResponseEntity<?> modifyGoal(@RequestBody GoalModifyDTO goalModifyDTO) {
-        return goalService.modifyGoal(goalModifyDTO);
+    public ResponseEntity<String> modifyGoal(@RequestBody GoalModifyDTO goalModifyDTO) {
+        if (goalModifyDTO.getGoalId() == null || goalModifyDTO.getNewGoalObjective() <= 0.00) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Missing information to modify a goal");
+        }
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(goalService.modifyGoal(goalModifyDTO));
+        } catch (ProvidedDatesMustNotCollideWithOtherDatesException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 
     @PostMapping("/goals/getGoals")
     public ResponseEntity<?> getGoals(@RequestBody GoalFilterRequestDTO goalFilterRequestDTO) {
-        return goalService.getGoals(goalFilterRequestDTO);
+        if (goalFilterRequestDTO.getAchieved() == null || goalFilterRequestDTO.getStatus() == null) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Lists must not be null");
+        }
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(goalService.getGoals(goalFilterRequestDTO));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 
 }

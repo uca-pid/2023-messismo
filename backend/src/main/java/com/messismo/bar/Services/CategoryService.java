@@ -55,7 +55,7 @@ public class CategoryService {
         return categoryRepository.findAll();
     }
 
-    public Category getCategoryByName(String categoryName) throws Exception {
+    public Category getCategoryByName(String categoryName) throws CategoryNotFoundException {
         return categoryRepository.findByName(categoryName).orElseThrow(() -> new CategoryNotFoundException("CategoryName DOES NOT match any categoryName"));
     }
 }

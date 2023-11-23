@@ -49,7 +49,7 @@ public class InitialConfiguration {
         };
     }
 
-    private void addSampleGoals(GoalService goalService) throws ParseException {
+    private void addSampleGoals(GoalService goalService) throws Exception {
         // EXPIRED NOT ACHIEVED
         addNewGoal(1,goalService,"Category: Starter goal","2023-09-05 00:00:01","2023-10-05 00:00:01","Category","Starter",500000.00);
         addNewGoal(2,goalService, "Product: Tomato Bruschetta goal","2023-08-04 00:00:01","2023-09-04 00:00:01","Product","Tomato Bruschetta",50000.00);
@@ -65,7 +65,7 @@ public class InitialConfiguration {
         addNewGoal(8,goalService, "Product: Chocolate Profiteroles goal","2024-05-01 00:00:01","2024-05-07 00:00:01","Product","Chocolate Profiteroles",10000.00);
         addNewGoal(9,goalService, "Category: Dessert goal","2024-09-05 00:00:01","2024-09-07 00:00:01","Category","Dessert",10000.00);
     }
-    private void addNewGoal(Integer goalNumber, GoalService goalService,String name, String startingDate, String endingDate, String objectType, String goalObject, Double goalObjective) throws ParseException {
+    private void addNewGoal(Integer goalNumber, GoalService goalService,String name, String startingDate, String endingDate, String objectType, String goalObject, Double goalObjective) throws Exception {
         GoalDTO newGoal = GoalDTO.builder().name(name).startingDate(convertToFormat(startingDate)).endingDate(convertToFormat(endingDate)).objectType(objectType).goalObject(goalObject).goalObjective(goalObjective).build();
         System.out.println("GOAL:" + goalNumber);
         goalService.addGoal(newGoal);
