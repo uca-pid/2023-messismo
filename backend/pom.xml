@@ -162,7 +162,7 @@
                 <configuration>
                     <excludes>
                         <exclude>**/Configurations/*.class</exclude>
-                        <exclude>**/Controllers/*.class</exclude>
+<!--                        <exclude>**/Controllers/*.class</exclude>-->
                         <exclude>**/DTOs/*.class</exclude>
                         <exclude>**/Entities/*.class</exclude>
                         <exclude>**/Exceptions/*.class</exclude>

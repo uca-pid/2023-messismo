@@ -24,8 +24,8 @@ public class OrderService {
     public String addNewOrder(OrderRequestDTO orderRequestDTO) throws Exception {
         try {
             User employee = userRepository.findByEmail(orderRequestDTO.getRegisteredEmployeeEmail()).orElseThrow(() -> new UserNotFoundException("No user has that email"));
-            NewProductOrderList newProductOrderList = createProductOrder(orderRequestDTO.getProductOrders());
-            Order newOrder = new Order(employee, orderRequestDTO.getDateCreated(), newProductOrderList.getProductOrderList(), newProductOrderList.getTotalPrice(), newProductOrderList.getTotalCost());
+            NewProductOrderListDTO newProductOrderListDTO = createProductOrder(orderRequestDTO.getProductOrders());
+            Order newOrder = new Order(employee, orderRequestDTO.getDateCreated(), newProductOrderListDTO.getProductOrderList(), newProductOrderListDTO.getTotalPrice(), newProductOrderListDTO.getTotalCost());
             orderRepository.save(newOrder);
             return "Order created successfully";
         } catch (UserNotFoundException | ProductQuantityBelowAvailableStock e) {
@@ -51,10 +51,10 @@ public class OrderService {
     public String modifyOrder(ModifyOrderDTO modifyOrderDTO) throws Exception {
         try {
             Order order = orderRepository.findById(modifyOrderDTO.getOrderId()).orElseThrow(() -> new OrderNotFoundException("Order not found"));
-            NewProductOrderList newProductOrderList = createProductOrder(modifyOrderDTO.getProductOrders());
-            order.updateProductOrders(newProductOrderList.getProductOrderList());
-            order.updateTotalPrice(newProductOrderList.getTotalPrice());
-            order.updateTotalCost(newProductOrderList.getTotalCost());
+            NewProductOrderListDTO newProductOrderListDTO = createProductOrder(modifyOrderDTO.getProductOrders());
+            order.updateProductOrders(newProductOrderListDTO.getProductOrderList());
+            order.updateTotalPrice(newProductOrderListDTO.getTotalPrice());
+            order.updateTotalCost(newProductOrderListDTO.getTotalCost());
             orderRepository.save(order);
             return "Order modified successfully";
         } catch (ProductQuantityBelowAvailableStock | OrderNotFoundException e) {
@@ -79,7 +79,7 @@ public class OrderService {
         return filteredOrderByDate;
     }
 
-    public NewProductOrderList createProductOrder(List<ProductOrderDTO> productOrderDTOList) throws ProductQuantityBelowAvailableStock {
+    public NewProductOrderListDTO createProductOrder(List<ProductOrderDTO> productOrderDTOList) throws ProductQuantityBelowAvailableStock {
         List<ProductOrder> productOrderList = new ArrayList<>();
         double totalPrice = 0.00;
         double totalCost = 0.00;
@@ -97,6 +97,6 @@ public class OrderService {
                 productOrderList.add(productOrder);
             }
         }
-        return NewProductOrderList.builder().productOrderList(productOrderList).totalCost(totalCost).totalPrice(totalPrice).build();
+        return NewProductOrderListDTO.builder().productOrderList(productOrderList).totalCost(totalCost).totalPrice(totalPrice).build();
     }
 }

@@ -31,15 +31,15 @@ public class GoalService {
     private final CategoryService categoryService;
 
 
-    public ResponseEntity<?> addGoal(GoalDTO goalDTO) {
+    public String addGoal(GoalDTO goalDTO) throws Exception {
         try {
             List<Goal> goalList = updateGoals();
-            if (Objects.equals(goalDTO.getName(), "") || goalDTO.getName() == null || goalDTO.getStartingDate() == null || goalDTO.getEndingDate() == null || Objects.equals(goalDTO.getObjectType(), "") || goalDTO.getObjectType() == null || goalDTO.getGoalObjective() <= 0.00 || goalDTO.getGoalObjective() == null || ((goalDTO.getObjectType().equals("Product") || goalDTO.getObjectType().equals("Category")) && (Objects.equals(goalDTO.getGoalObject(), "") || goalDTO.getGoalObject() == null))) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body("Missing information to create a goal");
-            }
-            if (goalDTO.getStartingDate().after(goalDTO.getEndingDate())) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body("Ending date must be after Starting date");
-            }
+//            if (Objects.equals(goalDTO.getName(), "") || goalDTO.getName() == null || goalDTO.getStartingDate() == null || goalDTO.getEndingDate() == null || Objects.equals(goalDTO.getObjectType(), "") || goalDTO.getObjectType() == null || goalDTO.getGoalObjective() <= 0.00 || goalDTO.getGoalObjective() == null || ((goalDTO.getObjectType().equals("Product") || goalDTO.getObjectType().equals("Category")) && (Objects.equals(goalDTO.getGoalObject(), "") || goalDTO.getGoalObject() == null))) {
+//                return ResponseEntity.status(HttpStatus.CONFLICT).body("Missing information to create a goal");
+//            }
+//            if (goalDTO.getStartingDate().after(goalDTO.getEndingDate())) {
+//                return ResponseEntity.status(HttpStatus.CONFLICT).body("Ending date must be after Starting date");
+//            }
             for (Goal goal : goalList) {
                 if ((goalDTO.getStartingDate().after(goal.getStartingDate()) && goalDTO.getStartingDate().before(goal.getEndingDate())) || (goalDTO.getEndingDate().after(goal.getStartingDate()) && goalDTO.getEndingDate().before(goal.getEndingDate())) || (goalDTO.getStartingDate().equals(goal.getStartingDate()) || goalDTO.getStartingDate().equals(goal.getEndingDate())) || (goalDTO.getEndingDate().equals(goal.getStartingDate()) || goalDTO.getEndingDate().equals(goal.getEndingDate()))) {
                     return ResponseEntity.status(HttpStatus.CONFLICT).body("Ending date and Starting date must not collide with another goal dates");
@@ -52,9 +52,10 @@ public class GoalService {
             Goal newGoal = Goal.builder().name(goalDTO.getName()).startingDate(goalDTO.getStartingDate()).endingDate(goalDTO.getEndingDate()).objectType(goalDTO.getObjectType()).goalObject(goalDTO.getGoalObject()).goalObjective(goalDTO.getGoalObjective()).currentGoal(0.00).status("Upcoming").achieved("Not Achieved").build();
             goalRepository.save(newGoal);
             updateGoals();
-            return ResponseEntity.status(HttpStatus.CREATED).body("Goal created successfully");
+            return "Goal created successfully";
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("CANNOT create a goal at the moment.");
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("CANNOT create a goal at the moment.");
+            throw new Exception(e.getMessage());
         }
     }
 

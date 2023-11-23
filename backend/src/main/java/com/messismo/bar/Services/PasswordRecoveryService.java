@@ -68,7 +68,7 @@ public class PasswordRecoveryService {
     public String changeForgottenPassword(PasswordRecoveryDTO passwordRecoveryDTO) throws Exception {
         try {
             Date dateCreated = new Date();
-            User user = userRepository.findByEmail(passwordRecoveryDTO.getEmail()).orElseThrow(() -> new UserNotFoundException("No user has that email."));
+            User user = userRepository.findByEmail(passwordRecoveryDTO.getEmail()).orElseThrow(() -> new UserNotFoundException("No user has that email"));
             PasswordRecovery passwordRecovery = passwordRecoveryRepository.findByUser(user).orElseThrow(() -> new NoPinCreatedForUserException("The user has no PINs created"));
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(passwordRecovery.getDateCreated());

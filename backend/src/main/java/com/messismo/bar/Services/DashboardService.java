@@ -74,7 +74,6 @@ public class DashboardService {
                     filteredOrders.add(newOrder);
                 }
             }
-            System.out.println(filteredOrders);
             return filteredOrders;
         }
     }

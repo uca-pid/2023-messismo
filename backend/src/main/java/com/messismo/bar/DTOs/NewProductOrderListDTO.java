@@ -12,7 +12,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class NewProductOrderList {
+public class NewProductOrderListDTO {
 
     private List<ProductOrder> productOrderList;
 

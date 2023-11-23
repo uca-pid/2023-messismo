@@ -68,7 +68,7 @@ public class InitialConfiguration {
     private void addNewGoal(Integer goalNumber, GoalService goalService,String name, String startingDate, String endingDate, String objectType, String goalObject, Double goalObjective) throws ParseException {
         GoalDTO newGoal = GoalDTO.builder().name(name).startingDate(convertToFormat(startingDate)).endingDate(convertToFormat(endingDate)).objectType(objectType).goalObject(goalObject).goalObjective(goalObjective).build();
         System.out.println("GOAL:" + goalNumber);
-        System.out.println(goalService.addGoal(newGoal));
+        goalService.addGoal(newGoal);
     }
 
 
@@ -87,7 +87,7 @@ public class InitialConfiguration {
         }
     }
 
-    private void addSampleOrders(OrderService orderService, ProductRepository productRepository) throws ParseException {
+    private void addSampleOrders(OrderService orderService, ProductRepository productRepository) throws Exception {
         // EXPIRED NOT ACHIEVED
         generateOrderRequestDTO(orderService, "john.smith@example.com", "2023-09-24 08:10:43", List.of(ProductOrderDTO.builder().product(productRepository.findByName("French Egg Toast").get()).quantity(2).build()));
         generateOrderRequestDTO(orderService, "martinguido@gmail.com", "2023-08-16 08:10:43", List.of(ProductOrderDTO.builder().product(productRepository.findByName("Tomato Bruschetta").get()).quantity(2).build()));
@@ -207,7 +207,7 @@ public class InitialConfiguration {
     }
 
 
-    private void generateOrderRequestDTO(OrderService orderService, String userEmail, String stringDate, List<ProductOrderDTO> productOrderDTO) throws ParseException {
+    private void generateOrderRequestDTO(OrderService orderService, String userEmail, String stringDate, List<ProductOrderDTO> productOrderDTO) throws Exception {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = dateFormat.parse(stringDate);
         orderService.addNewOrder(OrderRequestDTO.builder().registeredEmployeeEmail(userEmail).dateCreated(date).productOrders(productOrderDTO).build());
@@ -244,7 +244,7 @@ public class InitialConfiguration {
         authenticationService.register(user6);
     }
 
-    private void addSampleCategories(CategoryService categoryService) {
+    private void addSampleCategories(CategoryService categoryService) throws Exception {
         CategoryRequestDTO categoryRequestDTO1 = CategoryRequestDTO.builder().categoryName("Starter").build();
         categoryService.addCategory(categoryRequestDTO1);
         CategoryRequestDTO categoryRequestDTO2 = CategoryRequestDTO.builder().categoryName("Main Course").build();
@@ -255,10 +255,10 @@ public class InitialConfiguration {
         categoryService.addCategory(categoryRequestDTO4);
     }
 
-    private void addSampleProducts(ProductService productService) {
+    private void addSampleProducts(ProductService productService) throws Exception {
         ProductDTO starter1 = ProductDTO.builder().name("Tomato Bruschetta").description("Toasted bread with fresh tomato, garlic, and basil").category("Starter").unitPrice(5500.00).stock(40).unitCost(1000.00).newCategory(false).build();
         productService.addProduct(starter1);
-        ProductDTO starter2 = ProductDTO.builder().name("Fried Calamari").description("Crispy calamari served with lemon sauce").category("Starter").unitPrice(6800.00).stock(27).unitCost(2500.00).newCategory(false).build();
+        ProductDTO starter2 = ProductDTO.builder().name("Fried Calamari").description("Crispy calamari served with lemon sauce").category("Starter").unitPrice(6800.00).stock(35).unitCost(2500.00).newCategory(false).build();
         productService.addProduct(starter2);
         ProductDTO starter3 = ProductDTO.builder().name("Spanish Omelette").description("Potato and onion omelette with eggs").category("Starter").unitPrice(6200.00).stock(48).unitCost(2000.00).newCategory(false).build();
         productService.addProduct(starter3);

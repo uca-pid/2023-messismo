@@ -35,7 +35,7 @@ public class AuthenticationService {
             Optional<User> employeeByUsername = userRepository.findByUsername(request.getUsername());
             Optional<User> employeeByMail = userRepository.findByEmail(request.getEmail());
             if (employeeByUsername.isPresent() || employeeByMail.isPresent()) {
-                throw new UserAlreadyExistsException("User already exists.");
+                throw new UserAlreadyExistsException("User already exists");
             } else {
                 User newEmployee = new User(request.getUsername(), request.getEmail(), request.getPassword());
                 userRepository.save(newEmployee);

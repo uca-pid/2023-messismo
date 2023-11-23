@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +21,10 @@ public class CategoryService {
 
     public String addCategory(CategoryRequestDTO categoryRequestDTO) throws Exception {
         try {
-            Category category = categoryRepository.findByName(categoryRequestDTO.getCategoryName()).orElseThrow(() -> new ExistingCategoryFoundException("Provided category name ALREADY exists"));
+            Optional<Category> existingCategory = categoryRepository.findByName(categoryRequestDTO.getCategoryName());
+            if (existingCategory.isPresent()) {
+                throw new ExistingCategoryFoundException("Provided category name ALREADY exists");
+            }
             Category newCategory = Category.builder().name(categoryRequestDTO.getCategoryName()).build();
             categoryRepository.save(newCategory);
             return "Category created successfully";

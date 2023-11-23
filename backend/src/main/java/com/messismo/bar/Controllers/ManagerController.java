@@ -28,24 +28,66 @@ public class ManagerController {
     private final GoalService goalService;
 
     @PutMapping("/product/updatePrice")
-    public ResponseEntity<?> updateProductPrice(@RequestBody ProductPriceDTO body) {
-        return productService.modifyProductPrice(body);
+    public ResponseEntity<?> updateProductPrice(@RequestBody ProductPriceDTO productPriceDTO) {
+        if (productPriceDTO.getUnitPrice() == null || productPriceDTO.getProductId() == null) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Missing data to modify product price");
+        }
+        if (productPriceDTO.getUnitPrice() <= 0) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Product price CANNOT be less than 0.");
+        }
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(productService.modifyProductPrice(productPriceDTO));
+        } catch (ProductNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 
     @PutMapping("/product/updateCost")
-    public ResponseEntity<?> updateProductCost(@RequestBody ProductPriceDTO body) {
-        return productService.modifyProductCost(body);
+    public ResponseEntity<?> updateProductCost(@RequestBody ProductPriceDTO productPriceDTO) {
+        if (productPriceDTO.getUnitPrice() == null || productPriceDTO.getProductId() == null) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Missing data to modify product cost");
+        }
+        if (productPriceDTO.getUnitPrice() <= 0) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Product cost CANNOT be less than 0.");
+        }
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(productService.modifyProductCost(productPriceDTO));
+        } catch (ProductNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 
     @PutMapping("/product/modifyProductStock")
-    public ResponseEntity<?> modifyProductStock(@RequestBody ProductStockDTO body) {
-        return productService.modifyProductStock(body);
+    public ResponseEntity<?> modifyProductStock(@RequestBody ProductStockDTO productStockDTO) {
+        if (productStockDTO.getModifyStock() == null || productStockDTO.getProductId() == null || productStockDTO.getOperation() == null) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Missing data to add product stock");
+        }
+        if (productStockDTO.getModifyStock() < 0) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Stock quantity cannot be less than 0");
+        }
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(productService.modifyProductStock(productStockDTO));
+        } catch (ProductNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 
 
     @DeleteMapping("/product/deleteProduct/{productId}")
     public ResponseEntity<?> deleteProduct(@PathVariable Long productId) {
-        return productService.deleteProduct(productId);
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(productService.deleteProduct(productId));
+        } catch (ProductNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 
     @GetMapping("/getAllEmployees")

@@ -4,17 +4,17 @@ import com.messismo.bar.DTOs.*;
 import com.messismo.bar.Entities.Category;
 import com.messismo.bar.Entities.Product;
 import com.messismo.bar.Exceptions.CategoryNotFoundException;
+import com.messismo.bar.Exceptions.ExistingCategoryFoundException;
 import com.messismo.bar.Exceptions.ExistingProductFoundException;
 import com.messismo.bar.Exceptions.ProductNotFoundException;
 import com.messismo.bar.Repositories.CategoryRepository;
 import com.messismo.bar.Repositories.ProductRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +28,10 @@ public class ProductService {
 
     public String addProduct(ProductDTO productDTO) throws Exception {
         try {
-            Product product = productRepository.findByName(productDTO.getName()).orElseThrow((() -> new ExistingProductFoundException("The product already exists")));
+            Optional<Product> existingProduct = productRepository.findByName(productDTO.getName());
+            if (existingProduct.isPresent()) {
+                throw new ExistingProductFoundException("The product already exists");
+            }
             if (productDTO.getNewCategory() == Boolean.TRUE) {
                 CategoryRequestDTO categoryRequestDTO = CategoryRequestDTO.builder().categoryName(productDTO.getCategory()).build();
                 categoryService.addCategory(categoryRequestDTO);
@@ -49,65 +52,56 @@ public class ProductService {
         return productRepository.findAll();
     }
 
-    public ResponseEntity<?> deleteProduct(Long productId) {
+    public String deleteProduct(Long productId) throws Exception {
         try {
             Product product = productRepository.findByProductId(productId).orElseThrow(() -> new ProductNotFoundException("ProductId DOES NOT match any productId"));
             productRepository.delete(product);
-            return ResponseEntity.status(HttpStatus.OK).body("Product deleted successfully");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Product CANNOT be deleted");
+            return "Product deleted successfully";
+        } catch (ProductNotFoundException e) {
+            throw e;
+        }
+        catch(Exception e){
+            throw new Exception("Product CANNOT be deleted");
         }
     }
 
-    public ResponseEntity<?> modifyProductPrice(ProductPriceDTO productPriceDTO) {
-        if (productPriceDTO.getUnitPrice() == null || productPriceDTO.getProductId() == null) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Missing data to modify product price");
-        }
-        if (productPriceDTO.getUnitPrice() <= 0) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Product price CANNOT be less than 0.");
-        }
+    public String modifyProductPrice(ProductPriceDTO productPriceDTO) throws Exception {
         try {
             Product product = productRepository.findByProductId(productPriceDTO.getProductId()).orElseThrow(() -> new ProductNotFoundException("ProductId DOES NOT match any productId"));
             product.updateUnitPrice(productPriceDTO.getUnitPrice());
             productRepository.save(product);
-            return ResponseEntity.status(HttpStatus.OK).body("Product price updated successfully");
+            return "Product price updated successfully";
+        } catch (ProductNotFoundException e) {
+            throw e;
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Product price CANNOT be updated");
+            throw new Exception("");
         }
     }
 
-    public ResponseEntity<?> modifyProductCost(ProductPriceDTO productPriceDTO) {
-        if (productPriceDTO.getUnitPrice() == null || productPriceDTO.getProductId() == null) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Missing data to modify product cost");
-        }
-        if (productPriceDTO.getUnitPrice() <= 0) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Product cost CANNOT be less than 0.");
-        }
+    public String modifyProductCost(ProductPriceDTO productPriceDTO) throws Exception {
         try {
             Product product = productRepository.findByProductId(productPriceDTO.getProductId()).orElseThrow(() -> new ProductNotFoundException("ProductId DOES NOT match any productId"));
             product.updateUnitCost(productPriceDTO.getUnitPrice());
             productRepository.save(product);
-            return ResponseEntity.status(HttpStatus.OK).body("Product cost updated successfully");
+            return "Product cost updated successfully";
+        } catch (ProductNotFoundException e) {
+            throw e;
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Product cost CANNOT be updated");
+            throw new Exception("");
         }
     }
 
 
-    public ResponseEntity<?> modifyProductStock(ProductStockDTO productStockDTO) {
-        if (productStockDTO.getModifyStock() == null || productStockDTO.getProductId() == null || productStockDTO.getOperation() == null) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Missing data to add product stock");
-        }
-        if (productStockDTO.getModifyStock() < 0) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Stock quantity cannot be less than 0");
-        }
+    public String modifyProductStock(ProductStockDTO productStockDTO) throws Exception {
         try {
             Product product = productRepository.findByProductId(productStockDTO.getProductId()).orElseThrow(() -> new ProductNotFoundException("ProductId DOES NOT match any productId"));
             product.updateStock(productStockDTO.getOperation(), productStockDTO.getModifyStock());
             productRepository.save(product);
-            return ResponseEntity.status(HttpStatus.OK).body("Product stock updated successfully");
+            return "Product stock updated successfully";
+        } catch (ProductNotFoundException e) {
+            throw e;
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Product stock CANNOT be updated");
+            throw new Exception();
         }
     }
 

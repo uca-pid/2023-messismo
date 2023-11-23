@@ -1,9 +1,12 @@
 package com.messismo.bar.ServicesTests;
 
 import com.messismo.bar.DTOs.CategoryRequestDTO;
-import com.messismo.bar.Entities.Product;
-import com.messismo.bar.Repositories.CategoryRepository;
 import com.messismo.bar.Entities.Category;
+import com.messismo.bar.Entities.Product;
+import com.messismo.bar.Exceptions.CategoryHasAtLeastOneProductAssociated;
+import com.messismo.bar.Exceptions.CategoryNotFoundException;
+import com.messismo.bar.Exceptions.ExistingCategoryFoundException;
+import com.messismo.bar.Repositories.CategoryRepository;
 import com.messismo.bar.Repositories.ProductRepository;
 import com.messismo.bar.Services.CategoryService;
 import org.junit.jupiter.api.Assertions;
@@ -13,13 +16,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
@@ -50,42 +53,49 @@ public class CategoryServiceTests {
         categories.add(category2);
 
         when(categoryRepository.findAll()).thenReturn(categories);
-        Assertions.assertEquals(categoryService.getAllCategories(),
-                ResponseEntity.status(HttpStatus.OK).body(categories));
+        Assertions.assertEquals(categoryService.getAllCategories(), categories);
+
     }
 
     @Test
-    public void testAddCategory() {
+    public void testAddCategory() throws Exception {
 
         CategoryRequestDTO requestDTO = CategoryRequestDTO.builder().categoryName("New Category").build();
 
         when(categoryRepository.findByName(requestDTO.getCategoryName())).thenReturn(Optional.empty());
-        Assertions.assertEquals(ResponseEntity.status(HttpStatus.CREATED).body("Category created successfully"),
-                categoryService.addCategory(requestDTO));
+        Assertions.assertEquals("Category created successfully", categoryService.addCategory(requestDTO));
+
     }
 
     @Test
     public void testAddCategory_CategoryAlreadyExists() {
 
         CategoryRequestDTO requestDTO = CategoryRequestDTO.builder().categoryName("Existing Category").build();
-
         when(categoryRepository.findByName(requestDTO.getCategoryName())).thenReturn(Optional.of(new Category()));
-        Assertions.assertEquals(ResponseEntity.status(HttpStatus.CONFLICT).body("The category already exists"),
-                categoryService.addCategory(requestDTO));
+
+        ExistingCategoryFoundException exception = assertThrows(ExistingCategoryFoundException.class, () -> {
+            categoryService.addCategory(requestDTO);
+        });
+        assertEquals("Provided category name ALREADY exists", exception.getMessage());
+
     }
 
     @Test
-    public void testAddCategory_MissingInformation() {
+    public void testAddCategory_CategoryNotCreated() {
 
-        CategoryRequestDTO requestDTO = CategoryRequestDTO.builder().build();
+        CategoryRequestDTO requestDTO = CategoryRequestDTO.builder().categoryName("New Category").build();
 
-        Assertions.assertEquals(
-                ResponseEntity.status(HttpStatus.CONFLICT).body("Missing information to create a category"),
-                categoryService.addCategory(requestDTO));
+        when(categoryRepository.findByName(requestDTO.getCategoryName())).thenReturn(Optional.empty());
+        doThrow(new DataIntegrityViolationException("Error saving")).when(categoryRepository).save(any(Category.class));
+        Exception exception = assertThrows(Exception.class, () -> {
+            categoryService.addCategory(requestDTO);
+        });
+        assertEquals("Category NOT created", exception.getMessage());
+
     }
 
     @Test
-    public void testDeleteCategory_Success() {
+    public void testDeleteCategory_Success() throws Exception {
 
         CategoryRequestDTO requestDTO = CategoryRequestDTO.builder().categoryName("CategoryToDelete").build();
         Category categoryToDelete = new Category();
@@ -93,8 +103,8 @@ public class CategoryServiceTests {
 
         when(categoryRepository.findByName(requestDTO.getCategoryName())).thenReturn(Optional.of(categoryToDelete));
         when(productRepository.findByCategory(categoryToDelete)).thenReturn(emptyProductList);
-        Assertions.assertEquals(categoryService.deleteCategory(requestDTO),
-                ResponseEntity.status(HttpStatus.OK).body("Category deleted successfully"));
+        Assertions.assertEquals(categoryService.deleteCategory(requestDTO), "Category deleted successfully");
+
     }
 
     @Test
@@ -103,12 +113,16 @@ public class CategoryServiceTests {
         CategoryRequestDTO requestDTO = CategoryRequestDTO.builder().categoryName("NonExistentCategory").build();
 
         when(categoryRepository.findByName(requestDTO.getCategoryName())).thenReturn(Optional.empty());
-        Assertions.assertEquals(categoryService.deleteCategory(requestDTO),
-                ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Category NOT deleted."));
+        CategoryNotFoundException exception = assertThrows(CategoryNotFoundException.class, () -> {
+            categoryService.deleteCategory(requestDTO);
+        });
+        assertEquals("Provided category DOES NOT match any category name", exception.getMessage());
+
     }
 
     @Test
     public void testDeleteCategory_CategoryWithProducts() {
+
         CategoryRequestDTO requestDTO = CategoryRequestDTO.builder().categoryName("CategoryWithProducts").build();
         Category categoryWithProducts = new Category();
         List<Product> productsWithCategory = new ArrayList<>();
@@ -116,24 +130,11 @@ public class CategoryServiceTests {
 
         when(categoryRepository.findByName(requestDTO.getCategoryName())).thenReturn(Optional.of(categoryWithProducts));
         when(productRepository.findByCategory(categoryWithProducts)).thenReturn(productsWithCategory);
-        Assertions.assertEquals(categoryService.deleteCategory(requestDTO), ResponseEntity.status(HttpStatus.CONFLICT)
-                .body("The provided category has associated one or more products. Please delete them first"));
-    }
+        CategoryHasAtLeastOneProductAssociated exception = assertThrows(CategoryHasAtLeastOneProductAssociated.class, () -> {
+            categoryService.deleteCategory(requestDTO);
+        });
+        assertEquals("The provided category has associated one or more products. Please delete them first", exception.getMessage());
 
-    @Test
-    public void testDeleteCategory_MissingInformation() {
-        CategoryRequestDTO requestDTO = new CategoryRequestDTO();
-        ResponseEntity<?> response = categoryService.deleteCategory(requestDTO);
-        Assertions.assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
-        Assertions.assertEquals("Missing information to delete a category", response.getBody());
-    }
-    @Test
-    public void testAddCategory_CategoryNotCreated() {
-        CategoryRequestDTO requestDTO = CategoryRequestDTO.builder().categoryName("New Category").build();
-        when(categoryRepository.findByName(requestDTO.getCategoryName())).thenReturn(Optional.empty());
-        doThrow(new DataIntegrityViolationException("Error saving")).when(categoryRepository).save(any(Category.class));
-        ResponseEntity<?> response = categoryService.addCategory(requestDTO);
-        Assertions.assertEquals(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Category NOT created."), response);
     }
 
 }

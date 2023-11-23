@@ -16,10 +16,9 @@ public class KeepAliveService {
 
 
     // Execute every 2 minutes (120000ms)
-    @Scheduled(fixedRate = 60000) // CADA UN MINUTO
+    @Scheduled(fixedRate = 120000) // CADA DOS MINUTOS
     public void keepBackendAlive() {
         ResponseEntity<String> response = restTemplate.getForEntity("https://backendmessismo.onrender.com/api/v1/auth/health", String.class);
-//        System.out.println("Server response: " + response);
         log.info("Server response: " + response.getBody());
     }
 }
