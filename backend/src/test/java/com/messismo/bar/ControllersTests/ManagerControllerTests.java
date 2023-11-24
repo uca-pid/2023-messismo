@@ -16,10 +16,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
@@ -473,44 +470,53 @@ public class ManagerControllerTests {
 
     }
 
-    //    @Test
-//    public void testGetDashboardInformation_Success() throws Exception {
-//
-//        DashboardRequestDTO dashboardRequestDTO = new DashboardRequestDTO(/* Datos de prueba */);
-//        DashboardInformationDTO expectedDashboardInfo = new DashboardInformationDTO(/* Datos esperados */);
-//        when(dashboardService.getDashboardInformation(dashboardRequestDTO)).thenReturn(expectedDashboardInfo);
-//        ResponseEntity<?> response = managerController.getDashboardInformation(dashboardRequestDTO);
-//
-//        assertEquals(HttpStatus.OK, response.getStatusCode());
-//        assertEquals(expectedDashboardInfo, response.getBody());
-//        verify(dashboardService).getDashboardInformation(dashboardRequestDTO);
-//
-//    }
-//
-//    @Test
-//    public void testGetDashboardInformation_ConflictInvalidDate() throws Exception {
-//
-//        DashboardRequestDTO dashboardRequestDTO = new DashboardRequestDTO(/* Datos de prueba */);
-//        when(dashboardService.getDashboardInformation(dashboardRequestDTO)).thenThrow(new InvalidDashboardRequestedDate("Invalid dashboard date"));
-//        ResponseEntity<?> response = managerController.getDashboardInformation(dashboardRequestDTO);
-//
-//        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
-//        assertEquals("Invalid dashboard date", response.getBody());
-//        verify(dashboardService).getDashboardInformation(dashboardRequestDTO);
-//
-//    }
-//
-//    @Test
-//    public void testGetDashboardInformation_InternalServerError() throws Exception {
-//
-//        DashboardRequestDTO dashboardRequestDTO = new DashboardRequestDTO(/* Datos de prueba */);
-//        when(dashboardService.getDashboardInformation(dashboardRequestDTO)).thenThrow(new Exception("Internal server error"));
-//        ResponseEntity<?> response = managerController.getDashboardInformation(dashboardRequestDTO);
-//
-//        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-//        assertEquals("Internal server error", response.getBody());
-//        verify(dashboardService).getDashboardInformation(dashboardRequestDTO);
-//    }
+    @Test
+    public void testGetDashboardInformation_Success() throws Exception {
+
+        DashboardRequestDTO dashboardRequestDTO = new DashboardRequestDTO("2023-03-01", new ArrayList<>());
+        HashMap<String,Object> response = new HashMap<>();
+        response.put("orderByQuantity", new TreeMap<>());
+        response.put("orderByEarnings",  new TreeMap<>());
+        response.put("averageByOrder", new TreeMap<>());
+        response.put("quantityProductDonut", new HashMap<>());
+        response.put("earningProductDonut", new HashMap<>());
+        response.put("quantityCategoryDonut", new HashMap<>());
+        response.put("earningCategoryDonut", new HashMap<>());
+        response.put("labels", new ArrayList<>());
+        when(dashboardService.getDashboardInformation(dashboardRequestDTO)).thenReturn(response);
+        ResponseEntity<?> responseData = managerController.getDashboardInformation(dashboardRequestDTO);
+
+        assertEquals(HttpStatus.OK, responseData.getStatusCode());
+        assertEquals(response, responseData.getBody());
+        verify(dashboardService).getDashboardInformation(dashboardRequestDTO);
+
+    }
+
+    @Test
+    public void testGetDashboardInformation_ConflictInvalidDate() throws Exception {
+
+        DashboardRequestDTO dashboardRequestDTO = new DashboardRequestDTO("ERRORDATE", new ArrayList<>());
+        when(dashboardService.getDashboardInformation(dashboardRequestDTO)).thenThrow(new InvalidDashboardRequestedDate("Invalid dashboard date"));
+        ResponseEntity<?> response = managerController.getDashboardInformation(dashboardRequestDTO);
+
+        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+        assertEquals("Invalid dashboard date", response.getBody());
+        verify(dashboardService).getDashboardInformation(dashboardRequestDTO);
+
+    }
+
+    @Test
+    public void testGetDashboardInformation_InternalServerError() throws Exception {
+
+        DashboardRequestDTO dashboardRequestDTO = new DashboardRequestDTO("2023-03-01", new ArrayList<>());
+        when(dashboardService.getDashboardInformation(dashboardRequestDTO)).thenThrow(new Exception("Internal server error"));
+        ResponseEntity<?> response = managerController.getDashboardInformation(dashboardRequestDTO);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals("Internal server error", response.getBody());
+        verify(dashboardService).getDashboardInformation(dashboardRequestDTO);
+    }
+
     @Test
     public void testAddGoal_Success() throws Exception {
 
@@ -518,7 +524,7 @@ public class ManagerControllerTests {
         goalDTO.setName("Test Goal");
         LocalDate today = LocalDate.now();
         Date startingDate = java.sql.Date.valueOf(today);
-        LocalDate tomorrow = today.plus(1, ChronoUnit.DAYS);
+        LocalDate tomorrow = today.plusDays(1);
         Date endingDate = java.sql.Date.valueOf(tomorrow);
         goalDTO.setStartingDate(startingDate);
         goalDTO.setEndingDate(endingDate);
@@ -539,7 +545,7 @@ public class ManagerControllerTests {
         goalDTO.setName("Test Goal");
         LocalDate today = LocalDate.now();
         Date startingDate = java.sql.Date.valueOf(today);
-        LocalDate tomorrow = today.plus(1, ChronoUnit.DAYS);
+        LocalDate tomorrow = today.plusDays(1);
         Date endingDate = java.sql.Date.valueOf(tomorrow);
         goalDTO.setStartingDate(startingDate);
         goalDTO.setEndingDate(endingDate);
@@ -558,7 +564,7 @@ public class ManagerControllerTests {
         goalDTO.setName("Test Goal");
         LocalDate today = LocalDate.now();
         Date startingDate = java.sql.Date.valueOf(today);
-        LocalDate tomorrow = today.plus(1, ChronoUnit.DAYS);
+        LocalDate tomorrow = today.plusDays(1);
         Date endingDate = java.sql.Date.valueOf(tomorrow);
         goalDTO.setStartingDate(startingDate);
         goalDTO.setEndingDate(endingDate);
@@ -579,13 +585,13 @@ public class ManagerControllerTests {
         goalDTO.setName("Test Goal");
         LocalDate today = LocalDate.now();
         Date startingDate = java.sql.Date.valueOf(today);
-        LocalDate tomorrow = today.plus(1, ChronoUnit.DAYS);
+        LocalDate tomorrow = today.plusDays(1);
         Date endingDate = java.sql.Date.valueOf(tomorrow);
         goalDTO.setStartingDate(startingDate);
         goalDTO.setEndingDate(endingDate);
         goalDTO.setObjectType("Category");
         goalDTO.setGoalObjective(500.0);
-        System.out.println("HOLA "+ goalDTO);
+        System.out.println("HOLA " + goalDTO);
         ResponseEntity<String> response = managerController.addGoal(goalDTO);
 
         assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
@@ -599,7 +605,7 @@ public class ManagerControllerTests {
         goalDTO.setName("Test Goal");
         LocalDate today = LocalDate.now();
         Date startingDate = java.sql.Date.valueOf(today);
-        LocalDate tomorrow = today.plus(1, ChronoUnit.DAYS);
+        LocalDate tomorrow = today.plusDays(1);
         Date endingDate = java.sql.Date.valueOf(tomorrow);
         goalDTO.setStartingDate(startingDate);
         goalDTO.setEndingDate(endingDate);
@@ -677,7 +683,7 @@ public class ManagerControllerTests {
         goalDTO.setName("Test Goal");
         LocalDate today = LocalDate.now();
         Date startingDate = java.sql.Date.valueOf(today);
-        LocalDate yesterday = today.minus(1, ChronoUnit.DAYS);
+        LocalDate yesterday = today.minusDays(1);
         Date endingDate = java.sql.Date.valueOf(yesterday);
         goalDTO.setStartingDate(startingDate);
         goalDTO.setEndingDate(endingDate);
@@ -856,8 +862,8 @@ public class ManagerControllerTests {
     public void testGetGoals_Success() throws Exception {
 
         GoalFilterRequestDTO goalFilterRequestDTO = new GoalFilterRequestDTO();
-        goalFilterRequestDTO.setAchieved(Arrays.asList("Achieved","Not Achieved"));
-        goalFilterRequestDTO.setStatus(Arrays.asList("Upcoming","Expired"));
+        goalFilterRequestDTO.setAchieved(Arrays.asList("Achieved", "Not Achieved"));
+        goalFilterRequestDTO.setStatus(Arrays.asList("Upcoming", "Expired"));
         when(goalService.getGoals(goalFilterRequestDTO)).thenReturn(new ArrayList<>());
         ResponseEntity<?> response = managerController.getGoals(goalFilterRequestDTO);
 
@@ -882,8 +888,8 @@ public class ManagerControllerTests {
     public void testGetGoals_InternalServerError() throws Exception {
 
         GoalFilterRequestDTO goalFilterRequestDTO = new GoalFilterRequestDTO();
-        goalFilterRequestDTO.setAchieved(Arrays.asList("Achieved","Not Achieved"));
-        goalFilterRequestDTO.setStatus(Arrays.asList("Upcoming","Expired"));
+        goalFilterRequestDTO.setAchieved(Arrays.asList("Achieved", "Not Achieved"));
+        goalFilterRequestDTO.setStatus(Arrays.asList("Upcoming", "Expired"));
         when(goalService.getGoals(goalFilterRequestDTO)).thenThrow(new Exception("Internal server error"));
         ResponseEntity<?> response = managerController.getGoals(goalFilterRequestDTO);
 
