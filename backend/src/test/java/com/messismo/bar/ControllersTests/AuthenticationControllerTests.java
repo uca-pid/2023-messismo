@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class AuthenticationControllerTests {
@@ -28,9 +29,6 @@ public class AuthenticationControllerTests {
 
     @Mock
     private PasswordRecoveryService passwordRecoveryService;
-
-
-
 
     @BeforeEach
     public void setUp() {
@@ -72,6 +70,19 @@ public class AuthenticationControllerTests {
 
         assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
         assertEquals("User already exists", response.getBody());
+
+    }
+
+    @Test
+    public void testRegister_InternalServerError() throws Exception {
+
+        RegisterRequestDTO requestDTO = new RegisterRequestDTO("test@example.com", "password", "username");
+        when(authenticationService.register(requestDTO)).thenThrow(new Exception("Internal error"));
+        ResponseEntity<?> response = authenticationController.register(requestDTO);
+
+        verify(authenticationService).register(requestDTO);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals("Internal error", response.getBody());
 
     }
 

@@ -614,22 +614,116 @@ public class ManagerControllerTests {
 
     }
 
+
+    @Test
+    public void testAddGoal_Conflict_DatesCollisionException() throws Exception {
+
+        GoalDTO goalDTO = new GoalDTO();
+        goalDTO.setName("Test Goal");
+        goalDTO.setStartingDate(new Date());
+        goalDTO.setEndingDate(new Date());
+        goalDTO.setObjectType("Category");
+        goalDTO.setGoalObject("TestCategory");
+        goalDTO.setGoalObjective(500.0);
+        when(goalService.addGoal(goalDTO)).thenThrow(new ProvidedDatesMustNotCollideWithOtherDatesException("Dates collision"));
+        ResponseEntity<String> response = managerController.addGoal(goalDTO);
+
+        verify(goalService).addGoal(goalDTO);
+        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+        assertEquals("Dates collision", response.getBody());
+    }
+
+    @Test
+    public void testAddGoal_Conflict_ProductNotFoundException() throws Exception {
+
+        GoalDTO goalDTO = new GoalDTO();
+        goalDTO.setName("Test Goal");
+        goalDTO.setStartingDate(new Date());
+        goalDTO.setEndingDate(new Date());
+        goalDTO.setObjectType("Product");
+        goalDTO.setGoalObject("NonExistingProduct");
+        goalDTO.setGoalObjective(500.0);
+        when(goalService.addGoal(goalDTO)).thenThrow(new ProductNotFoundException("Product not found"));
+        ResponseEntity<String> response = managerController.addGoal(goalDTO);
+
+        verify(goalService).addGoal(goalDTO);
+        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+        assertEquals("Product not found", response.getBody());
+    }
+
+    @Test
+    public void testAddGoal_Conflict_CategoryNotFoundException() throws Exception {
+
+        GoalDTO goalDTO = new GoalDTO();
+        goalDTO.setName("Test Goal");
+        goalDTO.setStartingDate(new Date());
+        goalDTO.setEndingDate(new Date());
+        goalDTO.setObjectType("Category");
+        goalDTO.setGoalObject("NonExistingCategory");
+        goalDTO.setGoalObjective(500.0);
+        when(goalService.addGoal(goalDTO)).thenThrow(new CategoryNotFoundException("Category not found"));
+        ResponseEntity<String> response = managerController.addGoal(goalDTO);
+
+        verify(goalService).addGoal(goalDTO);
+        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+        assertEquals("Category not found", response.getBody());
+
+    }
+
+    @Test
+    public void testAddGoal_Conflict_EndingDateMustBeAfterStartingDateException() throws Exception {
+
+        GoalDTO goalDTO = new GoalDTO();
+        goalDTO.setName("Test Goal");
+        LocalDate today = LocalDate.now();
+        Date startingDate = java.sql.Date.valueOf(today);
+        LocalDate yesterday = today.minus(1, ChronoUnit.DAYS);
+        Date endingDate = java.sql.Date.valueOf(yesterday);
+        goalDTO.setStartingDate(startingDate);
+        goalDTO.setEndingDate(endingDate);
+        goalDTO.setObjectType("Category");
+        goalDTO.setGoalObject("TestCategory");
+        goalDTO.setGoalObjective(500.0);
+        when(goalService.addGoal(goalDTO)).thenThrow(new EndingDateMustBeAfterStartingDateException("Ending date must be after Starting date"));
+        ResponseEntity<String> response = managerController.addGoal(goalDTO);
+
+        verify(goalService).addGoal(goalDTO);
+        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+        assertEquals("Ending date must be after Starting date", response.getBody());
+
+    }
+
+    @Test
+    public void testAddGoal_InternalServerError() throws Exception {
+
+        GoalDTO goalDTO = new GoalDTO();
+        goalDTO.setName("Test Goal");
+        goalDTO.setStartingDate(new Date());
+        goalDTO.setEndingDate(new Date());
+        goalDTO.setObjectType("Category");
+        goalDTO.setGoalObject("TestCategory");
+        goalDTO.setGoalObjective(500.0);
+        when(goalService.addGoal(goalDTO)).thenThrow(new Exception("Internal error"));
+        ResponseEntity<String> response = managerController.addGoal(goalDTO);
+
+        verify(goalService).addGoal(goalDTO);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals("Internal error", response.getBody());
+
+    }
+
     @Test
     public void testDeleteGoal_Success() throws Exception {
-        // Preparación de datos
+
         GoalDeleteDTO goalDeleteDTO = new GoalDeleteDTO();
         goalDeleteDTO.setGoalId(1L);
-
-        // Configuración del comportamiento del servicio
         when(goalService.deleteGoal(goalDeleteDTO)).thenReturn("Goal deleted successfully");
-
-        // Ejecución del método y verificación de resultados
         ResponseEntity<String> response = managerController.deleteGoal(goalDeleteDTO);
 
-        // Verificación de comportamiento y resultados
         verify(goalService).deleteGoal(goalDeleteDTO);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Goal deleted successfully", response.getBody());
+
     }
 
     @Test

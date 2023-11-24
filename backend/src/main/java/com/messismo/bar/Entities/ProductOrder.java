@@ -19,9 +19,6 @@ public class ProductOrder {
     @Column(name = "productOrderId")
     private Long productOrderId;
 
-    //    @ManyToOne(fetch = FetchType.EAGER)
-//    @JoinColumn(name = "product", referencedColumnName = "product_id")
-//    private Product product;
     @Column(name = "productName")
     private String productName;
 
