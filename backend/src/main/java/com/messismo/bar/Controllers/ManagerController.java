@@ -152,7 +152,7 @@ public class ManagerController {
 
     @PostMapping("/goals/addGoal")
     public ResponseEntity<String> addGoal(@RequestBody GoalDTO goalDTO) {
-        if (Objects.equals(goalDTO.getName(), "") || goalDTO.getName() == null || goalDTO.getStartingDate() == null || goalDTO.getEndingDate() == null || Objects.equals(goalDTO.getObjectType(), "") || goalDTO.getObjectType() == null || goalDTO.getGoalObjective() <= 0.00 || goalDTO.getGoalObjective() == null || ((goalDTO.getObjectType().equals("Product") || goalDTO.getObjectType().equals("Category")) && (Objects.equals(goalDTO.getGoalObject(), "") || goalDTO.getGoalObject() == null))) {
+        if (Objects.equals(goalDTO.getName(), "") || goalDTO.getName() == null || goalDTO.getStartingDate() == null || goalDTO.getEndingDate() == null || Objects.equals(goalDTO.getObjectType(), "") || goalDTO.getObjectType() == null || goalDTO.getGoalObjective() <= 0.00 || goalDTO.getGoalObjective() == null || !(((goalDTO.getObjectType().equals("Product") && !(goalDTO.getGoalObject() == null))) || (goalDTO.getObjectType().equals("Category"))&& !(goalDTO.getGoalObject() == null)) || (Objects.equals(goalDTO.getObjectType(), "") && goalDTO.getGoalObject() == null)) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Missing information to create a goal");
         }
         try {
