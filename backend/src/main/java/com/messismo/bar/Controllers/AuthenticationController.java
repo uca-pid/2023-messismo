@@ -79,9 +79,4 @@ public class AuthenticationController {
         return ResponseEntity.status(HttpStatus.OK).body("Server is up!");
     }
 
-    // @PostMapping("/refresh-token")
-    // public void refreshToken(HttpServletRequest request, HttpServletResponse
-    // response) throws IOException {
-    // authenticationService.refreshToken(request, response);
-    // }
 }

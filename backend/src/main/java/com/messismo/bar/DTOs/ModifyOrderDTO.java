@@ -17,7 +17,4 @@ public class ModifyOrderDTO {
 
     private List<ProductOrderDTO> productOrders;
 
-//    private Double totalPrice;
-//
-//    private Double totalCost;
 }

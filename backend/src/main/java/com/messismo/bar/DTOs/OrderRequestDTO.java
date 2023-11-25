@@ -20,7 +20,4 @@ public class OrderRequestDTO {
 
     private List<ProductOrderDTO> productOrders;
 
-//    private Double totalPrice;
-//
-//    private Double totalCost;
 }

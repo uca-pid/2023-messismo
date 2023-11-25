@@ -55,7 +55,6 @@ public class DashboardService {
         } else {
             List<Order> filteredOrders = new ArrayList<>();
             for (Order order : allOrders) {
-                System.out.println(order);
                 Order newOrder = Order.builder().status(order.getStatus()).dateCreated(order.getDateCreated()).id(order.getId()).user(order.getUser()).build();
                 List<ProductOrder> productOrderList = new ArrayList<>();
                 double orderPrice = 0.00;
