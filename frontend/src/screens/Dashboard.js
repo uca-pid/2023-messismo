@@ -29,6 +29,7 @@ import Chip from "@mui/material/Chip";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import { useMediaQuery } from "@mui/material";
 
+
 const CustomizedDateTimePicker = styled(DatePicker)`
   .MuiInputBase-input {
     color: #a4d4cc;
@@ -375,6 +376,7 @@ function Dashboard() {
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [dateToShow, setDateToShow] = useState("");
   const isSmallScreen = useMediaQuery("(max-width:600px)");
+  
 
   useEffect(() => {
     dashboardService
@@ -475,6 +477,19 @@ function Dashboard() {
     }
   };
 
+  const handleCategoryClick = (category) => {
+
+    dashboardService
+      .getDashboard({ dateRequested: selectedDate, categoryList: selectedCategories })
+      .then((response) => {
+        console.log(response);
+        setDashboardData(response);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
   const handleSliderChange = (event, newValue) => {
     setSliderValue(newValue);
   };
@@ -552,7 +567,7 @@ function Dashboard() {
     );
 
     setSelectedCategories(selectedCats);
-    handleButtonClick();
+    handleCategoryClick();
   };
 
   return (

@@ -280,12 +280,15 @@ function Orders() {
   const handleCloseOrderForm = () => {
     setOrderFormVisible(false);
     setOpen(false);
+    setIsLoading(true);
   };
 
   const handleCloseEditOrderForm = () => {
     setEditFormVisible(false);
     setOpenEditForm(false);
+    setOrderFormVisible(false); 
     setOpen(false);
+    setIsLoading(true);
   };
 
   const handleViewDetails = (orderId) => {
@@ -306,6 +309,7 @@ function Orders() {
     setSelectedOrderDetails(selectedOrder.productOrders);
     setSelectedTotalPrice(selectedOrder.totalPrice);
     setOpen(true);
+    setIsLoading(true);
   };
 
   const rows = orders.map((order) => ({
