@@ -27,10 +27,13 @@ ChartJS.register(
 
 export default function Doughnuts({ data, label }) {
 
-    const sortedData = Object.entries(data).sort((a, b) => b[1] - a[1]);
+    const sortedData = Object.entries(data)
+  .filter(([_, value]) => value !== 0) 
+  .sort((a, b) => b[1] - a[1]);
     const first5 = sortedData.slice(0, 5);
     const labels = first5.map(([key]) => key);
     const values = first5.map(([_, value]) => value);
+   
 
     var misoptions = {
       responsive: true,
@@ -80,5 +83,25 @@ export default function Doughnuts({ data, label }) {
         ]
     };
 
-    return <Doughnut data={midata} options={misoptions} />;
+    const plugins = [
+        {
+          afterDraw: function (chart) {
+            console.log(chart.data.datasets[0].data)
+            const allZeros = chart.data.datasets[0].data.every(value => value === 0);
+            if (chart.data.datasets[0].data.length < 1 || allZeros) {
+              let ctx = chart.ctx;
+              let width = chart.width;
+              let height = chart.height;
+              ctx.fillStyle = 'white';
+              ctx.textAlign = "center";
+              ctx.textBaseline = "middle";
+              ctx.font = "25px Arial";
+              ctx.fillText("No data to display", width / 2, height / 2);
+              ctx.restore();
+            }
+          },
+        },
+      ];
+
+    return <Doughnut data={midata} options={misoptions} plugins={plugins}/>;
 }

@@ -329,6 +329,7 @@ function Goals() {
   const handleCloseGoalForm = () => {
     setGoalFormVisible(false);
     setOpen(false);
+    setIsLoading(true);
   };
 
   const handleEditGoalClick = (goalId) => {
@@ -339,6 +340,7 @@ function Goals() {
   const handleCloseEditGoalForm = () => {
     setEditGoalFormVisible(false);
     setOpenEditForm(false);
+    setIsLoading(true);
   };
 
   const handleViewDetails = (orderId) => {

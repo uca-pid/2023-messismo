@@ -71,6 +71,7 @@ const [isLoading, setIsLoading] = useState(true);
 
   const handleClose = () => {
     setOpen(false);
+    setIsLoading(true);
   };
 
   const handleOpenProductsModal = () => {
@@ -79,6 +80,7 @@ const [isLoading, setIsLoading] = useState(true);
 
   const handleCloseProductsModal = () => {
     setOpenFormModal(false);
+    setIsLoading(true);
   };
 
   const handleOpenFilter = () => {
@@ -141,10 +143,12 @@ const [isLoading, setIsLoading] = useState(true);
   };
 
   const handleCloseEditForm = () => {
+    setIsLoading(true);
     productsService
       .getAllProducts()
       .then((response) => {
         setProducts(response.data);
+        setIsLoading(false);
       })
       .catch((error) => {
         console.error("Error al mostrar los productos", error);
