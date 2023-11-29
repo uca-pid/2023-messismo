@@ -355,7 +355,6 @@ function Dashboard() {
   const [totalproducts, setTotalProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedDate, setSelectedDate] = useState("");
-  const [sliderValue, setSliderValue] = useState(15);
   const [datePickerVisible, setDatePickerVisible] = useState(false);
   const [datePickerType, setDatePickerType] = useState("");
   const [isDateButtonClicked, setIsDateButtonClicked] = useState(false);
@@ -370,6 +369,10 @@ function Dashboard() {
       orderByEarnings: {},
     },
   });
+
+  const [allProducts, setAllProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [sliderValue, setSliderValue] = useState(9);
 
   const [chartType, setChartType] = useState("product");
   const [isLoading, setIsLoading] = useState(true);
@@ -411,16 +414,23 @@ function Dashboard() {
     productsService
       .getAllProducts()
       .then((response) => {
-        const filteredProducts = response.data.filter(
+        setAllProducts(response.data);
+        const initialFilteredProducts = response.data.filter(
           (product) => product.stock <= sliderValue
         );
-        setProducts(filteredProducts);
-        setTotalProducts(response.data);
+        setFilteredProducts(initialFilteredProducts);
       })
       .catch((error) => {
         console.error("Error al mostrar los productos", error);
       });
-  }, [sliderValue]);
+  }, []);
+
+  useEffect(() => {
+    const updatedFilteredProducts = allProducts.filter(
+      (product) => product.stock <= sliderValue
+    );
+    setFilteredProducts(updatedFilteredProducts);
+  }, [sliderValue, allProducts]);
 
   useEffect(() => {
     categoryService
@@ -713,12 +723,12 @@ function Dashboard() {
                     Products with {sliderValue} or less units
                   </p>
 
-                  {products.map((producto, index) => (
+                  {filteredProducts.map((product, index) => (
                     <ProgressBar
                       key={index}
-                      bgcolor={producto.stock !== 0 ? "#9fc16c" : "#d496bb"}
-                      name={producto.name}
-                      progress={producto.stock}
+                      bgcolor={product.stock !== 0 ? "#9fc16c" : "#d496bb"}
+                      name={product.name}
+                      progress={product.stock}
                       sliderValue={sliderValue}
                     />
                   ))}
