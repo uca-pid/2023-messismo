@@ -1,5 +1,6 @@
 package com.messismo.bar.DTOs;
 
+import com.messismo.bar.Entities.ProductOrder;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,10 +12,13 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ModifyOrderDTO {
+public class NewProductOrderListDTO {
 
-    private Long orderId;
+    private List<ProductOrder> productOrderList;
 
-    private List<ProductOrderDTO> productOrders;
+    private Double totalPrice;
+
+    private Double totalCost;
+
 
 }

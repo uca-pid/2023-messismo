@@ -1,17 +1,19 @@
 package com.messismo.bar.ServicesTests;
 
 import com.messismo.bar.DTOs.UserDTO;
+import com.messismo.bar.DTOs.UserIdDTO;
 import com.messismo.bar.Entities.Role;
 import com.messismo.bar.Entities.User;
+import com.messismo.bar.Exceptions.CannotUpgradeToManager;
+import com.messismo.bar.Exceptions.CannotUpgradeToValidatedEmployee;
 import com.messismo.bar.Repositories.UserRepository;
 import com.messismo.bar.Services.UserService;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
@@ -19,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.*;
 
@@ -45,11 +46,11 @@ public class UserServiceTests {
         users.add(user1);
         users.add(user2);
         users.add(user3);
-        when(userRepository.findByEmail("admin@mail.com")).thenReturn(Optional.ofNullable(user1));
+        when(userRepository.findByEmail("admin@mail.com")).thenReturn(Optional.of(user1));
         when(userRepository.findByUsername("noExistente")).thenReturn(Optional.empty());
-        when(userRepository.findById(2L)).thenReturn(Optional.ofNullable(user2));
-        when(userRepository.findById(4L)).thenReturn(Optional.ofNullable(user4));
-        when(userRepository.findById(5L)).thenReturn(Optional.ofNullable(user5));
+        when(userRepository.findById(2L)).thenReturn(Optional.of(user2));
+        when(userRepository.findById(4L)).thenReturn(Optional.of(user4));
+        when(userRepository.findById(5L)).thenReturn(Optional.of(user5));
         when(userRepository.findById(100L)).thenReturn(Optional.empty());
         when(userRepository.findAll()).thenReturn(users);
     }
@@ -59,8 +60,9 @@ public class UserServiceTests {
 
         UserDetails result = userService.loadUserByUsername("admin@mail.com");
 
-        assertEquals("password1", result.getPassword());
+        Assertions.assertEquals("password1", result.getPassword());
         verify(userRepository, times(1)).findByEmail("admin@mail.com");
+
     }
 
     @Test
@@ -70,6 +72,7 @@ public class UserServiceTests {
             userService.loadUserByUsername("noExistente");
         });
         verify(userRepository, times(1)).findByEmail("noExistente");
+
     }
 
     @Test
@@ -79,86 +82,110 @@ public class UserServiceTests {
             userService.loadUserByUsername(null);
         });
         verify(userRepository, times(1)).findByEmail(null);
+
     }
 
     @Test
     public void testUserServiceGetAllEmployees() {
 
-        UserDTO user1 =  UserDTO.builder().id(1L).email("admin@mail.com").username("admin").role(Role.ADMIN).build();
-        UserDTO user2 =  UserDTO.builder().id(2L).email("messi2@gmail.com").username("messi2").role(Role.EMPLOYEE).build();
-        UserDTO user3 =  UserDTO.builder().id(3L).email("messi3@gmail.com").username("messi3").role(Role.EMPLOYEE).build();
+        UserDTO user1 = UserDTO.builder().id(1L).email("admin@mail.com").username("admin").role(Role.ADMIN).build();
+        UserDTO user2 = UserDTO.builder().id(2L).email("messi2@gmail.com").username("messi2").role(Role.EMPLOYEE).build();
+        UserDTO user3 = UserDTO.builder().id(3L).email("messi3@gmail.com").username("messi3").role(Role.EMPLOYEE).build();
         List<UserDTO> users = new ArrayList<>();
         users.add(user1);
         users.add(user2);
         users.add(user3);
-        ResponseEntity<List<UserDTO>> response = ResponseEntity.status(HttpStatus.OK).body(users);
 
-        assertEquals(response, userService.getAllEmployees());
+        Assertions.assertEquals(users, userService.getAllEmployees());
         verify(userRepository, times(1)).findAll();
+
     }
 
     @Test
-    public void testUserServiceValidateEmployee() {
+    public void testUserServiceValidateEmployee() throws Exception {
 
-        ResponseEntity<String> response = ResponseEntity.status(HttpStatus.OK).body("User IS NOW a VALIDATED_EMPLOYEE");
+        UserIdDTO userIdDTO = new UserIdDTO(2L);
 
-        assertEquals(response, userService.validateEmployee(2L));
+        Assertions.assertEquals("User IS NOW a VALIDATED_EMPLOYEE", userService.validateEmployee(userIdDTO));
     }
 
     @Test
     public void testUserServiceValidateEmployee_NotFound() {
 
-        ResponseEntity<String> response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User DOES NOT exist");
+        UserIdDTO userIdDTO = new UserIdDTO(100L);
 
-        assertEquals(response, userService.validateEmployee(100L));
+        UsernameNotFoundException exception = assertThrows(UsernameNotFoundException.class, () -> {
+            userService.validateEmployee(userIdDTO);
+        });
+        Assertions.assertEquals("User DOES NOT exist", exception.getMessage());
+
     }
 
-    @Test
-    public void testUserServiceValidateEmployee_NullNotFound() {
-
-        ResponseEntity<String> response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User DOES NOT exist");
-
-        assertEquals(response, userService.validateEmployee(null));
-    }
 
     @Test
     public void testUserServiceValidateEmployee_AlreadyAValidatedEmployee() {
 
-        ResponseEntity<String> response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User IS already a VALIDATED_EMPLOYEE OR SUPERIOR");
+        UserIdDTO userIdDTO = new UserIdDTO(4L);
 
-        assertEquals(response, userService.validateEmployee(4L));
+        CannotUpgradeToValidatedEmployee exception = assertThrows(CannotUpgradeToValidatedEmployee.class, () -> {
+            userService.validateEmployee(userIdDTO);
+        });
+        Assertions.assertEquals("User IS already a VALIDATED_EMPLOYEE OR SUPERIOR", exception.getMessage());
+
     }
 
     @Test
-    public void testUserServiceValidateManager() {
+    public void testUserServiceValidateEmployee_Exception() {
 
-        ResponseEntity<String> response = ResponseEntity.status(HttpStatus.OK).body("User IS NOW a MANAGER");
+        UserIdDTO userIdDTO = new UserIdDTO(2L);
+        doThrow(new RuntimeException("Runtime Exception")).when(userRepository).save(any());
 
-        assertEquals(response, userService.validateManager(4L));
+        Exception exception = assertThrows(Exception.class, () -> {
+            userService.validateEmployee(userIdDTO);
+        });
+        Assertions.assertEquals("Cannot upgrade to validated employee", exception.getMessage());
+
     }
 
     @Test
-    public void testUserServiceValidateManager_NotFound() {
+    public void testUserServiceValidateManager() throws Exception {
 
-        ResponseEntity<String> response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User DOES NOT exist");
+        Assertions.assertEquals("User IS NOW a MANAGER", userService.validateManager(new UserIdDTO(4L)));
 
-        assertEquals(response, userService.validateManager(100L));
     }
 
     @Test
-    public void testUserServiceValidateManager_NullNotFound() {
+    public void testUserServiceValidateManager_NotFound() throws Exception {
 
-        ResponseEntity<String> response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User DOES NOT exist");
+        UsernameNotFoundException exception = assertThrows(UsernameNotFoundException.class, () -> {
+            userService.validateManager(new UserIdDTO(100L));
+        });
+        Assertions.assertEquals("User DOES NOT exist", exception.getMessage());
 
-        assertEquals(response, userService.validateManager(null));
+    }
+
+
+    @Test
+    public void testUserServiceValidateManager_IsNotAValidatedEmployee() {
+
+        CannotUpgradeToManager exception = assertThrows(CannotUpgradeToManager.class, () -> {
+            userService.validateManager(new UserIdDTO(5L));
+        });
+        Assertions.assertEquals("User MUST be first a VALIDATED_EMPLOYEE", exception.getMessage());
     }
 
     @Test
-    public void testUserServiceValidateManager_AlreadyAValidatedAdmin() {
+    public void testUserServiceValidateManager_Exception() {
 
-        ResponseEntity<String> response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User MUST be first a VALIDATED_EMPLOYEE");
+        UserIdDTO userIdDTO = new UserIdDTO(4L);
+        doThrow(new RuntimeException("Runtime Exception")).when(userRepository).save(any());
 
-        assertEquals(response, userService.validateManager(5L));
+        Exception exception = assertThrows(Exception.class, () -> {
+            userService.validateManager(userIdDTO);
+        });
+        Assertions.assertEquals("Cannot upgrade to manager", exception.getMessage());
+
     }
 }
+
 

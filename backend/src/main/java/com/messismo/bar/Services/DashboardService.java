@@ -4,6 +4,7 @@ import com.messismo.bar.DTOs.DashboardRequestDTO;
 import com.messismo.bar.Entities.Category;
 import com.messismo.bar.Entities.Order;
 import com.messismo.bar.Entities.ProductOrder;
+import com.messismo.bar.Exceptions.InvalidDashboardRequestedDate;
 import com.messismo.bar.Repositories.CategoryRepository;
 import com.messismo.bar.Repositories.OrderRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,9 +25,8 @@ public class DashboardService {
 
     private final CategoryRepository categoryRepository;
 
-//    private final ProductRepository productRepository;
 
-    public ResponseEntity<?> getDashboardInformation(DashboardRequestDTO dashboardRequestDTO) {
+    public HashMap<String, Object>  getDashboardInformation(DashboardRequestDTO dashboardRequestDTO) throws Exception {
         try {
             HashMap<String, Object> response = new HashMap<>();
             if (dashboardRequestDTO.getDateRequested() == null || dashboardRequestDTO.getDateRequested().isEmpty()) {
@@ -37,38 +37,17 @@ public class DashboardService {
                 response = getWeeklyInformation(dashboardRequestDTO.getDateRequested(), dashboardRequestDTO.getCategoryList());
             } else if (dashboardRequestDTO.getDateRequested().matches("\\d{4}-\\d{2}")) {
                 response = getDailyInformation(dashboardRequestDTO.getDateRequested(), dashboardRequestDTO.getCategoryList());
+            } else {
+                throw new InvalidDashboardRequestedDate("Incorrect date format");
             }
-//            else if (dashboardRequestDTO.getDateRequested().equals("historic")) {
-//                response = getHistoricInformation();
-//            }
-            else {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body("Incorrect date format");
-            }
-            return ResponseEntity.status(HttpStatus.OK).body(response);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("CANNOT get information for dashboards right now.");
+            return response;
+        } catch (InvalidDashboardRequestedDate e) {
+          throw e;
+        }catch (Exception e) {
+            throw new Exception("CANNOT get information for dashboards right now");
         }
     }
 
-//    private List<Order> filterByCategory1111(List<Order> allOrders, List<Category> categoryList) {
-//        if (categoryList.isEmpty() || categoryList == null) {
-//            return allOrders;
-//        } else {
-//            List<Order> filteredOrders = new ArrayList<>();
-//            for (Category category : categoryList) {
-//                for (Order order : allOrders) {
-//                    for (ProductOrder productOrder : order.getProductOrders()) {
-//                        if (productOrder.getCategory().getName().equals(category.getName())) {
-//                            if (!filteredOrders.contains(order)) {
-//                                filteredOrders.add(order);
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//            return filteredOrders;
-//        }
-//    }
 
     private List<Order> filterByCategory2(List<Order> allOrders, List<Category> categoryList) {
         if (categoryList.isEmpty() || categoryList == null) {
@@ -76,34 +55,31 @@ public class DashboardService {
         } else {
             List<Order> filteredOrders = new ArrayList<>();
             for (Order order : allOrders) {
-                System.out.println(order);
                 Order newOrder = Order.builder().status(order.getStatus()).dateCreated(order.getDateCreated()).id(order.getId()).user(order.getUser()).build();
                 List<ProductOrder> productOrderList = new ArrayList<>();
                 double orderPrice = 0.00;
                 double orderCost = 0.00;
                 for (ProductOrder productOrder : order.getProductOrders()) {
-//                    if( categoryList.stream().anyMatch(cat -> cat.equals(productOrder.getCategory()))){
-                    if( productOrderHasAnyCategory(categoryList,productOrder.getCategory())){
-                        orderPrice+=(productOrder.getProductUnitPrice()*productOrder.getQuantity());
-                        orderCost+=(productOrder.getProductUnitCost()*productOrder.getQuantity());
+                    if (productOrderHasAnyCategory(categoryList, productOrder.getCategory())) {
+                        orderPrice += (productOrder.getProductUnitPrice() * productOrder.getQuantity());
+                        orderCost += (productOrder.getProductUnitCost() * productOrder.getQuantity());
                         productOrderList.add(productOrder);
                     }
                 }
-                if(orderPrice>0.00 && orderCost>0.00 && !productOrderList.isEmpty()){
+                if (orderPrice > 0.00 && orderCost > 0.00 && !productOrderList.isEmpty()) {
                     newOrder.setProductOrders(productOrderList);
                     newOrder.setTotalPrice(orderPrice);
                     newOrder.setTotalCost(orderCost);
                     filteredOrders.add(newOrder);
                 }
             }
-            System.out.println(filteredOrders);
             return filteredOrders;
         }
     }
 
     private boolean productOrderHasAnyCategory(List<Category> categoryList, Category category) {
-        for(Category category1 : categoryList){
-            if(Objects.equals(category.getName(), category1.getName())){
+        for (Category category1 : categoryList) {
+            if (Objects.equals(category.getName(), category1.getName())) {
                 return true;
             }
         }
@@ -152,7 +128,6 @@ public class DashboardService {
         response.put("quantityCategoryDonut", getQuantityCategoryDonut(filteredOrdersByCategories));
         response.put("earningCategoryDonut", getEarningCategoryDonut(filteredOrdersByCategories));
         response.put("labels", new ArrayList<>(years));
-//        response.put("EarningPerCategorySelected", dataByCategories(filteredOrdersByCategories,categoryList));
         return response;
     }
 
@@ -218,7 +193,6 @@ public class DashboardService {
             orderByDateEarnings.put(formattedDate, 0.0);
             currentDate = currentDate.plusDays(1);
         }
-//        List<Order> allOrders = orderRepository.findAll();
         List<Order> allOrderList = orderRepository.findAll();
         List<Order> filteredOrdersByCategories = filterByCategory2(allOrderList, categoryList);
         for (Order order : filteredOrdersByCategories) {
@@ -293,55 +267,6 @@ public class DashboardService {
         return response;
     }
 
-//    public HashMap<String, Object> getHistoricInformation() { // DESDE PRIMER ORDEN HASTA AHORA
-//        List<Order> allOrders = orderRepository.findAll();
-//        LocalDate minDate = allOrders.stream()
-//                .map(order -> order.getDateCreated().toInstant().atZone(ZoneId.systemDefault()).toLocalDate())
-//                .min(Comparator.naturalOrder()).orElse(LocalDate.now());
-//        LocalDate maxDate = allOrders.stream()
-//                .map(order -> order.getDateCreated().toInstant().atZone(ZoneId.systemDefault()).toLocalDate())
-//                .max(Comparator.naturalOrder()).orElse(LocalDate.now());
-//        List<String> labels = new ArrayList<>();
-//        LocalDate currentDate = minDate;
-//        while (!currentDate.isAfter(maxDate)) {
-//            String label = currentDate.format(DateTimeFormatter.ofPattern("MM/yy"));
-//            labels.add(label);
-//            currentDate = currentDate.plusMonths(1);
-//        }
-//        TreeMap<String, Integer> ordersByMonthQuantity = new TreeMap<>();
-//        TreeMap<String, Double> ordersByMonthEarnings = new TreeMap<>();
-//        TreeMap<String, Double> averageByOrder = new TreeMap<>();
-//        for (String label : labels) {
-//            ordersByMonthQuantity.put(label, 0);
-//            ordersByMonthEarnings.put(label, 0.0);
-//        }
-//        for (Order order : allOrders) {
-//            LocalDate orderDate = order.getDateCreated().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-//            String monthYearLabel = orderDate.format(DateTimeFormatter.ofPattern("MM/yy"));
-//            int currentOrderCount = ordersByMonthQuantity.getOrDefault(monthYearLabel, 0);
-//            double currentEarnings = ordersByMonthEarnings.getOrDefault(monthYearLabel, 0.0);
-//            ordersByMonthQuantity.put(monthYearLabel, currentOrderCount + 1);
-//            ordersByMonthEarnings.put(monthYearLabel, currentEarnings + (order.getTotalPrice()) - order.getTotalCost());
-//        }
-//        for (String label : labels) {
-//            int quantity = ordersByMonthQuantity.get(label);
-//            double earnings = ordersByMonthEarnings.get(label);
-//            double average = quantity > 0 ? earnings / quantity : 0.0;
-//            average = (double) Math.round(average * 100.00) / 100.00;
-//            averageByOrder.put(label, average);
-//        }
-//        HashMap<String, Object> response = new HashMap<>();
-//        response.put("orderByQuantity", ordersByMonthQuantity);
-//        response.put("orderByEarnings", ordersByMonthEarnings);
-//        response.put("averageByOrder", averageByOrder);
-//        response.put("quantityProductDonut", getQuantityProductDonut(allOrders));
-//        response.put("earningProductDonut", getEarningProductDonut(allOrders));
-//        response.put("quantityCategoryDonut", getQuantityCategoryDonut(allOrders));
-//        response.put("earningCategoryDonut", getEarningCategoryDonut(allOrders));
-//        response.put("labels", labels);
-//        return response;
-//    }
-
     public HashMap<String, Object> getEarningCategoryDonut(List<Order> orders) {
         HashMap<String, Object> categoryEarningsMap = new HashMap<>();
         List<Category> categories = categoryRepository.findAll();
@@ -386,7 +311,6 @@ public class DashboardService {
         HashMap<String, Integer> productSalesMap = new HashMap<>();
         for (Order order : orders) {
             for (ProductOrder productOrder : order.getProductOrders()) {
-//                Product product = productOrder.getProduct();
                 productSalesMap.put(productOrder.getProductName(), productSalesMap.getOrDefault(productOrder.getProductName(), 0) + productOrder.getQuantity());
             }
         }

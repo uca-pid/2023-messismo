@@ -2,6 +2,7 @@ package com.messismo.bar.ServicesTests;
 
 import com.messismo.bar.DTOs.DashboardRequestDTO;
 import com.messismo.bar.Entities.*;
+import com.messismo.bar.Exceptions.InvalidDashboardRequestedDate;
 import com.messismo.bar.Repositories.CategoryRepository;
 import com.messismo.bar.Repositories.OrderRepository;
 import com.messismo.bar.Repositories.ProductRepository;
@@ -12,12 +13,11 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 import java.util.*;
 
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertThrows;
+import static org.mockito.Mockito.when;
 
 public class DashboardServiceTests {
 
@@ -50,107 +50,9 @@ public class DashboardServiceTests {
         Category category12 = Category.builder().categoryId(12L).name("Cheese").build();
         Category category13 = Category.builder().categoryId(13L).name("Bakery").build();
         Category category14 = Category.builder().categoryId(14L).name("Sweets").build();
-        List<Category> categories = new ArrayList<>();
-        categories.add(category1);
-        categories.add(category2);
-        categories.add(category3);
-        categories.add(category4);
-        categories.add(category5);
-        categories.add(category6);
-        categories.add(category7);
-        categories.add(category8);
-        categories.add(category9);
-        categories.add(category10);
-        categories.add(category11);
-        categories.add(category12);
-        categories.add(category13);
-        categories.add(category14);
+        List<Category> categories = Arrays.asList(category1, category2, category3, category4, category5, category6, category7, category8, category9, category10, category11, category12, category13, category14);
         when(categoryRepository.findAll()).thenReturn(categories);
     }
-
-//    @Test
-//    public void testGetTotalInfo_PositiveCase() {
-//
-//        HashMap<String, Object> responses = new HashMap<>();
-//        responses.put("totalSalesInEarnings", 90.0);
-//        responses.put("openSalesInEarnings", 40.0);
-//        responses.put("closedSalesInEarnings", 50.0);
-//        responses.put("totalOrdersQuantity", 2);
-//        responses.put("openOrdersQuantity", 1);
-//        responses.put("closedOrdersQuantity", 1);
-//        responses.put("totalProducts", 0);
-//        responses.put("totalCategories", 0);
-//        Order closedOrder = new Order();
-//        closedOrder.setStatus("Closed");
-//        closedOrder.setTotalPrice(100.0);
-//        closedOrder.setTotalCost(50.0);
-//        Order openOrder = new Order();
-//        openOrder.setStatus("Open");
-//        openOrder.setTotalPrice(80.0);
-//        openOrder.setTotalCost(40.0);
-//        List<Order> allOrders = new ArrayList<>();
-//        allOrders.add(closedOrder);
-//        allOrders.add(openOrder);
-//        List<Product> products = new ArrayList<>();
-//        List<Category> categories = new ArrayList<>();
-//        when(orderRepository.findAll()).thenReturn(allOrders);
-//        when(orderRepository.findByStatus("Open")).thenReturn(List.of(openOrder));
-//        when(orderRepository.findByStatus("Closed")).thenReturn(List.of(closedOrder));
-//        when(productRepository.findAll()).thenReturn(products);
-//        when(categoryRepository.findAll()).thenReturn(categories);
-//        ResponseEntity<?> response = dashboardService.getTotalInfo();
-//
-//        Assertions.assertEquals(ResponseEntity.status(HttpStatus.OK).body(responses), response);
-//    }
-//
-//    @Test
-//    public void testGetTotalInfo_ExceptionCase() {
-//
-//        when(orderRepository.findAll()).thenThrow(new RuntimeException("Simulated exception"));
-//        ResponseEntity<?> response = dashboardService.getTotalInfo();
-//
-//        Assertions.assertEquals(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("CANNOT get total information for dashboards right now."), response);
-//    }
-//
-//    @Test
-//    public void testGetProductStock_NegativeMinStock() {
-//
-//        ThresholdDTO thresholdDTO = ThresholdDTO.builder().minStock(-10).build();
-//        ResponseEntity<?> response = dashboardService.getProductStock(thresholdDTO);
-//
-//        Assertions.assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
-//        Assertions.assertEquals("Some values cannot be less than zero. Please check.", response.getBody());
-//    }
-//
-//    @Test
-//    public void testGetProductStock_NullMinStock() {
-//
-//        ThresholdDTO thresholdDTO = ThresholdDTO.builder().build();
-//        ResponseEntity<?> response = dashboardService.getProductStock(thresholdDTO);
-//
-//        Assertions.assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
-//        Assertions.assertEquals("Some values cannot be less than zero. Please check.", response.getBody());
-//    }
-//
-//    @Test
-//    public void testGetProductStock_ValidMinStock() {
-//
-//        ThresholdDTO thresholdDTO = ThresholdDTO.builder().minStock(10).build();
-//        ResponseEntity<?> response = dashboardService.getProductStock(thresholdDTO);
-//
-//        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
-//    }
-//
-//    @Test
-//    public void testGetProductStock_ExceptionCase() {
-//
-//        doThrow(new RuntimeException("Simulated exception")).when(productRepository).findAll();
-//        ThresholdDTO thresholdDTO = ThresholdDTO.builder().minStock(10).build();
-//        ResponseEntity<?> response = dashboardService.getProductStock(thresholdDTO);
-//
-//        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-//        Assertions.assertEquals("CANNOT get product stock information for dashboards right now.", response.getBody());
-//    }
 
     @Test
     public void testGetQuantityProductDonut() {
@@ -226,57 +128,220 @@ public class DashboardServiceTests {
     }
 
     @Test
-    public void testGetDashboardInformationYearly() {
+    public void testGetDashboardInformationYearly() throws Exception {
 
         List<Order> fakeOrders = createFakeOrders();
+
         when(orderRepository.findAll()).thenReturn(fakeOrders);
         DashboardRequestDTO request = DashboardRequestDTO.builder().categoryList(new ArrayList<>()).build();
-        ResponseEntity<?> response = dashboardService.getDashboardInformation(request);
-        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
+        HashMap<String, Object> response = dashboardService.getDashboardInformation(request);
+        HashMap<String, Integer> quantityCategoryDonut = new HashMap<>();
+        quantityCategoryDonut.put("PotatoKing", 3);
+        quantityCategoryDonut.put("Bakery", 5);
+        quantityCategoryDonut.put("Cheese", 4);
+        quantityCategoryDonut.put("SaladCentral", 5);
+        quantityCategoryDonut.put("Fruits", 5);
+        quantityCategoryDonut.put("Meat", 2);
+        quantityCategoryDonut.put("TomatosVIP", 2);
+        quantityCategoryDonut.put("Bananas", 2);
+        quantityCategoryDonut.put("Dairy", 6);
+        quantityCategoryDonut.put("Beef", 3);
+        quantityCategoryDonut.put("VeggieDelight", 4);
+        quantityCategoryDonut.put("Sweets", 3);
+        quantityCategoryDonut.put("Pork", 4);
+        TreeMap<Integer, Double> averageByOrder = new TreeMap<>();
+        averageByOrder.put(2023, 30.6);
+        TreeMap<Integer, Integer> orderByQuantity = new TreeMap<>();
+        orderByQuantity.put(2023, 5);
+        Set<String> responseLabels = new HashSet<>(Arrays.asList("quantityCategoryDonut", "quantityProductDonut", "earningProductDonut", "averageByOrder", "orderByQuantity", "earningCategoryDonut", "orderByEarnings", "labels"));
+
+        Assertions.assertEquals(responseLabels, response.keySet());
+        Assertions.assertEquals(quantityCategoryDonut, response.get("quantityCategoryDonut"));
+        Assertions.assertEquals(averageByOrder, response.get("averageByOrder"));
+        Assertions.assertEquals(orderByQuantity, response.get("orderByQuantity"));
+        Assertions.assertEquals(List.of(2023), response.get("labels"));
+
     }
 
-//    @Test
-//    public void testGetDashboardInformationHistoric() {
-//
-//        List<Order> fakeOrders = createFakeOrders();
-//        when(orderRepository.findAll()).thenReturn(fakeOrders);
-//        DashboardRequestDTO request = DashboardRequestDTO.builder().dateRequested("historic").build();
-//        ResponseEntity<?> response = dashboardService.getDashboardInformation(request);
-//
-//        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
-//    }
 
     @Test
-    public void testGetDashboardInformationMonthly() {
+    public void testGetDashboardInformationMonthly() throws Exception {
 
         List<Order> fakeOrders = createFakeOrders();
         when(orderRepository.findAll()).thenReturn(fakeOrders);
         DashboardRequestDTO request = DashboardRequestDTO.builder().dateRequested("2023").categoryList(new ArrayList<>()).build();
-        ResponseEntity<?> response = dashboardService.getDashboardInformation(request);
+        HashMap<String, Object> response = dashboardService.getDashboardInformation(request);
+        HashMap<String, Integer> quantityCategoryDonut = new HashMap<>();
+        quantityCategoryDonut.put("PotatoKing", 3);
+        quantityCategoryDonut.put("Bakery", 5);
+        quantityCategoryDonut.put("Cheese", 4);
+        quantityCategoryDonut.put("SaladCentral", 5);
+        quantityCategoryDonut.put("Fruits", 5);
+        quantityCategoryDonut.put("Meat", 2);
+        quantityCategoryDonut.put("TomatosVIP", 2);
+        quantityCategoryDonut.put("Bananas", 2);
+        quantityCategoryDonut.put("Dairy", 6);
+        quantityCategoryDonut.put("Beef", 3);
+        quantityCategoryDonut.put("VeggieDelight", 4);
+        quantityCategoryDonut.put("Sweets", 3);
+        quantityCategoryDonut.put("Pork", 4);
+        HashMap<String, Double> averageByOrder = new HashMap<>();
+        averageByOrder.put("01", 0.0);
+        averageByOrder.put("02", 0.0);
+        averageByOrder.put("03", 0.0);
+        averageByOrder.put("04", 38.5);
+        averageByOrder.put("05", 25.33);
+        averageByOrder.put("06", 0.0);
+        averageByOrder.put("07", 0.0);
+        averageByOrder.put("08", 0.0);
+        averageByOrder.put("09", 0.0);
+        averageByOrder.put("10", 0.0);
+        averageByOrder.put("11", 0.0);
+        averageByOrder.put("12", 0.0);
+        HashMap<String, Integer> orderByQuantity = new HashMap<>();
+        orderByQuantity.put("01", 0);
+        orderByQuantity.put("02", 0);
+        orderByQuantity.put("03", 0);
+        orderByQuantity.put("04", 2);
+        orderByQuantity.put("05", 3);
+        orderByQuantity.put("06", 0);
+        orderByQuantity.put("07", 0);
+        orderByQuantity.put("08", 0);
+        orderByQuantity.put("09", 0);
+        orderByQuantity.put("10", 0);
+        orderByQuantity.put("11", 0);
+        orderByQuantity.put("12", 0);
+        Set<String> responseLabels = new HashSet<>(Arrays.asList("quantityCategoryDonut", "quantityProductDonut", "earningProductDonut", "averageByOrder", "orderByQuantity", "earningCategoryDonut", "orderByEarnings", "labels"));
 
-        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
+        Assertions.assertEquals(responseLabels, response.keySet());
+        Assertions.assertEquals(quantityCategoryDonut, response.get("quantityCategoryDonut"));
+        Assertions.assertEquals(averageByOrder, response.get("averageByOrder"));
+        Assertions.assertEquals(orderByQuantity, response.get("orderByQuantity"));
+        Assertions.assertEquals(List.of("01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"), response.get("labels"));
     }
 
     @Test
-    public void testGetDashboardInformationWeekly() {
+    public void testGetDashboardInformationWeekly() throws Exception {
 
         List<Order> fakeOrders = createFakeOrders();
         when(orderRepository.findAll()).thenReturn(fakeOrders);
         DashboardRequestDTO request = DashboardRequestDTO.builder().dateRequested("2023-05-10").categoryList(new ArrayList<>()).build();
-        ResponseEntity<?> response = dashboardService.getDashboardInformation(request);
+        HashMap<String, Object> response = dashboardService.getDashboardInformation(request);
+        HashMap<String, Integer> quantityCategoryDonut = new HashMap<>();
+        quantityCategoryDonut.put("Cheese", 4);
+        quantityCategoryDonut.put("Dairy", 6);
+        HashMap<String, Double> averageByOrder = new HashMap<>();
+        averageByOrder.put("10/05", 0.0);
+        averageByOrder.put("11/05", 19.0);
+        averageByOrder.put("12/05", 0.0);
+        averageByOrder.put("13/05", 0.0);
+        averageByOrder.put("14/05", 0.0);
+        averageByOrder.put("15/05", 0.0);
+        averageByOrder.put("16/05", 0.0);
+        HashMap<String, Integer> orderByQuantity = new HashMap<>();
+        orderByQuantity.put("10/05", 0);
+        orderByQuantity.put("11/05", 1);
+        orderByQuantity.put("12/05", 0);
+        orderByQuantity.put("13/05", 0);
+        orderByQuantity.put("14/05", 0);
+        orderByQuantity.put("15/05", 0);
+        orderByQuantity.put("16/05", 0);
+        Set<String> responseLabels = new HashSet<>(Arrays.asList("quantityCategoryDonut", "quantityProductDonut", "earningProductDonut", "averageByOrder", "orderByQuantity", "earningCategoryDonut", "orderByEarnings", "labels"));
 
-        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
+        Assertions.assertEquals(responseLabels, response.keySet());
+        Assertions.assertEquals(quantityCategoryDonut, response.get("quantityCategoryDonut"));
+        Assertions.assertEquals(averageByOrder, response.get("averageByOrder"));
+        Assertions.assertEquals(orderByQuantity, response.get("orderByQuantity"));
+        Assertions.assertEquals(List.of("10/05", "11/05", "12/05", "13/05", "14/05", "15/05", "16/05"), response.get("labels"));
     }
 
     @Test
-    public void testGetDashboardInformationDaily() {
+    public void testGetDashboardInformationDaily() throws Exception {
 
         List<Order> fakeOrders = createFakeOrders();
         when(orderRepository.findAll()).thenReturn(fakeOrders);
         DashboardRequestDTO request = DashboardRequestDTO.builder().dateRequested("2023-05").categoryList(new ArrayList<>()).build();
-        ResponseEntity<?> response = dashboardService.getDashboardInformation(request);
+        HashMap<String, Object> response = dashboardService.getDashboardInformation(request);
+        HashMap<String, Integer> quantityCategoryDonut = new HashMap<>();
+        quantityCategoryDonut.put("Dairy", 6);
+        quantityCategoryDonut.put("Bakery", 5);
+        quantityCategoryDonut.put("Cheese", 4);
+        quantityCategoryDonut.put("Beef", 3);
+        quantityCategoryDonut.put("Sweets", 3);
+        quantityCategoryDonut.put("Pork", 4);
+        quantityCategoryDonut.put("Meat", 2);
+        HashMap<String, Double> averageByOrder = new HashMap<>();
+        averageByOrder.put("01", 0.0);
+        averageByOrder.put("02", 0.0);
+        averageByOrder.put("03", 0.0);
+        averageByOrder.put("04", 46.0);
+        averageByOrder.put("05", 0.0);
+        averageByOrder.put("06", 0.0);
+        averageByOrder.put("07", 0.0);
+        averageByOrder.put("08", 0.0);
+        averageByOrder.put("09", 0.0);
+        averageByOrder.put("10", 0.0);
+        averageByOrder.put("11", 19.0);
+        averageByOrder.put("12", 0.0);
+        averageByOrder.put("13", 0.0);
+        averageByOrder.put("14", 0.0);
+        averageByOrder.put("15", 0.0);
+        averageByOrder.put("16", 0.0);
+        averageByOrder.put("17", 0.0);
+        averageByOrder.put("18", 11.0);
+        averageByOrder.put("19", 0.0);
+        averageByOrder.put("20", 0.0);
+        averageByOrder.put("21", 0.0);
+        averageByOrder.put("22", 0.0);
+        averageByOrder.put("23", 0.0);
+        averageByOrder.put("24", 0.0);
+        averageByOrder.put("25", 0.0);
+        averageByOrder.put("26", 0.0);
+        averageByOrder.put("27", 0.0);
+        averageByOrder.put("28", 0.0);
+        averageByOrder.put("29", 0.0);
+        averageByOrder.put("30", 0.0);
+        averageByOrder.put("31", 0.0);
+        HashMap<String, Integer> orderByQuantity = new HashMap<>();
+        orderByQuantity.put("01", 0);
+        orderByQuantity.put("02", 0);
+        orderByQuantity.put("03", 0);
+        orderByQuantity.put("04", 1);
+        orderByQuantity.put("05", 0);
+        orderByQuantity.put("06", 0);
+        orderByQuantity.put("07", 0);
+        orderByQuantity.put("08", 0);
+        orderByQuantity.put("09", 0);
+        orderByQuantity.put("10", 0);
+        orderByQuantity.put("11", 1);
+        orderByQuantity.put("12", 0);
+        orderByQuantity.put("13", 0);
+        orderByQuantity.put("14", 0);
+        orderByQuantity.put("15", 0);
+        orderByQuantity.put("16", 0);
+        orderByQuantity.put("17", 0);
+        orderByQuantity.put("18", 1);
+        orderByQuantity.put("19", 0);
+        orderByQuantity.put("20", 0);
+        orderByQuantity.put("21", 0);
+        orderByQuantity.put("22", 0);
+        orderByQuantity.put("23", 0);
+        orderByQuantity.put("24", 0);
+        orderByQuantity.put("25", 0);
+        orderByQuantity.put("26", 0);
+        orderByQuantity.put("27", 0);
+        orderByQuantity.put("28", 0);
+        orderByQuantity.put("29", 0);
+        orderByQuantity.put("30", 0);
+        orderByQuantity.put("31", 0);
+        Set<String> responseLabels = new HashSet<>(Arrays.asList("quantityCategoryDonut", "quantityProductDonut", "earningProductDonut", "averageByOrder", "orderByQuantity", "earningCategoryDonut", "orderByEarnings", "labels"));
 
-        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
+        Assertions.assertEquals(responseLabels, response.keySet());
+        Assertions.assertEquals(quantityCategoryDonut, response.get("quantityCategoryDonut"));
+        Assertions.assertEquals(averageByOrder, response.get("averageByOrder"));
+        Assertions.assertEquals(orderByQuantity, response.get("orderByQuantity"));
+        Assertions.assertEquals(List.of("01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31"), response.get("labels"));
+
     }
 
     @Test
@@ -284,9 +349,12 @@ public class DashboardServiceTests {
 
         DashboardRequestDTO request = new DashboardRequestDTO();
         when(orderRepository.findAll()).thenThrow(new RuntimeException("Simulated exception"));
-        ResponseEntity<?> response = dashboardService.getDashboardInformation(request);
 
-        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        Exception exception = assertThrows(Exception.class, () -> {
+            dashboardService.getDashboardInformation(request);
+        });
+        Assertions.assertEquals("CANNOT get information for dashboards right now", exception.getMessage());
+
     }
 
     @Test
@@ -294,21 +362,23 @@ public class DashboardServiceTests {
 
         DashboardRequestDTO request = new DashboardRequestDTO();
         request.setDateRequested("formatoIncorrecto");
-        ResponseEntity<?> response = dashboardService.getDashboardInformation(request);
 
-        Assertions.assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
-        Assertions.assertEquals("Incorrect date format", response.getBody());
+        InvalidDashboardRequestedDate exception = assertThrows(InvalidDashboardRequestedDate.class, () -> {
+            dashboardService.getDashboardInformation(request);
+        });
+        Assertions.assertEquals("Incorrect date format", exception.getMessage());
+
     }
 
     @Test
     public void testGetDailyInformation() {
 
+
         List<Category> allCategories = categoryRepository.findAll();
-        System.out.println(allCategories);
         String dateRequested = "2023-05";
         List<Order> fakeOrders = createFakeOrders();
         when(orderRepository.findAll()).thenReturn(fakeOrders);
-        HashMap<String, Object> result = dashboardService.getDailyInformation(dateRequested,allCategories);
+        HashMap<String, Object> result = dashboardService.getDailyInformation(dateRequested, allCategories);
 
         Assertions.assertNotNull(result.get("orderByQuantity"));
         Assertions.assertNotNull(result.get("orderByEarnings"));
@@ -324,11 +394,7 @@ public class DashboardServiceTests {
         Assertions.assertEquals(0, (int) orderByQuantity.get("01"));
         Assertions.assertEquals(1, (int) orderByQuantity.get("04"));
         Assertions.assertEquals(0, (int) orderByQuantity.get("03"));
-        Assertions.assertNotNull(result.get("quantityProductDonut"));
-        Assertions.assertNotNull(result.get("earningProductDonut"));
-        Assertions.assertNotNull(result.get("quantityCategoryDonut"));
-        Assertions.assertNotNull(result.get("earningCategoryDonut"));
-        Assertions.assertNotNull(result.get("labels"));
+
     }
 
     @Test
@@ -338,23 +404,17 @@ public class DashboardServiceTests {
         String dateRequested = "2023-05-10";
         List<Order> fakeOrders = createFakeOrders();
         when(orderRepository.findAll()).thenReturn(fakeOrders);
-        HashMap<String, Object> result = dashboardService.getWeeklyInformation(dateRequested,allCategories);
+        HashMap<String, Object> result = dashboardService.getWeeklyInformation(dateRequested, allCategories);
 
         Assertions.assertNotNull(result.get("orderByQuantity"));
         Assertions.assertNotNull(result.get("orderByEarnings"));
         Assertions.assertNotNull(result.get("averageByOrder"));
-        Assertions.assertEquals(Integer.valueOf(0),
-                ((Map<String, Integer>) result.get("orderByQuantity")).get("10/05"));
-        Assertions.assertEquals(Integer.valueOf(1),
-                ((Map<String, Integer>) result.get("orderByQuantity")).get("11/05"));
-        Assertions.assertEquals(Integer.valueOf(0),
-                ((Map<String, Integer>) result.get("orderByQuantity")).get("12/05"));
-        Assertions.assertEquals(Double.valueOf(0.0),
-                ((Map<String, Double>) result.get("orderByEarnings")).get("10/05"));
-        Assertions.assertEquals(Double.valueOf(19.0),
-                ((Map<String, Double>) result.get("orderByEarnings")).get("11/05"));
-        Assertions.assertEquals(Double.valueOf(0.0),
-                ((Map<String, Double>) result.get("orderByEarnings")).get("12/05"));
+        Assertions.assertEquals(Integer.valueOf(0), ((Map<String, Integer>) result.get("orderByQuantity")).get("10/05"));
+        Assertions.assertEquals(Integer.valueOf(1), ((Map<String, Integer>) result.get("orderByQuantity")).get("11/05"));
+        Assertions.assertEquals(Integer.valueOf(0), ((Map<String, Integer>) result.get("orderByQuantity")).get("12/05"));
+        Assertions.assertEquals(Double.valueOf(0.0), ((Map<String, Double>) result.get("orderByEarnings")).get("10/05"));
+        Assertions.assertEquals(Double.valueOf(19.0), ((Map<String, Double>) result.get("orderByEarnings")).get("11/05"));
+        Assertions.assertEquals(Double.valueOf(0.0), ((Map<String, Double>) result.get("orderByEarnings")).get("12/05"));
         Assertions.assertNotNull(result.get("labels"));
         List<String> labels = (List<String>) result.get("labels");
         Assertions.assertEquals("10/05", labels.get(0));
@@ -369,39 +429,15 @@ public class DashboardServiceTests {
         String yearRequested = "2023";
         List<Order> fakeOrders = createFakeOrders();
         when(orderRepository.findAll()).thenReturn(fakeOrders);
-        HashMap<String, Object> result = dashboardService.getMonthlyInformation(yearRequested,allCategories);
+        HashMap<String, Object> result = dashboardService.getMonthlyInformation(yearRequested, allCategories);
 
         Assertions.assertNotNull(result.get("orderByQuantity"));
         Assertions.assertNotNull(result.get("orderByEarnings"));
         Assertions.assertNotNull(result.get("averageByOrder"));
     }
 
-//    @Test
-//    public void testGetHistoricInformation() {
-//
-//        List<Category> allCategories = categoryRepository.findAll();
-//        List<Order> fakeOrders = createFakeOrders();
-//        when(orderRepository.findAll()).thenReturn(fakeOrders);
-//        HashMap<String, Object> result = dashboardService.getHistoricInformation(allCategories);
-//
-//        Assertions.assertNotNull(result.get("orderByQuantity"));
-//        Assertions.assertNotNull(result.get("orderByEarnings"));
-//        Assertions.assertNotNull(result.get("averageByOrder"));
-//        TreeMap<String, Integer> orderByQuantity = (TreeMap<String, Integer>) result.get("orderByQuantity");
-//        Assertions.assertEquals(2, orderByQuantity.size());
-//        Assertions.assertEquals(3, orderByQuantity.get("05/23"));
-//        Assertions.assertEquals(2, orderByQuantity.get("04/23"));
-//        TreeMap<String, Double> orderByEarnings = (TreeMap<String, Double>) result.get("orderByEarnings");
-//        Assertions.assertEquals(2, orderByEarnings.size());
-//        Assertions.assertEquals(76.0, orderByEarnings.get("05/23"));
-//        Assertions.assertEquals(77.0, orderByEarnings.get("04/23"));
-//        Assertions.assertNotNull(result.get("orderByQuantity"));
-//        Assertions.assertNotNull(result.get("orderByEarnings"));
-//        Assertions.assertNotNull(result.get("averageByOrder"));
-//    }
 
     private List<Order> createFakeOrders() {
-
         List<ProductOrder> productOrders1 = new ArrayList<>();
         productOrders1.add(createFakeProductOrder("Tomato", 10.00, 5.00, "Tomato description", 10, "TomatosVIP", 2));
         productOrders1.add(createFakeProductOrder("Potato", 20.00, 10.00, "Potato description", 20, "PotatoKing", 3));
@@ -440,27 +476,22 @@ public class DashboardServiceTests {
         return calendar.getTime();
     }
 
-    private Order createFakeOrder(List<ProductOrder> productOrders, String username, String email, Double totalPrice,
-            Double totalCost, String status, Date date) {
-        return Order.builder().productOrders(productOrders).user(createFakeUser(username, email)).dateCreated(date)
-                .totalPrice(totalPrice).totalCost(totalCost).status(status).build();
+    private Order createFakeOrder(List<ProductOrder> productOrders, String username, String email, Double totalPrice, Double totalCost, String status, Date date) {
+
+        return Order.builder().productOrders(productOrders).user(createFakeUser(username, email)).dateCreated(date).totalPrice(totalPrice).totalCost(totalCost).status(status).build();
     }
 
     private User createFakeUser(String username, String email) {
-        return User.builder().username(username).email(email).role(Role.VALIDATEDEMPLOYEE).password("Password1")
-                .build();
+        return User.builder().username(username).email(email).role(Role.VALIDATEDEMPLOYEE).password("Password1").build();
     }
 
-    private ProductOrder createFakeProductOrder(String name, Double unitPrice, Double unitCost, String description,
-            Integer stock, String category, int quantity) {
+    private ProductOrder createFakeProductOrder(String name, Double unitPrice, Double unitCost, String description, Integer stock, String category, int quantity) {
         Product product = createFakeProduct(name, unitPrice, unitCost, description, stock, category);
         return ProductOrder.builder().productName(name).productUnitPrice(unitPrice).productUnitCost(unitCost).category(product.getCategory()).quantity(quantity).build();
     }
 
-    private Product createFakeProduct(String name, Double unitPrice, Double unitCost, String description, Integer stock,
-            String category) {
-        return Product.builder().name(name).unitPrice(unitPrice).unitCost(unitCost).description(description)
-                .stock(stock).category(createFakeCategory(category)).build();
+    private Product createFakeProduct(String name, Double unitPrice, Double unitCost, String description, Integer stock, String category) {
+        return Product.builder().name(name).unitPrice(unitPrice).unitCost(unitCost).description(description).stock(stock).category(createFakeCategory(category)).build();
     }
 
     private Category createFakeCategory(String categoryName) {
@@ -478,8 +509,7 @@ public class DashboardServiceTests {
         return categories;
     }
 
-    private Order createOrderWithProductsAndCategory(String productName, String categoryName, int quantity,
-            double unitPrice, double unitCost) {
+    private Order createOrderWithProductsAndCategory(String productName, String categoryName, int quantity, double unitPrice, double unitCost) {
         ProductOrder productOrder = new ProductOrder();
         Category category = Category.builder().name(categoryName).build();
         Product product = Product.builder().name(productName).unitPrice(unitPrice).unitCost(unitCost).category(category).build();

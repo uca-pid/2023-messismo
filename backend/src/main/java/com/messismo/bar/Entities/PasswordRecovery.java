@@ -12,9 +12,9 @@ import java.util.Date;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
+//@AllArgsConstructor
 @Entity
-@Builder
+//@Builder
 @Table(name = "pins")
 public class PasswordRecovery {
 
@@ -34,5 +34,16 @@ public class PasswordRecovery {
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name = "date_created")
     private Date dateCreated;
+
+    public PasswordRecovery(String pin, User user,Date dateCreated){
+        if(pin.length()!=6){
+            throw new IllegalArgumentException("Pin length must be equal to 6");
+        }
+        else{
+            this.pin=pin;
+            this.user=user;
+            this.dateCreated=dateCreated;
+        }
+    }
 
 }

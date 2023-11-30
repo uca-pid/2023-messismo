@@ -1,25 +1,13 @@
 package com.messismo.bar.Services;
 
-import com.messismo.bar.DTOs.ModifyOrderDTO;
-import com.messismo.bar.DTOs.OrderIdDTO;
-import com.messismo.bar.DTOs.OrderRequestDTO;
-import com.messismo.bar.DTOs.ProductOrderDTO;
-import com.messismo.bar.Entities.Order;
-import com.messismo.bar.Entities.Product;
-import com.messismo.bar.Entities.ProductOrder;
-import com.messismo.bar.Entities.User;
-import com.messismo.bar.Repositories.OrderRepository;
-import com.messismo.bar.Repositories.ProductOrderRepository;
-import com.messismo.bar.Repositories.ProductRepository;
-import com.messismo.bar.Repositories.UserRepository;
+import com.messismo.bar.DTOs.*;
+import com.messismo.bar.Entities.*;
+import com.messismo.bar.Exceptions.*;
+import com.messismo.bar.Repositories.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -33,82 +21,51 @@ public class OrderService {
 
     private final ProductOrderRepository productOrderRepository;
 
-    public ResponseEntity<?> addNewOrder(OrderRequestDTO orderRequestDTO) {
+    public String addNewOrder(OrderRequestDTO orderRequestDTO) throws Exception {
         try {
-            User employee = userRepository.findByEmail(orderRequestDTO.getRegisteredEmployeeEmail()).orElseThrow(() -> new Exception("Employee not found"));
-            List<ProductOrder> productOrderList = new ArrayList<>();
-            Double totalPrice = 0.00;
-            Double totalCost = 0.00;
-            for (ProductOrderDTO productOrderDTO : orderRequestDTO.getProductOrders()) {
-                if (productOrderDTO.getProduct().getStock() < productOrderDTO.getQuantity()) {
-                    return ResponseEntity.status(HttpStatus.CONFLICT).body("Not enough stock of a product");
-                } else {
-                    Product product = productOrderDTO.getProduct();
-                    product.setStock(product.getStock() - productOrderDTO.getQuantity());
-                    productRepository.save(product);
-                    totalPrice += (product.getUnitPrice() * productOrderDTO.getQuantity());
-                    totalCost += (product.getUnitCost() * productOrderDTO.getQuantity());
-                    ProductOrder productOrder = ProductOrder.builder().productName(product.getName()).productUnitCost(product.getUnitCost()).productUnitPrice(product.getUnitPrice()).category(product.getCategory()).quantity(productOrderDTO.getQuantity()).build();
-                    productOrderRepository.save(productOrder);
-                    productOrderList.add(productOrder);
-                }
-            }
-            Order newOrder = Order.builder().productOrders(productOrderList).user(employee).dateCreated(orderRequestDTO.getDateCreated()).totalPrice(totalPrice).totalCost(totalCost).status("Open").build();
+            User employee = userRepository.findByEmail(orderRequestDTO.getRegisteredEmployeeEmail()).orElseThrow(() -> new UserNotFoundException("No user has that email"));
+            NewProductOrderListDTO newProductOrderListDTO = createProductOrder(orderRequestDTO.getProductOrders());
+            Order newOrder = new Order(employee, orderRequestDTO.getDateCreated(), newProductOrderListDTO.getProductOrderList(), newProductOrderListDTO.getTotalPrice(), newProductOrderListDTO.getTotalCost());
             orderRepository.save(newOrder);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Order created successfully");
+            return "Order created successfully";
+        } catch (UserNotFoundException | ProductQuantityBelowAvailableStock e) {
+            throw e;
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("CANNOT create an order at the moment.");
+            throw new Exception("CANNOT create an order at the moment");
         }
     }
 
-
-    public ResponseEntity<?> modifyOrder(ModifyOrderDTO modifyOrderDTO) {
+    public String closeOrder(OrderIdDTO orderIdDTO) throws Exception {
         try {
-            Order order = orderRepository.findById(modifyOrderDTO.getOrderId()).orElseThrow(() -> new Exception("Order not found"));
-            List<ProductOrder> productOrderList = new ArrayList<>();
-            Double totalPrice = 0.00;
-            Double totalCost = 0.00;
-            for (ProductOrderDTO productOrderDTO : modifyOrderDTO.getProductOrders()) {
-                if (productOrderDTO.getProduct().getStock() < productOrderDTO.getQuantity()) {
-                    return ResponseEntity.status(HttpStatus.CONFLICT).body("Not enough stock of a product");
-                } else {
-
-                    Product product = productOrderDTO.getProduct();
-                    product.setStock(product.getStock() - productOrderDTO.getQuantity());
-                    productRepository.save(product);
-                    totalPrice += (product.getUnitPrice() * productOrderDTO.getQuantity());
-                    totalCost += (product.getUnitCost() * productOrderDTO.getQuantity());
-                    ProductOrder productOrder = ProductOrder.builder().productName(product.getName()).productUnitCost(product.getUnitCost()).productUnitPrice(product.getUnitPrice()).category(product.getCategory()).quantity(productOrderDTO.getQuantity()).build();
-                    productOrderRepository.save(productOrder);
-                    productOrderList.add(productOrder);
-                }
-            }
-            List<ProductOrder> productOrdersToUpdate = order.getProductOrders();
-            productOrdersToUpdate.addAll(productOrderList);
-            order.setProductOrders(productOrdersToUpdate);
-
-            order.setTotalPrice(order.getTotalPrice() + totalPrice);
-            order.setTotalCost(order.getTotalCost() + totalCost);
+            Order order = orderRepository.findById(orderIdDTO.getOrderId()).orElseThrow(() -> new OrderNotFoundException("Order not found"));
+            order.close();
             orderRepository.save(order);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Order modified successfully");
+            return "Order closed successfully";
+        } catch (OrderNotFoundException e) {
+            throw e;
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("CANNOT modify this order at the moment.");
+            throw new Exception("CANNOT close an order at the moment");
         }
     }
 
-    public ResponseEntity<?> closeOrder(OrderIdDTO orderIdDTO) {
+    public String modifyOrder(ModifyOrderDTO modifyOrderDTO) throws Exception {
         try {
-            Order order = orderRepository.findById(orderIdDTO.getOrderId()).orElseThrow(() -> new Exception("Order not found"));
-            order.setStatus("Closed");
+            Order order = orderRepository.findById(modifyOrderDTO.getOrderId()).orElseThrow(() -> new OrderNotFoundException("Order not found"));
+            NewProductOrderListDTO newProductOrderListDTO = createProductOrder(modifyOrderDTO.getProductOrders());
+            order.updateProductOrders(newProductOrderListDTO.getProductOrderList());
+            order.updateTotalPrice(newProductOrderListDTO.getTotalPrice());
+            order.updateTotalCost(newProductOrderListDTO.getTotalCost());
             orderRepository.save(order);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Order closed successfully");
+            return "Order modified successfully";
+        } catch (ProductQuantityBelowAvailableStock | OrderNotFoundException e) {
+            throw e;
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("CANNOT close an order at the moment.");
+            throw new Exception("CANNOT modify this order at the moment");
         }
     }
 
-    public ResponseEntity<?> getAllOrders() {
-        return ResponseEntity.status(HttpStatus.OK).body(orderRepository.findAll());
+    public List<Order> getAllOrders() {
+        return orderRepository.findAll();
     }
 
     public List<Order> getAllOrdersBetweenTwoDates(Date startingDate, Date endingDate) {
@@ -120,5 +77,26 @@ public class OrderService {
             }
         }
         return filteredOrderByDate;
+    }
+
+    public NewProductOrderListDTO createProductOrder(List<ProductOrderDTO> productOrderDTOList) throws ProductQuantityBelowAvailableStock {
+        List<ProductOrder> productOrderList = new ArrayList<>();
+        double totalPrice = 0.00;
+        double totalCost = 0.00;
+        for (ProductOrderDTO productOrderDTO : productOrderDTOList) {
+            if (productOrderDTO.getProduct().getStock() < productOrderDTO.getQuantity()) {
+                throw new ProductQuantityBelowAvailableStock("Not enough stock of a product");
+            } else {
+                Product product = productOrderDTO.getProduct();
+                product.removeStock(productOrderDTO.getQuantity());
+                productRepository.save(product);
+                totalPrice += (product.getUnitPrice() * productOrderDTO.getQuantity());
+                totalCost += (product.getUnitCost() * productOrderDTO.getQuantity());
+                ProductOrder productOrder = new ProductOrder(product.getName(), product.getUnitPrice(), product.getUnitCost(), product.getCategory(), productOrderDTO.getQuantity());
+                productOrderRepository.save(productOrder);
+                productOrderList.add(productOrder);
+            }
+        }
+        return NewProductOrderListDTO.builder().productOrderList(productOrderList).totalCost(totalCost).totalPrice(totalPrice).build();
     }
 }
