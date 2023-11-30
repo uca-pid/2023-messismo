@@ -1,9 +1,14 @@
 package com.messismo.bar.ServicesTests;
 
+import com.messismo.bar.DTOs.CategoryRequestDTO;
 import com.messismo.bar.DTOs.PasswordRecoveryDTO;
+import com.messismo.bar.Entities.Category;
 import com.messismo.bar.Entities.PasswordRecovery;
 import com.messismo.bar.Entities.Role;
 import com.messismo.bar.Entities.User;
+import com.messismo.bar.Exceptions.NoPinCreatedForUserException;
+import com.messismo.bar.Exceptions.PinExpiredException;
+import com.messismo.bar.Exceptions.UserNotFoundException;
 import com.messismo.bar.Repositories.PasswordRecoveryRepository;
 import com.messismo.bar.Repositories.UserRepository;
 import com.messismo.bar.Services.PasswordRecoveryService;
@@ -13,15 +18,17 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.*;
 
 public class PasswordRecoveryServiceTests {
@@ -55,23 +62,38 @@ public class PasswordRecoveryServiceTests {
         Assertions.assertEquals(6, pin.length());
         Assertions.assertFalse(pin.isEmpty());
         Assertions.assertTrue(pin.matches("\\d+"));
+
     }
 
     @Test
-    public void testPasswordRecoveryServiceForgotPassword() {
+    public void testPasswordRecoveryServiceForgotPassword() throws Exception {
 
         String email = "user@example.com";
-        User user = User.builder().id(1L).username("user").email("user@example.com").password("Password1")
-                .role(Role.EMPLOYEE).build();
+        User user = User.builder().id(1L).username("user").email("user@example.com").password("Password1").role(Role.EMPLOYEE).build();
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
         when(passwordRecoveryRepository.findByUser(user)).thenReturn(Optional.empty());
-        ResponseEntity<String> response = passwordRecoveryService.forgotPassword(email);
+        String response = passwordRecoveryService.forgotPassword(email);
 
         verify(userRepository, times(1)).findByEmail(email);
         verify(passwordRecoveryRepository, times(1)).findByUser(user);
         verify(javaMailSender, times(1)).send(any(SimpleMailMessage.class));
-        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
-        Assertions.assertEquals("Email sent!", response.getBody());
+        Assertions.assertEquals("Email sent!", response);
+
+    }
+    @Test
+    public void testPasswordRecoveryServiceForgotPassword_Exception() {
+
+        String email = "user@example.com";
+        User user = User.builder().id(1L).username("user").email("user@example.com").password("Password1").role(Role.EMPLOYEE).build();
+        when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
+        when(passwordRecoveryRepository.findByUser(user)).thenReturn(Optional.empty());
+
+        doThrow(new DataIntegrityViolationException("Error saving")).when(passwordRecoveryRepository).save(any(PasswordRecovery.class));
+        Exception exception = assertThrows(Exception.class, () -> {
+            passwordRecoveryService.forgotPassword(email);
+        });
+        Assertions.assertEquals("CANNOT recover the password at the moment", exception.getMessage());
+
     }
 
     @Test
@@ -79,16 +101,16 @@ public class PasswordRecoveryServiceTests {
 
         String email = "user@example.com";
         when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
-        ResponseEntity<String> response = passwordRecoveryService.forgotPassword(email);
 
-        verify(userRepository, times(1)).findByEmail(email);
-        verify(javaMailSender, times(0)).send(any(SimpleMailMessage.class));
-        Assertions.assertEquals(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("CANNOT recover the password at the moment"), response);
+        UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> {
+            passwordRecoveryService.forgotPassword(email);
+        });
+        Assertions.assertEquals("No user has that email", exception.getMessage());
+
     }
 
     @Test
-    public void testChangeForgottenPassword_Success() {
+    public void testPasswordRecoveryServiceChangeForgottenPassword_Success() throws Exception {
 
         PasswordRecoveryDTO passwordRecoveryDTO = new PasswordRecoveryDTO();
         passwordRecoveryDTO.setEmail("user@example.com");
@@ -102,13 +124,13 @@ public class PasswordRecoveryServiceTests {
         when(userRepository.findByEmail(passwordRecoveryDTO.getEmail())).thenReturn(Optional.of(user));
         when(passwordRecoveryRepository.findByUser(user)).thenReturn(Optional.of(passwordRecovery));
         when(passwordEncoder.encode(passwordRecoveryDTO.getNewPassword())).thenReturn("encodedPassword");
-        ResponseEntity<String> response = passwordRecoveryService.changeForgottenPassword(passwordRecoveryDTO);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Password changed successfully", response.getBody());
+        String response = passwordRecoveryService.changeForgottenPassword(passwordRecoveryDTO);
+        Assertions.assertEquals("Password changed successfully", response);
+
     }
 
     @Test
-    public void testChangeForgottenPassword_PinExpired() {
+    public void testPasswordRecoveryServiceChangeForgottenPassword_PinExpired() {
 
         PasswordRecoveryDTO passwordRecoveryDTO = new PasswordRecoveryDTO();
         passwordRecoveryDTO.setEmail("user@example.com");
@@ -123,13 +145,15 @@ public class PasswordRecoveryServiceTests {
 
         when(userRepository.findByEmail(passwordRecoveryDTO.getEmail())).thenReturn(Optional.of(user));
         when(passwordRecoveryRepository.findByUser(user)).thenReturn(Optional.of(passwordRecovery));
-        ResponseEntity<String> response = passwordRecoveryService.changeForgottenPassword(passwordRecoveryDTO);
-        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
-        assertEquals("PIN expired!", response.getBody());
+        PinExpiredException exception = assertThrows(PinExpiredException.class, () -> {
+            passwordRecoveryService.changeForgottenPassword(passwordRecoveryDTO);
+        });
+        Assertions.assertEquals("PIN expired!", exception.getMessage());
+
     }
 
     @Test
-    public void testChangeForgottenPassword_WithWrongEmail() {
+    public void testPasswordRecoveryServiceChangeForgottenPassword_WithWrongEmail() {
 
         PasswordRecoveryDTO passwordRecoveryDTO = new PasswordRecoveryDTO();
         passwordRecoveryDTO.setEmail("user@example.com");
@@ -142,9 +166,56 @@ public class PasswordRecoveryServiceTests {
         passwordRecovery.setPin("123456");
 
         when(userRepository.findByEmail(passwordRecoveryDTO.getEmail())).thenReturn(Optional.empty());
-        ResponseEntity<String> response = passwordRecoveryService.changeForgottenPassword(passwordRecoveryDTO);
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-        assertEquals("CANNOT change the new password at the moment", response.getBody());
+        UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> {
+            passwordRecoveryService.changeForgottenPassword(passwordRecoveryDTO);
+        });
+        Assertions.assertEquals("No user has that email", exception.getMessage());
+
     }
 
+    @Test
+    public void testPasswordRecoveryServiceChangeForgottenPassword_Exception() {
+
+        PasswordRecoveryDTO passwordRecoveryDTO = new PasswordRecoveryDTO();
+        passwordRecoveryDTO.setEmail("user@example.com");
+        passwordRecoveryDTO.setPin("123456");
+        passwordRecoveryDTO.setNewPassword("newPassword");
+        User user = new User();
+        PasswordRecovery passwordRecovery = new PasswordRecovery();
+        passwordRecovery.setDateCreated(new Date());
+        passwordRecovery.setPin("123456");
+
+        when(userRepository.findByEmail(passwordRecoveryDTO.getEmail())).thenReturn(Optional.of(user));
+        when(passwordRecoveryRepository.findByUser(user)).thenReturn(Optional.of(passwordRecovery));
+        when(passwordEncoder.encode(passwordRecoveryDTO.getNewPassword())).thenReturn("encodedPassword");
+        doThrow(new RuntimeException("Runtime Exception")).when(userRepository).save(any());
+        Exception exception = assertThrows(Exception.class, () -> {
+            passwordRecoveryService.changeForgottenPassword(passwordRecoveryDTO);
+        });
+        Assertions.assertEquals("CANNOT change the new password at the moment", exception.getMessage());
+
+    }
+
+    @Test
+    public void testChangeForgottenPassword_NoPinCreatedForUser() throws Exception {
+
+        PasswordRecoveryDTO passwordRecoveryDTO = new PasswordRecoveryDTO();
+        passwordRecoveryDTO.setEmail("test@example.com");
+        passwordRecoveryDTO.setPin("123456");
+        passwordRecoveryDTO.setNewPassword("newPassword");
+        User user = new User();
+        user.setEmail("test@example.com");
+
+        when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(user));
+        when(passwordRecoveryRepository.findByUser(user)).thenReturn(Optional.empty());
+        Exception exception = assertThrows(NoPinCreatedForUserException.class, () -> {
+            passwordRecoveryService.changeForgottenPassword(passwordRecoveryDTO);
+        });
+        Assertions.assertEquals("The user has no PINs created", exception.getMessage());
+        verify(userRepository, times(1)).findByEmail("test@example.com");
+        verify(passwordRecoveryRepository, times(1)).findByUser(user);
+        verify(userRepository, never()).save(any());
+        verify(passwordRecoveryRepository, never()).delete(any());
+
+    }
 }

@@ -48,12 +48,9 @@ public class SecurityConfiguration {
                     MANAGER.name());
             auth.requestMatchers(new AntPathRequestMatcher("/api/v1/validatedEmployee/**")).hasAnyRole(ADMIN.name(),
                     MANAGER.name(), VALIDATEDEMPLOYEE.name());
-            auth.requestMatchers(new AntPathRequestMatcher("/api/v1/employee/**")).hasAnyRole(ADMIN.name(),
-                    MANAGER.name(), VALIDATEDEMPLOYEE.name(), EMPLOYEE.name());
             if (Objects.equals(env, "test")) {
                 auth.requestMatchers(PathRequest.toH2Console()).permitAll();
             }
-            // SOLO SI SE NECESITA LA CONSOLA DE LA H2, ES DECIR, ESTA CON EL PROFILE TEST
             auth.anyRequest().authenticated();
         });
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

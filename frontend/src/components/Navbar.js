@@ -6,6 +6,7 @@ import { PiCoffeeFill } from 'react-icons/pi'
 import { ImExit } from 'react-icons/im'
 import { VscGraph } from 'react-icons/vsc'
 import { HiShoppingBag } from 'react-icons/hi2'
+import { GiStairsGoal } from 'react-icons/gi'
 import { styled } from 'styled-components'
 import { Link, useNavigate } from 'react-router-dom'
 import BurgerIcon from './BurgerIcon'
@@ -93,7 +94,7 @@ const NavContainer = styled.nav`
         position: absolute;
         margin-left: auto;
         margin-right: auto;
-        top: 15%;
+        top: 10%;
         left: 0;
         right: 0;
         text-align: center;
@@ -102,14 +103,14 @@ const NavContainer = styled.nav`
             padding: 1rem;
             .icon{
                 color: white;
-                font-size: 30px;
+                font-size: 28px;
                 margin-right: 1rem;
             }
 
             span{
                 color: white;
                 font-family: 'Roboto';
-                font-size: 38px;
+                font-size: 34px;
             }
         }
 
@@ -183,6 +184,13 @@ function Navbar() {
                     <NavLink to={'/dashboard'} onClick={clicked ? handleClick : undefined}>
                         <VscGraph className='icon'/>
                         <span>Dashboard</span>
+                    </NavLink>
+                )}
+
+                {(showManagerBoard || showAdminBoard) && (
+                    <NavLink to={'/goals'} onClick={clicked ? handleClick : undefined}>
+                        <GiStairsGoal className='icon'/>
+                        <span>Goals</span>
                     </NavLink>
                 )}
 

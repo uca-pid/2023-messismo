@@ -68,5 +68,24 @@ export default function Bars({ data, label, max, color }) {
         ]
     };
 
-    return <Bar data={midata} options={misoptions} />;
+    const plugins = [
+        {
+          afterDraw: function (chart) {
+            const allZeros = chart.data.datasets[0].data.every(value => value === 0);
+            if (allZeros) {
+              let ctx = chart.ctx;
+              let width = chart.width;
+              let height = chart.height;
+              ctx.fillStyle = 'white';
+              ctx.textAlign = "center";
+              ctx.textBaseline = "middle";
+              ctx.font = "20px Arial";
+              ctx.fillText("No data to display", width / 2, height / 2);
+              ctx.restore();
+            }
+          },
+        },
+      ];
+
+    return <Bar data={midata} options={misoptions} plugins={plugins} />;
 }
