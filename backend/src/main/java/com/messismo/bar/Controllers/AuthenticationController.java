@@ -79,4 +79,6 @@ public class AuthenticationController {
         return ResponseEntity.status(HttpStatus.OK).body("Server is up!");
     }
 
+
 }
+

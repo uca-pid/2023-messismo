@@ -27,7 +27,8 @@ import { useTheme } from "@mui/material/styles";
 import CircularProgress from "@mui/material/CircularProgress";
 import Chip from "@mui/material/Chip";
 import OutlinedInput from "@mui/material/OutlinedInput";
-import { useMediaQuery } from '@mui/material';
+import { useMediaQuery } from "@mui/material";
+
 
 const CustomizedDateTimePicker = styled(DatePicker)`
   .MuiInputBase-input {
@@ -354,7 +355,6 @@ function Dashboard() {
   const [totalproducts, setTotalProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedDate, setSelectedDate] = useState("");
-  const [sliderValue, setSliderValue] = useState(15);
   const [datePickerVisible, setDatePickerVisible] = useState(false);
   const [datePickerType, setDatePickerType] = useState("");
   const [isDateButtonClicked, setIsDateButtonClicked] = useState(false);
@@ -370,11 +370,16 @@ function Dashboard() {
     },
   });
 
+  const [allProducts, setAllProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [sliderValue, setSliderValue] = useState(9);
+
   const [chartType, setChartType] = useState("product");
   const [isLoading, setIsLoading] = useState(true);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [dateToShow, setDateToShow] = useState("");
-  const isSmallScreen = useMediaQuery('(max-width:600px)');
+  const isSmallScreen = useMediaQuery("(max-width:600px)");
+  
 
   useEffect(() => {
     dashboardService
@@ -409,16 +414,23 @@ function Dashboard() {
     productsService
       .getAllProducts()
       .then((response) => {
-        const filteredProducts = response.data.filter(
+        setAllProducts(response.data);
+        const initialFilteredProducts = response.data.filter(
           (product) => product.stock <= sliderValue
         );
-        setProducts(filteredProducts);
-        setTotalProducts(response.data);
+        setFilteredProducts(initialFilteredProducts);
       })
       .catch((error) => {
         console.error("Error al mostrar los productos", error);
       });
-  }, [sliderValue]);
+  }, []);
+
+  useEffect(() => {
+    const updatedFilteredProducts = allProducts.filter(
+      (product) => product.stock <= sliderValue
+    );
+    setFilteredProducts(updatedFilteredProducts);
+  }, [sliderValue, allProducts]);
 
   useEffect(() => {
     categoryService
@@ -473,6 +485,19 @@ function Dashboard() {
       lastYearDate.setDate(1);
       setSelectedDate(lastYearDate);
     }
+  };
+
+  const handleCategoryClick = (category) => {
+
+    dashboardService
+      .getDashboard({ dateRequested: selectedDate, categoryList: selectedCategories })
+      .then((response) => {
+        console.log(response);
+        setDashboardData(response);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   };
 
   const handleSliderChange = (event, newValue) => {
@@ -552,7 +577,7 @@ function Dashboard() {
     );
 
     setSelectedCategories(selectedCats);
-    handleButtonClick();
+    handleCategoryClick();
   };
 
   return (
@@ -698,12 +723,12 @@ function Dashboard() {
                     Products with {sliderValue} or less units
                   </p>
 
-                  {products.map((producto, index) => (
+                  {filteredProducts.map((product, index) => (
                     <ProgressBar
                       key={index}
-                      bgcolor={producto.stock !== 0 ? "#9fc16c" : "#d496bb"}
-                      name={producto.name}
-                      progress={producto.stock}
+                      bgcolor={product.stock !== 0 ? "#9fc16c" : "#d496bb"}
+                      name={product.name}
+                      progress={product.stock}
                       sliderValue={sliderValue}
                     />
                   ))}
@@ -782,12 +807,15 @@ function Dashboard() {
                   </Select>
                 </FormControl>
               </Box>
-              <p style={{
-      color: 'white',
-      marginLeft: isSmallScreen ? '0rem' : '2rem',
-      marginRight: isSmallScreen ? '7.5rem' : '0rem',
-     
-    }}>Select Categories</p>
+              <p
+                style={{
+                  color: "white",
+                  marginLeft: isSmallScreen ? "0rem" : "2rem",
+                  marginRight: isSmallScreen ? "7.5rem" : "0rem",
+                }}
+              >
+                Select Categories
+              </p>
               <Box sx={{ width: "80%" }}>
                 <FormControl fullWidth variant="outlined">
                   <Select
@@ -861,15 +889,17 @@ function Dashboard() {
               <DoughnutDiv>
                 {chartType === "product" ? (
                   <>
-                    <Doughnut
-                      data={Object(dashboardData.data.earningProductDonut)}
-                      label={"Revenue"}
-                    />
-
-                    <Doughnut
-                      data={Object(dashboardData.data.quantityProductDonut)}
-                      label={"Sales"}
-                    />
+                  
+                      <Doughnut
+                        data={Object(dashboardData.data.earningProductDonut)}
+                        label={"Revenue"}
+                      />
+                      <Doughnut
+                        data={Object(dashboardData.data.quantityProductDonut)}
+                        label={"Sales"}
+                      />
+                   
+                  
                   </>
                 ) : (
                   <>

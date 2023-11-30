@@ -61,6 +61,7 @@ const CategoriesList = () => {
   const handleCloseForm = () => {
     setOpenForm(false);
     setErrors({});
+    setIsLoading(true);
   }
 
   const handleAddCategory = async () => {
