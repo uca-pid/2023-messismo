@@ -28,6 +28,8 @@ public class AuthenticationService {
 
     private final TokenRepository tokenRepository;
 
+    private final PasswordEncoder passwordEncoder;
+
     public AuthenticationResponseDTO register(RegisterRequestDTO request) throws Exception {
         try {
             Optional<User> employeeByUsername = userRepository.findByUsername(request.getUsername());
@@ -35,7 +37,7 @@ public class AuthenticationService {
             if (employeeByUsername.isPresent() || employeeByMail.isPresent()) {
                 throw new UserAlreadyExistsException("User already exists");
             } else {
-                User newEmployee = new User(request.getUsername(), request.getEmail(), request.getPassword());
+                User newEmployee = new User(request.getUsername(), request.getEmail(), passwordEncoder.encode(request.getPassword()));
                 userRepository.save(newEmployee);
                 String jwtToken = jwtService.generateToken(newEmployee);
                 String refreshToken = jwtService.generateRefreshToken(newEmployee);
