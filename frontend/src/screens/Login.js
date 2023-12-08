@@ -26,6 +26,8 @@ import RecoverPasswordValidation from "../RecoverPasswordValidation";
 import ChangePasswordValidation from "../ChangePasswordValidation";
 import DialogContent from "@mui/material/DialogContent";
 import Button from "@mui/material/Button";
+import { CircularProgress } from "@mui/material";
+import Box from "@mui/material/Box";
 
 const ForgotPassword = styled.a`
   text-decoration: none;
@@ -72,6 +74,10 @@ function Login() {
   const [alertText, setAlertText] = useState("");
   const [isOperationSuccessful, setIsOperationSuccessful] = useState(false);
   const [repeatPassword, setRepeatPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingMail, setIsLoadingMail] = useState(false);
+  const [isLoadingPin, setIsLoadingPin] = useState(false);
+  
 
   useEffect(() => {
     const validationErrors = signinvalidation(signinvalues);
@@ -84,6 +90,7 @@ function Login() {
   }, [dispatch]);
 
   const handleLogin = (userData) => {
+    setIsLoading(true);
     const email = userData.email;
     const password = userData.password;
 
@@ -106,6 +113,9 @@ function Login() {
       .catch(() => {
         setIsRegistered(false);
         setSignInPopUp(true);
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   };
 
@@ -164,6 +174,7 @@ function Login() {
   };
 
   const handleSendEmail = () => {
+    setIsLoadingMail(true);
     const validationErrors = RecoverPasswordValidation({
       email,
     });
@@ -171,6 +182,7 @@ function Login() {
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       console.log(validationErrors);
+      setIsLoadingMail(false);
     } else {
       authService
         .forgotPassword(email)
@@ -185,6 +197,9 @@ function Login() {
           setAlertText("Error sending password recovery email");
           setIsOperationSuccessful(false);
           setOpenSnackbar(true);
+        })
+        .finally(() => {
+          setIsLoadingMail(false);
         });
       setEmail("");
     }
@@ -211,6 +226,7 @@ function Login() {
   };
 
   const handleChangePassword = () => {
+    setIsLoadingPin(true);
     const form = {
       email: email,
       newPassword: password,
@@ -227,6 +243,7 @@ function Login() {
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       console.log(validationErrors);
+      setIsLoadingPin(false);
     } else {
       authService
         .changePassword(form)
@@ -240,6 +257,9 @@ function Login() {
           setAlertText("Error changing password");
           setIsOperationSuccessful(false);
           setOpenSnackbar(true);
+        })
+        .finally(() => {
+          setIsLoadingPin(false);
         });
       setEmail("");
       setPassword("");
@@ -302,7 +322,18 @@ function Login() {
                   <ErrorMessage>{signinerrors.password}</ErrorMessage>
                 )}
               </div>
-
+              {isLoading && (
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    marginTop: "10%",
+                  }}
+                >
+                  <CircularProgress style={{ color: "#a4d4cc" }} />
+                </Box>
+              )}
               <Link
                 className="btn flx"
                 onClick={() => {
@@ -343,8 +374,7 @@ function Login() {
               >
                 <DialogContent>
                   <div>
-  
-                    <h1 style={{ marginBottom: "3%", fontSize: "1.6rem"}}>
+                    <h1 style={{ marginBottom: "3%", fontSize: "1.6rem" }}>
                       Password Recovery
                     </h1>
                     <hr
@@ -354,64 +384,84 @@ function Login() {
                         width: "100%",
                       }}
                     />
-                    <p>
-                      Please enter you email to receive a link to reset your
-                      password
-                    </p>
-                    <TextField
-                      required
-                      id="name"
-                      value={email}
-                      onChange={handleInputChange}
-                      variant="outlined"
-                      error={errors.email ? true : false}
-                      helperText={errors.email || ""}
-                      style={{
-                        width: "80%",
-                        marginTop: "3%",
-                        marginBottom: "3%",
-                        fontSize: "1.1rem",
-                      }}
-                      InputProps={{
-                        style: {
-                          fontSize: "1rem",
-                        },
-                      }}
-                      FormHelperTextProps={{
-                        style: {
-                          fontSize: "1.1rem",
-                        },
-                      }}
-                    />
-
-                    <div
-                      className="buttons"
-                      style={{
-                        flex: 1,
-                        display: "flex",
-                        flexDirection: "row",
-                        justifyContent: "flex-end",
-                      }}
-                    >
-                      <Button
-                        variant="outlined"
-                        style={{
-                          color: "grey",
-                          borderColor: "grey",
-                          fontSize: "1rem",
+                    {isLoadingMail ? (
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          marginTop: "10%",
                         }}
-                        onClick={handleCloseForm}
                       >
-                        Cancel
-                      </Button>
-                      <Button
-                        variant="contained"
-                        style={{ marginLeft: "3%", fontSize: "1rem", backgroundColor: "#a4d4cc", color: "black" }}
-                        onClick={handleSendEmail}
-                      >
-                        Send
-                      </Button>
-                    </div>
+                        <CircularProgress style={{ color: "#a4d4cc" }} />
+                      </Box>
+                    ) : (
+                      <>
+                        <p>
+                          Please enter you email to receive a link to reset your
+                          password
+                        </p>
+                        <TextField
+                          required
+                          id="name"
+                          value={email}
+                          onChange={handleInputChange}
+                          variant="outlined"
+                          error={errors.email ? true : false}
+                          helperText={errors.email || ""}
+                          style={{
+                            width: "80%",
+                            marginTop: "3%",
+                            marginBottom: "3%",
+                            fontSize: "1.1rem",
+                          }}
+                          InputProps={{
+                            style: {
+                              fontSize: "1rem",
+                            },
+                          }}
+                          FormHelperTextProps={{
+                            style: {
+                              fontSize: "1.1rem",
+                            },
+                          }}
+                        />
+
+                        <div
+                          className="buttons"
+                          style={{
+                            flex: 1,
+                            display: "flex",
+                            flexDirection: "row",
+                            justifyContent: "flex-end",
+                          }}
+                        >
+                          <Button
+                            variant="outlined"
+                            style={{
+                              color: "grey",
+                              borderColor: "grey",
+                              fontSize: "1rem",
+                            }}
+                            onClick={handleCloseForm}
+                          >
+                            Cancel
+                          </Button>
+                          <Button
+                            variant="contained"
+                            style={{
+                              marginLeft: "3%",
+                              fontSize: "1rem",
+                              backgroundColor: "#a4d4cc",
+                              color: "black",
+                            }}
+                            onClick={handleSendEmail}
+                          >
+                            Send
+                          </Button>
+                        </div>
+                      </>
+                    )}
                   </div>
                 </DialogContent>
               </Dialog>
@@ -436,6 +486,19 @@ function Login() {
                         width: "100%",
                       }}
                     />
+                     {isLoadingPin ? (
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          marginTop: "10%",
+                        }}
+                      >
+                        <CircularProgress style={{ color: "#a4d4cc" }} />
+                      </Box>
+                    ) : (
+                      <>
                     <p style={{ color: errors.email ? "red" : "black" }}>
                       Email *
                     </p>
@@ -573,13 +636,22 @@ function Login() {
                       </Button>
                       <Button
                         variant="contained"
-                        style={{ marginLeft: "3%", fontSize: "1rem", backgroundColor: "#a4d4cc", color: "black" }}
+                        style={{
+                          marginLeft: "3%",
+                          fontSize: "1rem",
+                          backgroundColor: "#a4d4cc",
+                          color: "black",
+                        }}
                         onClick={handleChangePassword}
                       >
                         Change Password
                       </Button>
                     </div>
+                    </>
+                    )}
                   </div>
+                  
+                    
                 </DialogContent>
               </Dialog>
             </form>

@@ -16,6 +16,8 @@ import { clearMessage } from "../redux/message";
 import Stack from '@mui/material/Stack';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
+import { CircularProgress } from '@mui/material'
+import Box from '@mui/material/Box'
 
 
 const ErrorMessage = styled.h4`
@@ -47,6 +49,7 @@ const Register = () => {
     const { isLoggedIn } = useSelector((state) => state.auth);
     const { message } = useSelector((state) => state.message);
     const { user: currentUser } = useSelector((state) => state.auth);
+    const [isLoading, setIsLoading] = useState(false);
 
     let navigate = useNavigate();
     const dispatch = useDispatch();
@@ -66,7 +69,7 @@ const Register = () => {
     }
 
     const handleRegister = (userData) => {
-
+        setIsLoading(true);
         const username = userData.username;
         const email = userData.email;
         const password = userData.password;
@@ -80,6 +83,9 @@ const Register = () => {
         .catch(() => {
             setIsRegistered(true);
             setSignUpPopUp(true);
+        })
+        .finally(() => {
+            setIsLoading(false);
         });
 
     };
@@ -161,7 +167,18 @@ const Register = () => {
                                 </div>
                                 {signuperrors.password && <ErrorMessage>{signuperrors.password}</ErrorMessage>}
                             </div>
-
+                            {isLoading && (
+                                <Box
+                                    sx={{
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        marginTop: '10%',
+                                    }}
+                                >
+                                    <CircularProgress style={{ color: "#a4d4cc" }} />
+                                </Box>
+                            )}
                             <Link type='submit' className='btn flx'
                             onClick={() => {
                                 handleSignUpValidation();
